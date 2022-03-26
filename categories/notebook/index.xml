@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>notebook on JhuoW‘s Notes</title>
+    <link>https://JhuoW.github.io/categories/notebook/</link>
+    <description>Recent content in notebook on JhuoW‘s Notes</description>
+    <image>
+      <url>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 28 Apr 2019 16:36:50 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/notebook/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>长期更新-好论文解读收藏</title>
+      <link>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</link>
+      <pubDate>Sun, 28 Apr 2019 16:36:50 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</guid>
+      <description>这篇笔记用于收藏别人的论文解读
+Social Diffusion    Title Unscramble     Social Influence Locality for Modeling Retweeting Behavior 解读 代码   Role-Aware Conformity Influence Modeling and Analysis in Social Network 解读   DeepInf:Social Influence Prediction with Deep Learning 解读   Reverse Influence Sampling in Python 解读及代码   Cost-effective Outbreak Detection in Networks（CELF） 解读及代码 解读   DeepCas: an End-to-end Predictor of Information Cascades 解读   Inf2vec: Latent Representation Model for Social Influence Embedding 解读   POI2Vec: Geographical Latent Representation for Predicting Future Visitors 解读    Network Embedding and GNN    Title Unscramble     Heterogeneous Graph Attention Network 解读   Attributed Social Network Embedding 解读   Self-Translation Network Embedding 解读1 解读2   Self-Paced Network Embedding 解读   CANE: Context-Aware Network Embedding for Relation Modeling 解读   HIN2Vec: Explore Meta-paths in Heterogeneous Information Networks for Representation Learning 解读1 解读2   Embedding Temporal Network via Neighborhood Formation 解读   Network Representation Learning with Rich Text Information 解读1 解读2   Meta-Path Guided Embedding for Similarity Search in Large-Scale Heterogeneous Information Networks 解读   SHINE: Signed Heterogeneous Information Network Embedding for Sentiment Link Prediction 解读   Context-Aware Network Embedding for Relation Modeling 解读   GAN在网络特征学习中的应用 this   一文读懂「Attention is All You Need」 附代码实现 解读   node2vec: Scalable Feature Learning for Networks 解读1 解读2 解读3   PTE:Predictive Text Embedding through Large-scale 解读   struc2vec: Learning Node Representations from Structural Identity 解读   AspEm: Embedding Learning by Aspects in HINs 解读   Max-Margin DeepWalk: Discriminative Learning of Network Representation 解读1 解读2   Structural Deep Network Embedding 解读   Learning Structural Node Embeddings via Diffusion Wavelets 解读   HARP: Hierarchical Representation Learning for Networks 解读   Dynamic Network Embedding by Modeling Triadic Closure Process 解读   RaRE: Social Rank Regulated Large-scale Network Embedding 解读   TransNet: Translation-Based Network Representation Learning for Social Relation Extraction 解读   GraphGAN: Graph Representation Learning with Generative Adversarial Nets 解读   Graph Convolutional Network 解答   GraRep: Learning Graph Representations with Global Structural Information 解读   Deep Dynamic Network Embedding for Link Prediction 解读   Representation Learning for Attributed Multiplex Heterogeneous Network GATNE   Inductive Representation Learning on Large Graphs GraphSAGE   Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba 解读   Graph Convolutional Neural Networks for Web-Scale Recommender Systems PinSAGE   Semi-Supervised Classification with Graph Convolutional Networks Semi-GCN   Joint Type Inference on Entities and Relations via Graph Convolutional Networks 解读   图卷积神经网络（GCN） GCN   Adaptive SamplingTowards Fast Graph Representation Learning 解读   ProNE: Fast and Scalable Network Representation Learning ProNE   ROTATE:Knowledge graph embedding by relational rotate in complex space Rotate   Signed Graph Convolutional Network SGCN   GAT: Graph Attention Network GAT GAT2   Large-Scale Learnable Graph Convolutional Networks LGCN LGCN2 LGCN3 LGCN4 LGCN5 代码分析   Hierarchical Graph Representation Learning with Differentiable Pooling DiffPool DiffPool    ML &amp;amp; DL    Title Unscramble     常见散度与距离(KL散度，JS散度，Wasserstein距离，互信息MI) Here   【简化数据】奇异值分解(SVD) Here   AUC的计算与近似 Here   PCA Here Here Here   AdaBoost Here Here   Batch Normalization Here   矩阵的正定及半正定 Here   精确率、召回率、F1 值、ROC、AUC Here   Hierarchical Softmax Here   傅立叶变换 Here   卷积神经网络（CNN）之一维卷积、二维卷积、三维卷积详解 Here   变分自编码器（VAE） Here    工具    Title Unscramble     tf.</description>
+    </item>
+    
+  </channel>
+</rss>

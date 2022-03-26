@@ -20,8 +20,26 @@
       <description>最近在看GNN/GCN的时候遇到谱聚类，学了下，做了些笔记。
 本文主要参考了：[1] https://www.cnblogs.com/pinard/p/6221564.html#!comments
 Introduction 谱聚类是图论中的算法，主要思想是空间中距离较远的两个点之间边的权重值较低， 距离较近的两个点之间边的权重值较高， 通过对所有数据点组成的图（Graph）进行切图， 使不同子图之间边的权重和尽可能低， 子图内边的权重值的和尽可能高，从而达到聚类的目的。
-基础1： 无向权重图 对于边$(v_i,v_j)$, 它的权重$w_{ij} &amp;gt; 0$。对于没有边的节点$v_i$和$v_j$, 他们之间的权重$w_{ij}=0$。图中的节点$v_i$, 它的度$d_i$定义为和它连接的所有边的权重之和，即： $$ d_i = \sum_{j=1}^n w_{ij} $$ 根据所有节点的度值，我们可以得到一个度矩阵$D$: $$ D=\displaystyle \left(\begin{array}{ccc}{d_{1}} &amp;amp; {\ldots} &amp;amp; {\ldots} \ {\ldots} &amp;amp; {d_{2}} &amp;amp; {\ldots} \ {\vdots} &amp;amp; {\vdots} &amp;amp; {\ddots} \ {\ldots} &amp;amp; {\ldots} &amp;amp; {d_{n}}\end{array}\right) ^{n\times n} $$ 是一个$n \times n$的对角阵，对角元素是每个节点的度和。
-定义图的邻接矩阵为$W \in \mathbb{R}^{n \times n}$， 每个元素$W_{ij}$表示节点对$(v_i,v_j)$之间的权重。 对于$V$中的一个子节点集$A \subset V$， 定义： $$ |A|=A 中的节点个数 \ vol(A) = \sum_{i \in A} d_i \quad 表示A中所有节点的权重之和 $$</description>
+基础1： 无向权重图 对于边$(v_i,v_j)$, 它的权重$w_{ij} &amp;gt; 0$。对于没有边的节点$v_i$和$v_j$, 他们之间的权重$w_{ij}=0$。图中的节点$v_i$, 它的度$d_i$定义为和它连接的所有边的权重之和，即： $$ d_i = \sum_{j=1}^n w_{ij} $$ 根据所有节点的度值，我们可以得到一个度矩阵$D$: $$ D=\displaystyle \left(\begin{array}{ccc}{d_{1}} &amp;amp; {\ldots} &amp;amp; {\ldots} \\\ {\ldots} &amp;amp; {d_{2}} &amp;amp; {\ldots} \\\ {\vdots} &amp;amp; {\vdots} &amp;amp; {\ddots} \\\ {\ldots} &amp;amp; {\ldots} &amp;amp; {d_{n}}\end{array}\right) ^{n\times n} $$ 是一个$n \times n$的对角阵，对角元素是每个节点的度和。
+定义图的邻接矩阵为$W \in \mathbb{R}^{n \times n}$， 每个元素$W_{ij}$表示节点对$(v_i,v_j)$之间的权重。 对于$V$中的一个子节点集$A \subset V$， 定义： $$|A|=A 中的节点个数 $$
+$$vol(A) = \sum_{i \in A} d_i \quad 表示A中所有节点的权重之和$$</description>
+    </item>
+    
+    <item>
+      <title>《Representation Learning for Information Diffusion through Social Networks:an Embedded Cascade Model》阅读笔记</title>
+      <link>https://JhuoW.github.io/posts/2019-05-12-embedding-ic/</link>
+      <pubDate>Sun, 12 May 2019 22:09:38 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-05-12-embedding-ic/</guid>
+      <description>文章链接：Embedding_IC
+Introduction 本文基于Network Embedding优化了传统的独立级联模型（IC），用以学习一个更具鲁棒性的扩散概率。
+对于网络和社交数据，分析用户交互来为扩散现象建模具有以下困难：
+ 用户通常是异质的，伴随着不同的行为或兴趣。并且他们通过各种通道同时交互。 用户之间的关系很难检测和表征。 例如，在信息传播过程中，不经常交互的用户之间的“弱关系”很重要，而它们很难被捕获。 不同应用中的级联长度变化很大，难以学习和预测。  本文的目的是通过从观察中学习来开发扩散模型。为此，本文专注于独立级联模型（IC），该模型定义了网络中的扩散迭代过程。在这种情况下，建模扩散的问题归结为__学习表征用户间隐含的相互影响关系的概率分布__，以便发现网络的主要通信通道。我们在此考虑的模型执行以下假设：
+ 影响传播是二元的（被感染或不被感染）， 扩散网络未知， 影响关系不依赖于传播的内容， 用户之间的感染概率不会随时间变化（一旦分配了两个节点间的感染概率，那么该概率固定）。  本文基于NE，将扩散空间建模为一个连续的潜在空间，用户间的相对位置用于定义内容传输的可能性。用户靠的越近，传播概率越高。如下图所示：
+Model Notations 传播事件集$\mathcal{D}={D_1,D_2,&amp;hellip;,D_n}$ 可以视为一个graph中的$n$个级联（cascade）。其中，一个传播事件$D$是一个带有时间戳的用户集。值得注意的是，级联中的用户并不知道是谁传染它，仅知道它何时被传染。
+给定一个社交网络，有$N$个用户：$\mathcal{U}={u_1,u_2,&amp;hellip;,u_N}$，一个传播级联$D$可以定义为user和它的timestamp的集合：$D = {(u,t^D(u)) | u \in \mathcal{U} \wedge t^D(u)&amp;lt; \infty}$， 其中，$t^D: \mathcal{U} \to \mathbb{R}^+$ 表示用户被传染的时间戳， $\infty$表示未被传染的用户。每个用户的时间戳$t^D$表示该用户相对于源用户（source user）被传染的时间，$t^D(source \quad user) = 0$。接下来，用$D(t)$表示在时间戳$t$之前被传染的用户：$D(t) = {u \in \mathcal{U} | t^D(u)&amp;lt;t}$。对称地，用$\bar{D}(t)$表示在时间戳$t$之前没有被感染的用户。 $D(\infty)$表示最终所有被感染的用户，$\bar{D}(infty)$表示最终所有没被感染的用户。
+Diffusion Model 本文将级联embed到连续空间中，用以捕获扩散关系的规律性。本文只考虑传播的顺序，而不是确切的感染时间戳。
+在Embedding_IC中，在一个传播事件(级联)$D$中，一个用户是否被感染的概率取决于先前所有已经被感染的节点。给定一个已经被影响的用户集$I \in \mathcal{U}$, $P(v|I)$表示给定活跃用户集$I$时，节点$v$被传染的概率，其中$v \in \mathcal{U} \backslash I$: $$ P(v|I) = 1-\prod_{u \in I}(1-P_{u,v}) $$ 上式中，$\prod_{u \in I}(1-P_{u,v})$表示$I$中所有节点都不影响$v$的概率。那么$P(v|I)$就可以表示$v$被感染的概率。</description>
     </item>
     
     <item>
@@ -41,6 +59,16 @@ LC IT模型（独立级联模型和线性阈值模型） WC（权重级联模型
     </item>
     
     <item>
+      <title>长期更新-好论文解读收藏</title>
+      <link>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</link>
+      <pubDate>Sun, 28 Apr 2019 16:36:50 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</guid>
+      <description>这篇笔记用于收藏别人的论文解读
+Social Diffusion    Title Unscramble     Social Influence Locality for Modeling Retweeting Behavior 解读 代码   Role-Aware Conformity Influence Modeling and Analysis in Social Network 解读   DeepInf:Social Influence Prediction with Deep Learning 解读   Reverse Influence Sampling in Python 解读及代码   Cost-effective Outbreak Detection in Networks（CELF） 解读及代码 解读   DeepCas: an End-to-end Predictor of Information Cascades 解读   Inf2vec: Latent Representation Model for Social Influence Embedding 解读   POI2Vec: Geographical Latent Representation for Predicting Future Visitors 解读    Network Embedding and GNN    Title Unscramble     Heterogeneous Graph Attention Network 解读   Attributed Social Network Embedding 解读   Self-Translation Network Embedding 解读1 解读2   Self-Paced Network Embedding 解读   CANE: Context-Aware Network Embedding for Relation Modeling 解读   HIN2Vec: Explore Meta-paths in Heterogeneous Information Networks for Representation Learning 解读1 解读2   Embedding Temporal Network via Neighborhood Formation 解读   Network Representation Learning with Rich Text Information 解读1 解读2   Meta-Path Guided Embedding for Similarity Search in Large-Scale Heterogeneous Information Networks 解读   SHINE: Signed Heterogeneous Information Network Embedding for Sentiment Link Prediction 解读   Context-Aware Network Embedding for Relation Modeling 解读   GAN在网络特征学习中的应用 this   一文读懂「Attention is All You Need」 附代码实现 解读   node2vec: Scalable Feature Learning for Networks 解读1 解读2 解读3   PTE:Predictive Text Embedding through Large-scale 解读   struc2vec: Learning Node Representations from Structural Identity 解读   AspEm: Embedding Learning by Aspects in HINs 解读   Max-Margin DeepWalk: Discriminative Learning of Network Representation 解读1 解读2   Structural Deep Network Embedding 解读   Learning Structural Node Embeddings via Diffusion Wavelets 解读   HARP: Hierarchical Representation Learning for Networks 解读   Dynamic Network Embedding by Modeling Triadic Closure Process 解读   RaRE: Social Rank Regulated Large-scale Network Embedding 解读   TransNet: Translation-Based Network Representation Learning for Social Relation Extraction 解读   GraphGAN: Graph Representation Learning with Generative Adversarial Nets 解读   Graph Convolutional Network 解答   GraRep: Learning Graph Representations with Global Structural Information 解读   Deep Dynamic Network Embedding for Link Prediction 解读   Representation Learning for Attributed Multiplex Heterogeneous Network GATNE   Inductive Representation Learning on Large Graphs GraphSAGE   Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba 解读   Graph Convolutional Neural Networks for Web-Scale Recommender Systems PinSAGE   Semi-Supervised Classification with Graph Convolutional Networks Semi-GCN   Joint Type Inference on Entities and Relations via Graph Convolutional Networks 解读   图卷积神经网络（GCN） GCN   Adaptive SamplingTowards Fast Graph Representation Learning 解读   ProNE: Fast and Scalable Network Representation Learning ProNE   ROTATE:Knowledge graph embedding by relational rotate in complex space Rotate   Signed Graph Convolutional Network SGCN   GAT: Graph Attention Network GAT GAT2   Large-Scale Learnable Graph Convolutional Networks LGCN LGCN2 LGCN3 LGCN4 LGCN5 代码分析   Hierarchical Graph Representation Learning with Differentiable Pooling DiffPool DiffPool    ML &amp;amp; DL    Title Unscramble     常见散度与距离(KL散度，JS散度，Wasserstein距离，互信息MI) Here   【简化数据】奇异值分解(SVD) Here   AUC的计算与近似 Here   PCA Here Here Here   AdaBoost Here Here   Batch Normalization Here   矩阵的正定及半正定 Here   精确率、召回率、F1 值、ROC、AUC Here   Hierarchical Softmax Here   傅立叶变换 Here   卷积神经网络（CNN）之一维卷积、二维卷积、三维卷积详解 Here   变分自编码器（VAE） Here    工具    Title Unscramble     tf.</description>
+    </item>
+    
+    <item>
       <title>社交网络影响最大化（Influence Maximization）中的IC，LT模型</title>
       <link>https://JhuoW.github.io/posts/2019-03-20-ic-lt/</link>
       <pubDate>Wed, 20 Mar 2019 21:34:08 +0000</pubDate>
@@ -50,7 +78,100 @@ LC IT模型（独立级联模型和线性阈值模型） WC（权重级联模型
 在时间步为0的时候，给定一个种子集（seed set）$S$,即$k$个已经是激活着的节点。 在时间步$t$时，每一个激活状态的节点$u$将会以一定的概率$p_{u,v}$来激活每一个和它连接的未激活节点$v$。时间步$t$之后，如果$v$依然是未激活状态，那么$v$将无法再次被$v$激活。结束一次上述过程后，$u$保持激活状态并且失去激活其他节点的能力。当网络$G$中没有其他节点可以被激活时，扩散过程结束。
 值得注意的是，当$S$是原始的激活节点集，那么上述随机激活过程完成后，所得到的影响分布（Influence Spread）是所期望的激活节点数。
 The Linear Threshold Model (LT Model) LT模型，即线性阈值模型。基本思想是，如果一个未被激活的节点有足够的传入邻居是激活状态的，那么该节点可以被激活。
-形式上， 在图$G$中每条边$e=(u,v) \in E$有一个权重$b_{u,v}$。 我们定义$\mathcal{N}I (v)$表示节点$v$的传入节点， 满足$\sum{u \in \mathcal{N}I (v)} b{u,v} \leq 1$, 即所有$v$的传入节点与$v$组成的边的权重只和小于1。 另外，每个节点$v$具有一个阈值$\theta_v$。 LT模型首先为每个节点$v$的阈值$\theta_v$在$[0,1]$上均匀随机采样。在时间步0时，设置$S$中的节点状态为激活，其他节点为未激活，然后迭代的更新每个节点的状态。 在时间步$t$时，所有$t-1$时刻是激活状态的节点依旧保持激活状态，与此同时，其他未激活的节点$v$, 如果任意一个节点$v$的激活传入邻居总权重的值至少为$\theta_v$,那么将$v$激活。 当没有节点将要被激活时，传播结束。</description>
+形式上， 在图$G$中每条边$e=(u,v) \in E$有一个权重$b_{u,v}$。 我们定义$\mathcal{N}_I (v)$表示节点$v$的传入节点， 满足$\sum_{u \in \mathcal{N}_I (v)} b_{u,v} \leq 1$, 即所有$v$的传入节点与$v$组成的边的权重只和小于1。 另外，每个节点$v$具有一个阈值$\theta_v$。 LT模型首先为每个节点$v$的阈值$\theta_v$在$[0,1]$上均匀随机采样。在时间步0时，设置$S$中的节点状态为激活，其他节点为未激活，然后迭代的更新每个节点的状态。 在时间步$t$时，所有$t-1$时刻是激活状态的节点依旧保持激活状态，与此同时，其他未激活的节点$v$, 如果任意一个节点$v$的激活传入邻居总权重的值至少为$\theta_v$,那么将$v$激活。 当没有节点将要被激活时，传播结束。</description>
+    </item>
+    
+    <item>
+      <title>《Enhanced Network Embeddings via Exploiting Edge Labels》阅读笔记</title>
+      <link>https://JhuoW.github.io/posts/2019-01-22-ne-edge-labels/</link>
+      <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-01-22-ne-edge-labels/</guid>
+      <description>论文地址: Enhanced Network Embeddings via Exploiting Edge Labels
+Introduction 这是DeepWalk团队的一篇论文，目的是捕获网络中的边信息。传统的NE方法通常把节点简单关系当做（0,1）二值，然而边中所包含的丰富的语义信息。本文尝试做Network Embedding的同时保留网络结构和节点关系信息。举个例子来说，真实社交网络中，一个用户可能和他的同事，家人有关系，但是已有的NE方法不能同事捕获好友关系（有边连接），以及边的类型。
+具体来说，本分的方法分为无监督部分和监督部分。其中无监督部分预测节点邻域， 监督部分预测边标签。所以本文模型是个半监督NE模型。
+Problem Definition 假定Network Graph $G=(V,E)$是无向图。$L=(l_1,l_2,&amp;hellip;,l_{|V|})$是边的类型集。一个含有边类型的Graph可以被重新定义为$G=(V,E_L,E_U,Y_L)$,其中$E_L$是由label的边集，$E_U$是没有label的边集，$E_L \cup E_U =E$。$Y_L$表示$E_L$中边的关系类型集合。论文中假定一条边可以有多重关系，所以对于边$E_i$的label集$Y_L(i) \in Y_L$, $Y_L(i)$可能包含很多类型 所以$Y_L(i) \subseteq L$。目的还是一样，学习一个映射函数$\Phi \to \mathbb{R}^{|V| \times d}$, 其中$d \ll |V|$。
+Method 首先定义损失函数:
+$$\mathcal{L}=(1-\lambda)\mathcal{L}_s+\lambda\mathcal{L}_r$$
+其中$\mathcal{L}_s$表示预测节点邻域的损失。$\mathcal{L}_r$表示预测边label的损失。$\lambda$是两种损失的权重。
+Structural Loss 第一部分是最小化无监督网络结构损失，对于一个给定的节点$v$, 要最大化这个节点和它邻域可能性。其中，节点的邻域不一定要一定和该节点有边相连。文章先给出了结构损失的目标函数：
+$$\mathcal{L}_s=-\sum_{u \in C(v)} \log Pr(u|v)$$
+这个函数其实就是给定$v$,最大化$v$的邻域的极大似然。其中$Pr(u|v)$是一个softmax函数：
+$$Pr(u|v)=\frac{\exp(\Phi(u) \cdot \Phi&amp;rsquo;(v))}{\sum_{u&amp;rsquo; \in V} \exp(\Phi(u&amp;rsquo;) \cdot \Phi&amp;rsquo;(v))}$$
+这其实和DeepWalk一样，一个节点$v$有两个表示向量，$\Phi(v)$和$\Phi&amp;rsquo;(v)$分别表示该节点作为中心节点和上下文节点的表示。由于计算复杂度较高，所以采用负采样的策略。
+剩下的问题就是如何构建节点$v$的邻域$C(v)$。一种直接的方式就是从邻接矩阵中选取他的邻居。然后由于现实网络的稀疏性，一个节点只有很少的邻居。为了缓解网络稀疏性的问题， 本文采取了类似于DeepWalk的randomwalk策略。 最终可以得到节点$v$的邻域：
+$$C(v)={v_{i-w},&amp;hellip;,v_{i-1}} \cup {v_{i+1},&amp;hellip;,v_{i+w}}$$
+Relational Loss 由于label是为了预测边的，所以需要把每条边表示出来，所以对于边$e=(u,v) \in E$,可以用一下方法来表示这条边:
+$$\Phi(e)=g(\Phi(u),\Phi(v))$$
+其中，$g$是一个映射函数用来把两个节点的表示向量转化为他们之间边的表示向量，本文使用了简单的连接操作，即把两个向量直接拼接：</description>
+    </item>
+    
+    <item>
+      <title>OpenCV轮廓提取并计算图片中某一封闭区域的面积</title>
+      <link>https://JhuoW.github.io/posts/2019-04-02-pic-closed-edge/</link>
+      <pubDate>Mon, 02 Apr 2018 15:43:44 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-04-02-pic-closed-edge/</guid>
+      <description>最近遇到一个问题，如果需要计算区域内的面积，比如说要计算下图中类似三角形区域内的面积
+之前的做法是用Canny算子提取边缘，再用HoughLines拟合直线，然后求出交点坐标并计算三角形面积，其中，边缘提取后的图像如下图所示：
+我们可以很明显的看出这不是一个标准的三角形，所以如果想要更精确的获得三角形，就需要对图片进行轮廓提取，然后计算轮廓内区域的面积。这里给出代码：
+{% codeblock %}
+import cv2 import numpy as np # Input image img = cv2.imread(&#39;cut.jpeg&#39;, cv2.IMREAD_GRAYSCALE) # Needed due to JPG artifacts _, temp = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY) # Dilate to better detect contours temp = cv2.dilate(temp, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))) # Find largest contour _, cnts, _ = cv2.findContours(temp, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE) largestCnt = [] for cnt in cnts: if len(cnt) &amp;gt; len(largestCnt): largestCnt = cnt # Determine center of area of largest contour M = cv2.</description>
+    </item>
+    
+    <item>
+      <title>深度学习中的优化算法总结</title>
+      <link>https://JhuoW.github.io/posts/2019-02-28-optimizer/</link>
+      <pubDate>Sun, 28 Jan 2018 11:48:28 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-02-28-optimizer/</guid>
+      <description>最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。
+Gradient Desent(梯度下降) 目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。
+(1).梯度下降的原理：目标函数（损失函数）$f(x)$关于参数$x$的梯度是损失函数上升最快的方向。所以只要让$x$沿梯度的反方向走，就可以缩小目标函数。
+(2).目标函数关于参数$x$在epoch $t$时的梯度：
+$$g_t = \nabla_x f(x_t)$$
+(3).我们要最小化$f(x)$, 所以参数$x$需要往梯度的反方向移动：
+$$x_{t+1} = x_t-\eta_t g_t$$
+其中$x_{t+1}$为$t+1$时刻的参数值。
+Stochastic Gradient Desent(随机梯度下降) 梯度下降存在的问题有鞍点问题以及无法找到全局最优解的问题。所以引入SGD。
+首先给出无偏估计的定义，稍后会用到：
+无偏估计：估计量的均值等于真实值，即具体每一次估计值可能大于真实值，也可能小于真实值，而不能总是大于或小于真实值（这就产生了系统误差）。
+深度学习中，目标函数通常是训练集中各个样本损失的平均，假设一个batch的大小为$n$，那么训练这个batch的损失就是$f_{batch}(x) = \frac{\displaystyle\sum_{i=1}^{n} f_i(x)}{n}$ , 所以目标函数对$x$的梯度就是：
+$$\nabla f_{batch}(x) = \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x)$$
+如果使用GD来优化：
+$$x_{t+1} = x_{t}- \eta_t \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x) \ = x_t-\eta_t \nabla f_{batch}(x)$$ 上式可以看出，当训练样本非常大时，n也将边的非常大，那么梯度计算的计算开销就比较大。
+随机梯度下降（SGD）的思想是： 以一个batch为例，这个batch中有n个样本，每个样本$i \in {1, \cdots,n}$, 每次从中随机选取一个样本来更新参数$x$。
+$$x_{t+1} = x_{t}-\eta_t \nabla f_i(x)$$
+这样就更新了一个batch的参数。 对比上面两个式子可以看出SGD降低了计算复杂度。上面两个式子是等价的，因为随机梯度$\nabla f_i(x)$是对梯度$\nabla f_{batch}(x)$的无偏估计，因为：</description>
+    </item>
+    
+    <item>
+      <title>HTNE:《Embedding Temporal Network via Neighborhood Formation》阅读笔记</title>
+      <link>https://JhuoW.github.io/posts/2019-01-17-htne/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-01-17-htne/</guid>
+      <description>论文地址：HTNE
+Introduction 本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。
+另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。
+因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。
+通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。
+另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。
+值得注意的是，本文目标是优化邻域生成序列的极大似然估计即条件强度函数（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数
+Model Definition 本文通过跟踪节点邻域的形成来捕获网络的形成过程。
+Definition 1 : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。
+因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。
+Definition 2 : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&amp;hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&amp;hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。
+Hawkes Process 点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。
+对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：
+$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&amp;lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$
+其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&amp;lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：
+$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$
+其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。
+综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。
+如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。
+直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。
+因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$.</description>
     </item>
     
   </channel>

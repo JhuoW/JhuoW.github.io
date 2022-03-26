@@ -21,11 +21,38 @@
     </item>
     
     <item>
+      <title>Diffusion</title>
+      <link>https://JhuoW.github.io/categories/diffusion/</link>
+      <pubDate>Sun, 12 May 2019 22:09:38 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/diffusion/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>paper</title>
+      <link>https://JhuoW.github.io/categories/paper/</link>
+      <pubDate>Sun, 12 May 2019 22:09:38 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/paper/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>IM</title>
       <link>https://JhuoW.github.io/categories/im/</link>
       <pubDate>Mon, 06 May 2019 20:16:17 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/categories/im/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>notebook</title>
+      <link>https://JhuoW.github.io/categories/notebook/</link>
+      <pubDate>Sun, 28 Apr 2019 16:36:50 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/notebook/</guid>
       <description></description>
     </item>
     
@@ -44,6 +71,42 @@
       <pubDate>Wed, 20 Mar 2019 21:34:08 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/categories/social-network-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network Embedding</title>
+      <link>https://JhuoW.github.io/categories/network-embedding/</link>
+      <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/network-embedding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Computer Vision</title>
+      <link>https://JhuoW.github.io/categories/computer-vision/</link>
+      <pubDate>Mon, 02 Apr 2018 15:43:44 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/computer-vision/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>project</title>
+      <link>https://JhuoW.github.io/categories/project/</link>
+      <pubDate>Mon, 02 Apr 2018 15:43:44 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/project/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Deep Learning</title>
+      <link>https://JhuoW.github.io/categories/deep-learning/</link>
+      <pubDate>Sun, 28 Jan 2018 11:48:28 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/deep-learning/</guid>
       <description></description>
     </item>
     

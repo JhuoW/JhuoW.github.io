@@ -39,6 +39,33 @@
     </item>
     
     <item>
+      <title>Diffusion</title>
+      <link>https://JhuoW.github.io/tags/diffusion/</link>
+      <pubDate>Sun, 12 May 2019 22:09:38 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/diffusion/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network Embedding</title>
+      <link>https://JhuoW.github.io/tags/network-embedding/</link>
+      <pubDate>Sun, 12 May 2019 22:09:38 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/network-embedding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Social Network Analysis</title>
+      <link>https://JhuoW.github.io/tags/social-network-analysis/</link>
+      <pubDate>Sun, 12 May 2019 22:09:38 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/social-network-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Influence Maximization</title>
       <link>https://JhuoW.github.io/tags/influence-maximization/</link>
       <pubDate>Mon, 06 May 2019 20:16:17 +0000</pubDate>
@@ -48,11 +75,11 @@
     </item>
     
     <item>
-      <title>Social Network Analysis</title>
-      <link>https://JhuoW.github.io/tags/social-network-analysis/</link>
-      <pubDate>Mon, 06 May 2019 20:16:17 +0000</pubDate>
+      <title>paper</title>
+      <link>https://JhuoW.github.io/tags/paper/</link>
+      <pubDate>Sun, 28 Apr 2019 16:36:50 +0000</pubDate>
       
-      <guid>https://JhuoW.github.io/tags/social-network-analysis/</guid>
+      <guid>https://JhuoW.github.io/tags/paper/</guid>
       <description></description>
     </item>
     
@@ -62,6 +89,42 @@
       <pubDate>Wed, 20 Mar 2019 21:34:08 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/tags/im/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>attention</title>
+      <link>https://JhuoW.github.io/tags/attention/</link>
+      <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/attention/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hawkes process</title>
+      <link>https://JhuoW.github.io/tags/hawkes-process/</link>
+      <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/hawkes-process/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Contours</title>
+      <link>https://JhuoW.github.io/tags/contours/</link>
+      <pubDate>Mon, 02 Apr 2018 15:43:44 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/contours/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Optimizer</title>
+      <link>https://JhuoW.github.io/tags/optimizer/</link>
+      <pubDate>Sun, 28 Jan 2018 11:48:28 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/optimizer/</guid>
       <description></description>
     </item>
     

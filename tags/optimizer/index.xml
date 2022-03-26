@@ -10,13 +10,13 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Jan 2018 11:48:28 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/optimizer/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 28 Jan 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/optimizer/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>深度学习中的优化算法总结</title>
-      <link>https://JhuoW.github.io/posts/2019-02-28-optimizer/</link>
-      <pubDate>Sun, 28 Jan 2018 11:48:28 +0000</pubDate>
+      <link>https://JhuoW.github.io/posts/2019-02-28-optimizer/2019-02-28-optimizer/</link>
+      <pubDate>Sun, 28 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/2019-02-28-optimizer/</guid>
+      <guid>https://JhuoW.github.io/posts/2019-02-28-optimizer/2019-02-28-optimizer/</guid>
       <description>最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。
 Gradient Desent(梯度下降) 目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。
 (1).梯度下降的原理：目标函数（损失函数）$f(x)$关于参数$x$的梯度是损失函数上升最快的方向。所以只要让$x$沿梯度的反方向走，就可以缩小目标函数。

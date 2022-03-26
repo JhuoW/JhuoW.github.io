@@ -13,10 +13,10 @@
     <lastBuildDate>Mon, 02 Apr 2018 15:43:44 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/project/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>OpenCV轮廓提取并计算图片中某一封闭区域的面积</title>
-      <link>https://JhuoW.github.io/posts/2019-04-02-pic-closed-edge/</link>
+      <link>https://JhuoW.github.io/posts/pic-closed-edge/</link>
       <pubDate>Mon, 02 Apr 2018 15:43:44 +0000</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/2019-04-02-pic-closed-edge/</guid>
+      <guid>https://JhuoW.github.io/posts/pic-closed-edge/</guid>
       <description>最近遇到一个问题，如果需要计算区域内的面积，比如说要计算下图中类似三角形区域内的面积
 之前的做法是用Canny算子提取边缘，再用HoughLines拟合直线，然后求出交点坐标并计算三角形面积，其中，边缘提取后的图像如下图所示：
 我们可以很明显的看出这不是一个标准的三角形，所以如果想要更精确的获得三角形，就需要对图片进行轮廓提取，然后计算轮廓内区域的面积。这里给出代码：

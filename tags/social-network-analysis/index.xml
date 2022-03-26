@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Social Network Analysis on JhuoW‘s Notes</title>
+    <link>https://JhuoW.github.io/tags/social-network-analysis/</link>
+    <description>Recent content in Social Network Analysis on JhuoW‘s Notes</description>
+    <image>
+      <url>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 06 May 2019 20:16:17 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/social-network-analysis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Influence Maximization Conclusion</title>
+      <link>https://JhuoW.github.io/posts/2019-05-06-im-conclusion/</link>
+      <pubDate>Mon, 06 May 2019 20:16:17 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-05-06-im-conclusion/</guid>
+      <description>影响力传播模型 社交网络上影响力最大化问题需要借助相应的影响力传播模型，影响力传播模型的选择
+LC IT模型（独立级联模型和线性阈值模型） WC（权重级联模型） HD（热传播模型） SIR（传染病模型） MIA模型（路径相关） 投票模型 巴斯模型 影响力最大化算法 目前有的几个影响力最大化的算法
+   基于目标函数的子模性质的算法（一般是贪心算法和贪心算法的改进）
+  A note on maximizing a submodular set function subject to a knapsack constraint 这个文章主要是把问题扩展了，认为选择每个节点是有不同的代价的，而不同于传统的问题，传统的问题中，每个节点的选择大家都是一样的，因此，在总代价一定的情况下，那么问题就是选择固定个数的节点即可，但是如果每个节点的选择代价不一样，在总代价一定的情况下，选择的节点的个数就不一样
+  Cost-effective outbreak detection in networks （CELF算法）
+  Celf ++ : optimizing the greedy algorithm for influence maximization in social networks（CELF++算法） 这个文章就是大名鼎鼎的CELF算法，利用子模性质和边际效益递减对贪心算法进行优化，同理还有CELF++算法也是大致相同的思路
+    基于中心性的启发式算法
+  Efficient influence maximization in social networks W.Chen （DegreeDiscount算法） 这个算法也是启发式算法，主要在于，每当选择一个节点后，认为这个节点不会再被影响，因此，它的邻居节点地度-1</description>
+    </item>
+    
+  </channel>
+</rss>

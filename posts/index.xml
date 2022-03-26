@@ -10,14 +10,47 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 26 Mar 2022 13:36:04 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 07 Sep 2019 09:11:09 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Quickstart</title>
-      <link>https://JhuoW.github.io/posts/quickstart/</link>
-      <pubDate>Sat, 26 Mar 2022 13:36:04 +0800</pubDate>
+      <title>谱聚类 Spectral Clustering 笔记</title>
+      <link>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</link>
+      <pubDate>Sat, 07 Sep 2019 09:11:09 +0000</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/quickstart/</guid>
-      <description>this is a test post</description>
+      <guid>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</guid>
+      <description>最近在看GNN/GCN的时候遇到谱聚类，学了下，做了些笔记。
+本文主要参考了：[1] https://www.cnblogs.com/pinard/p/6221564.html#!comments
+Introduction 谱聚类是图论中的算法，主要思想是空间中距离较远的两个点之间边的权重值较低， 距离较近的两个点之间边的权重值较高， 通过对所有数据点组成的图（Graph）进行切图， 使不同子图之间边的权重和尽可能低， 子图内边的权重值的和尽可能高，从而达到聚类的目的。
+基础1： 无向权重图 对于边$(v_i,v_j)$, 它的权重$w_{ij} &amp;gt; 0$。对于没有边的节点$v_i$和$v_j$, 他们之间的权重$w_{ij}=0$。图中的节点$v_i$, 它的度$d_i$定义为和它连接的所有边的权重之和，即： $$ d_i = \sum_{j=1}^n w_{ij} $$ 根据所有节点的度值，我们可以得到一个度矩阵$D$: $$ D=\displaystyle \left(\begin{array}{ccc}{d_{1}} &amp;amp; {\ldots} &amp;amp; {\ldots} \ {\ldots} &amp;amp; {d_{2}} &amp;amp; {\ldots} \ {\vdots} &amp;amp; {\vdots} &amp;amp; {\ddots} \ {\ldots} &amp;amp; {\ldots} &amp;amp; {d_{n}}\end{array}\right) ^{n\times n} $$ 是一个$n \times n$的对角阵，对角元素是每个节点的度和。
+定义图的邻接矩阵为$W \in \mathbb{R}^{n \times n}$， 每个元素$W_{ij}$表示节点对$(v_i,v_j)$之间的权重。 对于$V$中的一个子节点集$A \subset V$， 定义： $$ |A|=A 中的节点个数 \ vol(A) = \sum_{i \in A} d_i \quad 表示A中所有节点的权重之和 $$</description>
+    </item>
+    
+    <item>
+      <title>Influence Maximization Conclusion</title>
+      <link>https://JhuoW.github.io/posts/2019-05-06-im-conclusion/</link>
+      <pubDate>Mon, 06 May 2019 20:16:17 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-05-06-im-conclusion/</guid>
+      <description>影响力传播模型 社交网络上影响力最大化问题需要借助相应的影响力传播模型，影响力传播模型的选择
+LC IT模型（独立级联模型和线性阈值模型） WC（权重级联模型） HD（热传播模型） SIR（传染病模型） MIA模型（路径相关） 投票模型 巴斯模型 影响力最大化算法 目前有的几个影响力最大化的算法
+   基于目标函数的子模性质的算法（一般是贪心算法和贪心算法的改进）
+  A note on maximizing a submodular set function subject to a knapsack constraint 这个文章主要是把问题扩展了，认为选择每个节点是有不同的代价的，而不同于传统的问题，传统的问题中，每个节点的选择大家都是一样的，因此，在总代价一定的情况下，那么问题就是选择固定个数的节点即可，但是如果每个节点的选择代价不一样，在总代价一定的情况下，选择的节点的个数就不一样
+  Cost-effective outbreak detection in networks （CELF算法）
+  Celf ++ : optimizing the greedy algorithm for influence maximization in social networks（CELF++算法） 这个文章就是大名鼎鼎的CELF算法，利用子模性质和边际效益递减对贪心算法进行优化，同理还有CELF++算法也是大致相同的思路
+    基于中心性的启发式算法
+  Efficient influence maximization in social networks W.Chen （DegreeDiscount算法） 这个算法也是启发式算法，主要在于，每当选择一个节点后，认为这个节点不会再被影响，因此，它的邻居节点地度-1</description>
+    </item>
+    
+    <item>
+      <title>社交网络影响最大化（Influence Maximization）中的IC，LT模型</title>
+      <link>https://JhuoW.github.io/posts/2019-03-20-ic-lt/</link>
+      <pubDate>Wed, 20 Mar 2019 21:34:08 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-03-20-ic-lt/</guid>
+      <description>The Independent Cascade Model (IC Model) IC模型，即独立级联模型。 $v$表示图$G=（V,E)$中的一个节点（用户），$v$可以被它的传入邻居（incoming neighbor）以一个影响概率$p_{u,v}$的情况下独立激活。
+在时间步为0的时候，给定一个种子集（seed set）$S$,即$k$个已经是激活着的节点。 在时间步$t$时，每一个激活状态的节点$u$将会以一定的概率$p_{u,v}$来激活每一个和它连接的未激活节点$v$。时间步$t$之后，如果$v$依然是未激活状态，那么$v$将无法再次被$v$激活。结束一次上述过程后，$u$保持激活状态并且失去激活其他节点的能力。当网络$G$中没有其他节点可以被激活时，扩散过程结束。
+值得注意的是，当$S$是原始的激活节点集，那么上述随机激活过程完成后，所得到的影响分布（Influence Spread）是所期望的激活节点数。
+The Linear Threshold Model (LT Model) LT模型，即线性阈值模型。基本思想是，如果一个未被激活的节点有足够的传入邻居是激活状态的，那么该节点可以被激活。
+形式上， 在图$G$中每条边$e=(u,v) \in E$有一个权重$b_{u,v}$。 我们定义$\mathcal{N}I (v)$表示节点$v$的传入节点， 满足$\sum{u \in \mathcal{N}I (v)} b{u,v} \leq 1$, 即所有$v$的传入节点与$v$组成的边的权重只和小于1。 另外，每个节点$v$具有一个阈值$\theta_v$。 LT模型首先为每个节点$v$的阈值$\theta_v$在$[0,1]$上均匀随机采样。在时间步0时，设置$S$中的节点状态为激活，其他节点为未激活，然后迭代的更新每个节点的状态。 在时间步$t$时，所有$t-1$时刻是激活状态的节点依旧保持激活状态，与此同时，其他未激活的节点$v$, 如果任意一个节点$v$的激活传入邻居总权重的值至少为$\theta_v$,那么将$v$激活。 当没有节点将要被激活时，传播结束。</description>
     </item>
     
   </channel>

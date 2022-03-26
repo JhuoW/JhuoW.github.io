@@ -38,10 +38,10 @@ $$\Phi(e)=g(\Phi(u),\Phi(v))$$
     
     <item>
       <title>HTNE:《Embedding Temporal Network via Neighborhood Formation》阅读笔记</title>
-      <link>https://JhuoW.github.io/posts/2019-01-17-htne/</link>
+      <link>https://JhuoW.github.io/posts/htne/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/2019-01-17-htne/</guid>
+      <guid>https://JhuoW.github.io/posts/htne/</guid>
       <description>论文地址：HTNE
 Introduction 本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。
 另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。

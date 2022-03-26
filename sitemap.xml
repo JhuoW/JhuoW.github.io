@@ -2,28 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://JhuoW.github.io/tags/algorithm/</loc>
-    <lastmod>2019-09-07T09:11:09+00:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/categories/</loc>
+    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/</loc>
+    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/kernel/</loc>
+    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
+    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/</loc>
+    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/rkhs_kernel/</loc>
+    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/</loc>
+    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/algorithm/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/clustering/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/</loc>
-    <lastmod>2019-09-07T09:11:09+00:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/categories/machine-leaning/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/posts/</loc>
-    <lastmod>2019-09-07T09:11:09+00:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/tags/spectral-clustering/</loc>
-    <lastmod>2019-09-07T09:11:09+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</loc>

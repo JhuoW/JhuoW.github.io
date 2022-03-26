@@ -146,15 +146,6 @@ $$x_{t+1} = x_{t}-\eta_t \nabla f_i(x)$$
     </item>
     
     <item>
-      <title></title>
-      <link>https://JhuoW.github.io/posts/2022-03-26-rkhs/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://JhuoW.github.io/posts/2022-03-26-rkhs/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>HTNE:《Embedding Temporal Network via Neighborhood Formation》阅读笔记</title>
       <link>https://JhuoW.github.io/posts/htne/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

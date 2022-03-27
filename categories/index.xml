@@ -10,7 +10,17 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 26 Mar 2022 22:39:20 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 27 Mar 2022 15:38:50 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Code</title>
+      <link>https://JhuoW.github.io/categories/code/</link>
+      <pubDate>Sun, 27 Mar 2022 15:38:50 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/code/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
     <item>
       <title>Machine Learning</title>
       <link>https://JhuoW.github.io/categories/machine-learning/</link>

@@ -51,7 +51,7 @@ $$
 <p>Kernel is a kind of Inner Product. For example, the Gaussian kernel is defined as:
 $$
 \begin{equation}
-\langle u, v \rangle = k(u,v) = \exp{-\frac{||u-v||^2}{2\sigma}} \tag{1}
+\langle u, v \rangle = k(u,v) = \exp({-\frac{||u-v||^2}{2\sigma}}) \tag{1}
 \end{equation}
 $$</p>
 <h2 id="hilbert-space-1">Hilbert Space</h2>

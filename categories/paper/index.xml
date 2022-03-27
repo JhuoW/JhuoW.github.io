@@ -80,6 +80,90 @@ $$
     </item>
     
     <item>
+      <title>BiNE</title>
+      <link>https://JhuoW.github.io/posts/bine/</link>
+      <pubDate>Wed, 13 Mar 2019 22:01:15 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/bine/</guid>
+      <description>论文地址：BiNE
+Introduction Bipartite Network(二分网络):如下图所示：
+二分网络将节点分为两种类型，其中 边存在于两种类型之间，例如users-items组成的推荐网络，相同类型节点间不会产生边。传统的Network Embedding将bipartite network视为同质网络（homogeneous network)， 也就是仅考虑直接联系的边。这样就存在一个问题，即在同一个类型中的节点，虽然没有直接的连接，但是也可能有间接的关系。比如两个用户同时连接到同一个商品，则这两个用户可能有有相同的购买偏好。
+另一个问题，
+如上两图所示， 图一可以看出，节点被访问的词数和考虑到的节点数呈现斜率为-1.582的幂律分布，但是基于随机游走的生成器相对于真实分布有所偏差， 文中分析原因在于基于随机游走的模型DeepWalk为每个节点生成相同长度的节点序列（walk_length）并且每个节点所需要的随机游走次数（walk per vertex)也是完全相同的，这样无法反应网络的特征以及异构性。
+另外，对于Heterogeneous Network Embedding方法metapath2vec++, 此方法是次优的因为它将直接连接的节点与间接有关系的节点视为等价。
+针对以上问题，BiNE为直接连接和间接关系分别设计了专用的目标函数，并且联合优化。 并且，所及游走的长度由该节点的重要程度决定，节点的重要程度通过HITS来衡量。
+Model 如figure中的二分网络， 可以这样定义：$G=(U,V,E)$,和一个$|U| \times |V|$的$W=[w_{ij}]$为权重矩阵。输出d维embedding向量$U=[\overrightarrow{u_i}]$, $V=[\overrightarrow{v_i}]$，结构如下图所示：
+（取自作者的讲解ppt)
+Explicit Relations 同LINE一样， 基于直接连接的目标函数表示为：
+$$\mathrm{minimize} \quad O_1=-\sum_{e_{ij} \in E}w_{ij}\log \hat{P}(i,j)$$
+Implicit Relations 构造随机游走序列 这是本文的创新点，分别为$U$和$U$构建语料库，即随机游走序列$D^U$和$D^V$。 首先给出两个同type节点相似度的定义：
+$$w^U_{ij}=\sum_{k \in V}w_{ik}w_{jk}$$
+$$w^V_{ij}=\sum_{k \in U}w_{ki}w_{kj}$$
+其中$i$和$j$是为$U$或$V$中的同类节点，也就是说两个同类节点如果有共同目标顶点，那么他们的2介相似度不为0。 则$U$中的二阶权重矩阵$|U|\times|U|$维矩阵$W^U=[w^U_{ij}]$。$V$中同理。 其中$l=\max(H(v_i)\times \max T,\min T)$, $H(v_i)$为节点$v_i$的中心性，中心性由HITS衡量。$l$为节点$v$的random walk次数（the number of random walks）,有这个节点的重要程度（centrality/importance）决定。
+$$D_{v_i}=\mathrm{BiasedRandomWalk}(W^R,v_i,p)$$
+表示其中一次随机游走的节点集合$p$表示停止概率。
+通过上面的推导，可以对分别对$U$,$V$中的节点构早随机游走序列，以$U$为例，若$S\in D^U$表示 那么$S$就是$U$中的一个随机游走序列。
+对间接关系建模 如下图所示（图片取自作者的ppt），$S$为$D^U$中的一个随机游走序列， 其中$u_i$是这个序列的中心点，$C_s(u_i)$是$u_i$的上下文节点。 对于$U$中的随机游走序列结合$D^U$，我们要做的就是最大化给定$u_i$,生成$u_c \in C_s(u_i)$的条件概率。所以目标函数如下： $$\mathrm{maximize} \quad O_2 = \prod_{u_i \in S \land S \in D^U} \prod_{u_c \in C_s(u_i)}P(u_c|u_i)$$</description>
+      <content:encoded><![CDATA[<p>论文地址：<a href="https://www.comp.nus.edu.sg/~xiangnan/papers/sigir18-bipartiteNE.pdf">BiNE</a></p>
+<h1 id="introduction">Introduction</h1>
+<p><strong>Bipartite Network(二分网络)</strong>:如下图所示：<br>
+<img loading="lazy" src="/posts/2019-03-13-BiNE/stru.png#center" alt="你想输入的替代文字"  />
+<br>
+二分网络将节点分为两种类型，其中 边存在于两种类型之间，例如users-items组成的推荐网络，相同类型节点间不会产生边。传统的Network Embedding将bipartite network视为同质网络（homogeneous network)， 也就是仅考虑直接联系的边。这样就存在一个问题，即在同一个类型中的节点，虽然没有直接的连接，但是也可能有间接的关系。比如两个用户同时连接到同一个商品，则这两个用户可能有有相同的购买偏好。</p>
+<p>另一个问题，<br>
+<img loading="lazy" src="/posts/2019-03-13-BiNE/r1.png#center" alt="你想输入的替代文字"  />
+ <img loading="lazy" src="/posts/2019-03-13-BiNE/r2.png#center" alt="你想输入的替代文字"  />
+<br>
+如上两图所示， 图一可以看出，节点被访问的词数和考虑到的节点数呈现斜率为-1.582的幂律分布，但是基于随机游走的生成器相对于真实分布有所偏差， 文中分析原因在于基于随机游走的模型DeepWalk为每个节点生成相同长度的节点序列（walk_length）并且每个节点所需要的随机游走次数（walk per vertex)也是完全相同的，这样无法反应网络的特征以及异构性。<br>
+另外，对于Heterogeneous Network Embedding方法metapath2vec++, 此方法是次优的因为它将直接连接的节点与间接有关系的节点视为等价。</p>
+<p>针对以上问题，BiNE为直接连接和间接关系分别设计了专用的目标函数，并且联合优化。 并且，所及游走的长度由该节点的重要程度决定，节点的重要程度通过<a href="http://www.cs.cornell.edu/home/kleinber/auth.pdf">HITS</a>来衡量。</p>
+<h1 id="model">Model</h1>
+<p>如figure中的二分网络， 可以这样定义：$G=(U,V,E)$,和一个$|U| \times |V|$的$W=[w_{ij}]$为权重矩阵。输出d维embedding向量$U=[\overrightarrow{u_i}]$, $V=[\overrightarrow{v_i}]$，结构如下图所示：<br>
+<img loading="lazy" src="/posts/2019-03-13-BiNE/3.png" alt="你想输入的替代文字"  />
+（取自作者的讲解ppt)</p>
+<h2 id="explicit-relations">Explicit Relations</h2>
+<p>同LINE一样， 基于直接连接的目标函数表示为：<br>
+$$\mathrm{minimize} \quad O_1=-\sum_{e_{ij} \in E}w_{ij}\log \hat{P}(i,j)$$</p>
+<h2 id="implicit-relations">Implicit Relations</h2>
+<h3 id="构造随机游走序列">构造随机游走序列</h3>
+<p>这是本文的创新点，分别为$U$和$U$构建语料库，即随机游走序列$D^U$和$D^V$。 首先给出两个同type节点相似度的定义：<br>
+$$w^U_{ij}=\sum_{k \in V}w_{ik}w_{jk}$$<br>
+$$w^V_{ij}=\sum_{k \in U}w_{ki}w_{kj}$$<br>
+其中$i$和$j$是为$U$或$V$中的同类节点，也就是说两个同类节点如果有共同目标顶点，那么他们的2介相似度不为0。 则$U$中的二阶权重矩阵$|U|\times|U|$维矩阵$W^U=[w^U_{ij}]$。$V$中同理。
+<img loading="lazy" src="/posts/2019-03-13-BiNE/Al1.png" alt="你想输入的替代文字"  />
+<br>
+其中$l=\max(H(v_i)\times \max T,\min T)$, $H(v_i)$为节点$v_i$的中心性，中心性由HITS衡量。$l$为节点$v$的random walk次数（the number of random walks）,有这个节点的重要程度（centrality/importance）决定。<br>
+$$D_{v_i}=\mathrm{BiasedRandomWalk}(W^R,v_i,p)$$<br>
+表示其中一次随机游走的节点集合$p$表示停止概率。</p>
+<p>通过上面的推导，可以对分别对$U$,$V$中的节点构早随机游走序列，以$U$为例，若$S\in D^U$表示 那么$S$就是$U$中的一个随机游走序列。</p>
+<h3 id="对间接关系建模">对间接关系建模</h3>
+<p>如下图所示（图片取自作者的ppt），$S$为$D^U$中的一个随机游走序列， 其中$u_i$是这个序列的中心点，$C_s(u_i)$是$u_i$的上下文节点。
+<img loading="lazy" src="/posts/2019-03-13-BiNE/dd.png#center" alt="你想输入的替代文字"  />
+<br>
+对于$U$中的随机游走序列结合$D^U$，我们要做的就是最大化给定$u_i$,生成$u_c \in C_s(u_i)$的条件概率。所以目标函数如下：
+$$\mathrm{maximize} \quad O_2 = \prod_{u_i \in S \land S \in D^U} \prod_{u_c \in C_s(u_i)}P(u_c|u_i)$$<br>
+对于$D^V$同理。其中,$p(u_c|u_i) = \frac{\exp(\overrightarrow{u}_i^T \overrightarrow{\theta}_c)}{\sum^{|U|}_{k=1} \exp(\overrightarrow{u}_i^T \overrightarrow{\theta}_k))}$。</p>
+<h3 id="negative-sampling">Negative Sampling</h3>
+<p>本文的负采样方法是基于局部敏感哈希（LSH）来对与中心节点不相似的节点进行采样。
+该方法的strategy是，给定一个中心节点，随机选取一个bucket（序列）并且这个序列不包含给定的中心节点，以此来获得和给定节点尽量不相似的负采样节点。<br>
+$N^{ns}_S (u_i)$ 表示$ns$个负采样节点，对于中心节点$u_i$, 那么上文提到的条件概率$p(u_c|u_i)$可以被定义为下式：<br>
+$$p(u_c,N^{ns}_S (u_i)|u_i) = \prod_{z \in {u_c} \cup N^{ns}_S (u_i)} P(z|u_i)$$<br>
+其中条件概率$P(z|u_i)$定义为：<br>
+<img loading="lazy" src="/posts/2019-03-13-BiNE/4.png#center" alt="你想输入的替代文字"  />
+<br>
+其中$\sigma$表示sigmoid函数，这样就减少了上文softmax函数造成的计算量过大的问题。</p>
+<h2 id="联合优化">联合优化</h2>
+<p>通过随机梯度上升对3部分损失函数进行加权优化：<br>
+$$\mathrm{maximize} \quad L = \alpha \log O_2+\beta \log O_3 - \gamma O_1$$
+最终BiNE的整体算法流程如下：<br>
+<img loading="lazy" src="/posts/2019-03-13-BiNE/Al2.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>这篇文章提出的分布式训练以及负采样策略还是很值得学习的。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
       <title>《Enhanced Network Embeddings via Exploiting Edge Labels》阅读笔记</title>
       <link>https://JhuoW.github.io/posts/2019-01-22-ne-edge-labels/</link>
       <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>

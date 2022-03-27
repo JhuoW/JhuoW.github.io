@@ -2,19 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://JhuoW.github.io/categories/</loc>
-    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/</loc>
+    <lastmod>2022-03-27T10:45:08+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/mmd/</loc>
+    <lastmod>2022-03-27T10:45:08+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/</loc>
+    <lastmod>2022-03-27T10:45:08+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/</loc>
     <lastmod>2022-03-26T22:39:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/kernel/</loc>
     <lastmod>2022-03-26T22:39:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
-    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/posts/</loc>
     <lastmod>2022-03-26T22:39:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/rkhs_kernel/</loc>
@@ -86,13 +89,22 @@
     <loc>https://JhuoW.github.io/posts/2019-03-20-ic-lt/</loc>
     <lastmod>2019-03-20T21:34:08+00:00</lastmod>
   </url><url>
+    <loc>https://JhuoW.github.io/posts/bine/</loc>
+    <lastmod>2019-03-13T22:01:15+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/bipartite-network/</loc>
+    <lastmod>2019-03-13T22:01:15+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/network-embedding/</loc>
+    <lastmod>2019-03-13T22:01:15+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/sga/</loc>
+    <lastmod>2019-03-13T22:01:15+00:00</lastmod>
+  </url><url>
     <loc>https://JhuoW.github.io/tags/attention/</loc>
     <lastmod>2019-01-22T11:02:29+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/hawkes-process/</loc>
-    <lastmod>2019-01-22T11:02:29+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/network-embedding/</loc>
     <lastmod>2019-01-22T11:02:29+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2019-01-22-ne-edge-labels/</loc>

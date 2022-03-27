@@ -19,6 +19,200 @@
       <guid>https://JhuoW.github.io/posts/rkhs_kernel/</guid>
       <description>Hilbert Space Definition 1 (Norm) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):
  For $f \in \mathcal{F}$, $||f||_{\mathcal{F}}=0$ if and only if $f=0$. (norm separates points) $|\lambda f|_{\mathcal{F}}=|\lambda||f|_{\mathcal{F}}$, $\forall \lambda \in \mathbb{R}, \forall f \in \mathcal{F}$ (positive homogeneity). $|f+g|_{\mathcal{F}} \leq|f|_{\mathcal{F}}+|g|_{\mathcal{F}}, \forall f, g \in \mathcal{F}$ (triangle inequality).</description>
+      <content:encoded><![CDATA[<h1 id="hilbert-space">Hilbert Space</h1>
+<p><em><strong>Definition 1</strong></em> (<a href="http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf">Norm</a>) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):</p>
+<ol>
+<li>For $f \in \mathcal{F}$, $||f||_{\mathcal{F}}=0$ if and only if $f=0$. (norm separates points)</li>
+<li>$|\lambda f|_{\mathcal{F}}=|\lambda||f|_{\mathcal{F}}$, $\forall \lambda \in \mathbb{R}, \forall f \in \mathcal{F}$ (positive homogeneity).</li>
+<li>$|f+g|_{\mathcal{F}} \leq|f|_{\mathcal{F}}+|g|_{\mathcal{F}}, \forall f, g \in \mathcal{F}$ (triangle inequality).</li>
+</ol>
+<p>向$||\cdot||_{\mathcal{F}}$中输入任意一个向量，只要满足以上条件，那么$||\cdot||_{\mathcal{F}}$是一个valid norm operator.</p>
+<h2 id="inner-product">Inner Product</h2>
+<p>An <a href="https://ocw.mit.edu/courses/sloan-school-of-management/15-097-prediction-machine-learning-and-statistics-spring-2012/lecture-notes/MIT15_097S12_lec13.pdf">inner product</a> takes two elements of a vector space $\mathcal{X}$ and outputs a number. An inner product could be a usual dot product: $\langle\mathbf{u}, \mathbf{v}\rangle=\mathbf{u}^{\prime} \mathbf{v}=\sum_{i} u^{(i)} v^{(i)}$ (Inner Product can be Dot Product). Or the inner product could be something fancier（即内积不一定表示为点积的形式）. If an Inner Product $\langle \cdot,\cdot \rangle$ is valid, it <em><strong>MUST</strong></em>  satisfy the following conditions:</p>
+<ol>
+<li>
+<p>Symmetry
+$$\langle u, v\rangle=\langle v, u\rangle \quad \forall u, v \in \mathcal{X}$$</p>
+</li>
+<li>
+<p>Bilinearity
+$$\langle\alpha u+\beta v, w\rangle=\alpha\langle u, w\rangle+\beta\langle v, w\rangle \quad \forall u, v, w \in \mathcal{X}, \forall \alpha, \beta \in \mathbf{R}$$</p>
+</li>
+<li>
+<p>Strict Positive Definiteness
+$$
+\begin{gathered}
+\langle u, u\rangle \geq 0 \forall x \in \mathcal{X} \\
+\langle u, u\rangle=0 \Longleftrightarrow u=0
+\end{gathered}$$</p>
+</li>
+</ol>
+<p>An  <em><strong>inner product space</strong></em> (or pre-Hilbert space) is a vector space together with an inner product. （包含内积运算的向量空间称为 内积空间，即可以定义内积运算的向量空间）。</p>
+<p>Kernel is a kind of Inner Product. For example, the Gaussian kernel is defined as:
+$$
+\begin{equation}
+\langle u, v \rangle = k(u,v) = \exp{-\frac{||u-v||^2}{2\sigma}} \tag{1}
+\end{equation}
+$$</p>
+<h2 id="hilbert-space-1">Hilbert Space</h2>
+<p><em><strong>Definition 2</strong></em> (<a href="https://people.eecs.berkeley.edu/~bartlett/courses/281b-sp08/7.pdf">Hilbert Space</a>)  A Hilbert Space is an Inner Product space that is complete and separable with respect to the norm defined by the inner product.</p>
+<p>&lsquo;Complete&rsquo; means sequences converge to elements of the space - there aren&rsquo;t any &ldquo;holes&rdquo; in the space.</p>
+<h1 id="finite-states">Finite States</h1>
+<p>Given finite input space ${x_1, x_2, \cdots x_m }$. I want to be able to take inner products between any two of them using my function $k$  as the inner product ($k$ is customized and satisfy three conditions. For example, $k$ is a Gaussian inner product as Eq.(1)). Inner products by definition are symmetric, so $k(x_i, x_j)=k(x_j, x_i)$ , which yields a symmetric matrix $\mathbf{K}$.</p>
+<p>Since $\mathbf{K}$ is real symmetric, and this means we can diagonalize it （实对称阵可以对角化，即特征分解）, and the eigendecomposition takes this form:
+$$
+\begin{equation}
+\begin{aligned}
+\mathbf{K} &amp;=\mathbf{V} \Lambda \mathbf{V}^T \\
+&amp;= \mathbf{V} 	\begin{bmatrix}
+\lambda_1 &amp;   &amp; &amp;  \\
+&amp; \lambda_2 &amp;  &amp; \\
+&amp;   &amp; \cdots &amp;\
+&amp;   &amp;  &amp;\lambda_m
+\end{bmatrix} \mathbf{V}^T \\
+&amp;= \begin{bmatrix}
+v_1 &amp; v_2 &amp; \cdots v_m
+\end{bmatrix} \begin{bmatrix}
+\lambda_1 &amp;   &amp; &amp;  \\
+&amp; \lambda_2 &amp;  &amp; \\
+&amp;   &amp; \cdots &amp;\\
+&amp;   &amp;  &amp;\lambda_m
+\end{bmatrix}
+\begin{bmatrix}
+v_1^T\\
+v_2^T\\
+\cdots \\
+v_m^T
+\end{bmatrix}\\
+&amp;=v_1\lambda_1 v_1^T + \cdots + v_m\lambda_m v_m^T = \sum_{t=1}^m v_t\lambda_tv_t^T
+\end{aligned} \tag{2}
+\end{equation}
+$$
+Let the $i$-th element of vector $v$ as $v^{(i)}$, then
+$$
+\begin{equation}
+\begin{aligned}
+\mathbf{K}_{ij} = k(x_i, x_j) &amp;= [\sum_{t=1}^m v_t\lambda_tv_t^T]_{ij}\\
+&amp;=\sum^m_{t=1} v_t^{(i)} \lambda_t v_t^{(j)}
+\end{aligned} \tag{3}
+\end{equation}
+$$
+If $\mathbf{K}$ is a <strong>positive semi-definite</strong> (<strong>PSD</strong>) matrix, then $\lambda_1, \cdots \lambda_m \geq 0$.</p>
+<blockquote>
+<p><em><strong>Assumption 1</strong></em>. All $\lambda_t$ are nonnegative.</p>
+</blockquote>
+<p>We consider this feature map:
+$$
+\begin{equation}
+\Phi\left(x_{i}\right)=\left[\sqrt{\lambda_{1}} v_{1}^{(i)}, \ldots, \sqrt{\lambda_{t}} v_{t}^{(i)}, \ldots, \sqrt{\lambda_{m}} v_{m}^{(i)}\right] \in \mathbb{R}^m \tag{4}
+\end{equation}
+$$
+(writing it for $x_j$ too):
+$$
+\begin{equation}
+\boldsymbol{\Phi}\left(x_{j}\right)=\left[\sqrt{\lambda_{1}} v_{1}^{(j)}, \ldots, \sqrt{\lambda_{t}} v_{t}^{(j)}, \ldots, \sqrt{\lambda_{m}} v_{m}^{(j)}\right]  \in \mathbb{R}^m \tag{5}
+\end{equation}
+$$
+即 $\Phi: \mathcal{X} \to \mathbb{R}^m$ 将$x\in \mathcal{X}$映射到$m$维向量空间$\mathbb{R}^m$中的一个点。</p>
+<p>With this choice, the inner product $k$ is just defined as a dot product in $\mathbb{R}^m$:
+$$
+\begin{equation}
+\left\langle\Phi\left(x_{i}\right), \Phi\left(x_{j}\right)\right\rangle_{\mathbf{R}^{m}}=\sum_{t=1}^{m} \lambda_{t} v_{t}^{(i)} v_{t}^{(j)}=\left(\mathbf{V} \Lambda \mathbf{V}^{\prime}\right)_{i j}=K_{i j}=k\left(x_{i}, x_{j}\right)  \tag{6}
+\end{equation}
+$$
+If there exists an eigenvalue $\lambda_s &lt;0$ (即$\sqrt{\lambda_s} = \sqrt{|\lambda_s|} i$). $\lambda_s$对应的特征向量$v_s$。用$v_s \in \mathbb{R}^m$的$m$个元素$v_s = [v_s^{(1)},\cdots, v_s^{(m)}]$, 来对$\Phi(x_1),\cdots, \Phi(x_m)$做线性组合：
+$$
+\begin{equation}
+\mathbf{z}=\sum_{i=1}^{m} v_{s}^{(i)} \boldsymbol{\Phi}\left(x_{i}\right) \tag{7}
+\end{equation}
+$$</p>
+<p>It is obvious that $\mathbf{z} \in \mathbb{R}^m$. Then calculate
+$$
+\begin{equation}
+\begin{aligned}
+|\mathbf{z}|_{2}^{2} &amp;=\langle\mathbf{z}, \mathbf{z}\rangle_{\mathbf{R}^{m}}=\sum_{i} \sum_{j} v_{s}^{(i)} \boldsymbol{\Phi}\left(x_{i}\right)^{T} \boldsymbol{\Phi}\left(x_{j}\right) v_{s}^{(j)}=\sum_{i} \sum_{j} v_{s}^{(i)} K_{i j} v_{s}^{(j)} \\
+&amp;=\mathbf{v}_{s}^{T} \mathbf{K} \mathbf{v}_{s}=\lambda_{s}&lt;0
+\end{aligned}  \tag{8}
+\end{equation}
+$$
+which conflicts with the geometry of the feature space.</p>
+<p>如果$\mathbf{K}$不是半正定，那么feature space $\mathbb{R}^m$存在小于0的值。所以假设Assumption不成立。即，若$k$表示有限集的内积，那么它的Gram Matrix一定半正定(PSD)，否则无法保证该空间中的norm大于0。</p>
+<p>有效的内积对应的Gram Matrix 必定PSD.</p>
+<h1 id="kernel">Kernel</h1>
+<p><em><strong>Definition 3.</strong></em> (<a href="https://ocw.mit.edu/courses/sloan-school-of-management/15-097-prediction-machine-learning-and-statistics-spring-2012/lecture-notes/MIT15_097S12_lec13.pdf">Kernel</a>) A function $k: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is a kernel if</p>
+<ol>
+<li>$k$ is symmetric: $k(x,y) = k(y,x)$.</li>
+<li>$k$ gives rise to a positive semi-definite &ldquo;Gram matrix,&rdquo; i.e., for any $m\in \mathbb{N}$ and any $x_1,\cdots,x_m$ chosen from $X$, the Gram matrix $\mathbf{K}$ defined by $\mathbf{K}_{ij} = k(x_i,x_j)$ is positive semi-definite.</li>
+</ol>
+<p>Another way to show that a matrix $\mathbf{K}$ is positive semi-definite is to show that
+$$
+\begin{equation}
+\forall \mathbf{c} \in \mathbf{R}^{m}, \mathbf{c}^{T} \mathbf{K} \mathbf{c} \geq 0 \tag{9}
+\end{equation}
+$$
+Here are some nice properties of $k$:</p>
+<ul>
+<li>$k(u,u) \geq 0$ (Think about the Gram matrix of $m = 1$.)</li>
+<li>$k(u, v) \leq \sqrt{k(u, u) k(v, v)}$ (This is the Cauchy-Schwarz inequality.)</li>
+</ul>
+<h2 id="reproducing-kernel-hilbert-space-rkhs">Reproducing Kernel Hilbert Space (RKHS)</h2>
+<p>给定一个kernel $k(\cdot, \cdot): \mathcal{X} \times \mathcal{X} \to \mathbb{R}$. 定义一个函数空间（space of functions）$\mathbf{R}^{\mathcal{X}}:={f: \mathcal{X} \rightarrow \mathbb{R}}$. $\mathbf{R}^{\mathcal{X}}$ 是一个 Hilbert Space， 该空间中的每个元素是一个$\mathcal{X}$映射到$\mathbb{R}$的函数。</p>
+<p>令$k_x(\cdot) = k(x, \cdot)$, 假设$x$是一个定值（Constant），自变量（输入）用$\cdot$表示。那么$k(x, \cdot)$ 也是$\mathbf{R}^{\mathcal{X}}$空间中的一个函数。</p>
+<p>每个函数$k_x(\cdot)$ 都与一个特定的$x \in \mathcal{X}$有关，即每个$x$对应于一个函数$k_x(\cdot) = k(\cdot, x)$. 这种对应关系表示为$\Phi(x) = k_x(\cdot) = k(x,\cdot)$, 即：
+$$
+\begin{equation}
+\Phi: x \longmapsto k(\cdot, x) \tag{10}
+\end{equation}
+$$
+即 $\Phi$的输入为$x\in \mathcal{X}$, 输出一个函数, 输出的函数属于$\mathbf{R}^{\mathcal{X}}$空间。</p>
+<p>在连续空间$\mathcal{X}$中，$x \in \mathcal{X}$ 有无穷多种情况，那么$\Phi(x)=k_x(\cdot)=k(x, \cdot)$也有无穷多种情况，即无穷多种函数。 这些函数可以span 一个Hilbert Space:
+$$
+\begin{equation}
+\mathcal{H}_k = \operatorname{span}({\Phi(x): x \in \mathcal{X}})=\left\{f(\cdot)=\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right): m \in \mathbf{N}, x_{i} \in \mathcal{X}, \alpha_{i} \in \mathbf{R}\right\}  \tag{11}
+\end{equation}
+$$
+其中$k(x,\cdot)=\Phi(x)$可以理解为将$x$映射为一个函数（or vector）。上述Hilbert Space是由任意$k(x, \cdot)$线性组合而成的函数空间，该空间中的每个元素可以表示为
+$$
+\begin{equation}
+f(\cdot)=\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right)  \tag{12}
+\end{equation}
+$$
+所以$\mathcal{H}$可以看作是kernel $k$对应的一个Hilbert Space。</p>
+<p>给定$\mathcal{H}$中的任意两个函数$f(\cdot)=\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right)$, $g(\cdot)=\sum_{j=1}^{m^{\prime}} \beta_{j} k\left(\cdot, x_{j}^{\prime}\right)$。注意$f(\cdot)$和$g(\cdot)$可以表示$\mathcal{H}$中任意两个元素。我们将$\mathcal{H}$上的内积定义为：
+$$
+\begin{equation}
+\langle f, g\rangle_{\mathcal{H}_{k}}=\sum_{i=1}^{m} \sum_{j=1}^{m^{\prime}} \alpha_{i} \beta_{j} k\left(x_{i}, x_{j}^{\prime}\right) \tag{13}
+\end{equation}
+$$
+由<a href="https://ocw.mit.edu/courses/sloan-school-of-management/15-097-prediction-machine-learning-and-statistics-spring-2012/lecture-notes/MIT15_097S12_lec13.pdf">Proof</a>证明了该内积符合三个条件，顾上式是$\mathcal{H}$空间中一个有效的内积算子。注：$\mathcal{H}_k$表示该Hilbert Space是由函数 $k(x,\cdot)$ span而成的，与Kernel $k$有关.</p>
+<p>$k(x,\cdot)$也是$\mathcal{H}_k$中的一个函数，那么它与 $f$的内积为：
+$$
+\begin{equation}
+\langle k(\cdot, x), f\rangle_{\mathcal{H}_{k}}=
+\sum_{i=1}^m \alpha_i k(x,x_i)
+=f(x) \tag{14}
+\end{equation}
+$$
+<strong>Theorem 1.</strong>  $k(\cdot, \cdot)$ is a reproducing kernel of a Hilbert space $\mathcal{H}_k$ if $f(x)=\langle k(x, \cdot), f(\cdot)\rangle$.</p>
+<p>$\mathcal{H}_k$ 为$k(\cdot, \cdot)$的再生核希尔伯特空间。</p>
+<p>同理，$k(\cdot, x_i)$, $k(\cdot, x_j)$都为$\mathcal{H}_k$中的函数， 计算他们的内积:
+$$
+\begin{equation}
+\left\langle k(\cdot, x_i), k\left(\cdot, x_j\right)\right\rangle_{\mathcal{H}_{k}}=k\left(x_i, x_j\right)  \tag{15}
+\end{equation}
+$$
+因为$ k(\cdot, x_i) = \Phi(x_i)$, $ k(\cdot, x_j) = \Phi(x_j)$, 所以
+$$
+\begin{equation}
+k\left(x_i, x_j\right) = \left\langle  \Phi(x_i), \Phi(x_j)\right\rangle_{\mathcal{H}_{k}} \tag{16}
+\end{equation}
+$$
+表示将$x_i$和$x_j$ 映射成$\mathcal{H}_k$中的函数（向量）后再做内积。</p>
+<h4 id="参考文献">参考文献</h4>
+<p>[1] <a href="https://people.eecs.berkeley.edu/~bartlett/courses/281b-sp08/7.pdf">https://people.eecs.berkeley.edu/~bartlett/courses/281b-sp08/7.pdf</a></p>
+<p>[2] <a href="http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf">http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf</a></p>
+<p>[3] <a href="https://ocw.mit.edu/courses/sloan-school-of-management/15-097-prediction-machine-learning-and-statistics-spring-2012/lecture-notes/MIT15_097S12_lec13.pdf">https://ocw.mit.edu/courses/sloan-school-of-management/15-097-prediction-machine-learning-and-statistics-spring-2012/lecture-notes/MIT15_097S12_lec13.pdf</a></p>
+]]></content:encoded>
     </item>
     
   </channel>

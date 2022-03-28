@@ -17,9 +17,11 @@
       <pubDate>Sat, 26 Mar 2022 22:39:20 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/rkhs_kernel/</guid>
-      <description>Hilbert Space Definition 1 (Norm) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):
+      <description>PDF版
+Hilbert Space Definition 1 (Norm) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):
  For $f \in \mathcal{F}$, $||f||_{\mathcal{F}}=0$ if and only if $f=0$. (norm separates points) $|\lambda f|_{\mathcal{F}}=|\lambda||f|_{\mathcal{F}}$, $\forall \lambda \in \mathbb{R}, \forall f \in \mathcal{F}$ (positive homogeneity). $|f+g|_{\mathcal{F}} \leq|f|_{\mathcal{F}}+|g|_{\mathcal{F}}, \forall f, g \in \mathcal{F}$ (triangle inequality).</description>
-      <content:encoded><![CDATA[<h1 id="hilbert-space">Hilbert Space</h1>
+      <content:encoded><![CDATA[<p><a href="/posts/rkhs/RKHS.pdf">PDF版</a></p>
+<h1 id="hilbert-space">Hilbert Space</h1>
 <p><em><strong>Definition 1</strong></em> (<a href="http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf">Norm</a>) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):</p>
 <ol>
 <li>For $f \in \mathcal{F}$, $||f||_{\mathcal{F}}=0$ if and only if $f=0$. (norm separates points)</li>

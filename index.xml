@@ -10,7 +10,406 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 27 Mar 2022 15:38:50 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 29 Mar 2022 11:03:50 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Blog, Tools and Survey</title>
+      <link>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</link>
+      <pubDate>Tue, 29 Mar 2022 11:03:50 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</guid>
+      <description>这篇笔记用于收藏别人的博客
+Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Bronstein   https://geometricdeeplearning.com/ Michael Bronstein   https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c Vitaly Kurin (Many Paper Notes)   https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html UvA DL Notebooks   https://graph-neural-networks.github.io/index.html GNN Books   http://prob140.org/sp17/textbook/ Probability for Data Science class at UC Berkeley   https://graphreason.github.io/schedule.html Learning and Reasoning with Graph-Structured Representations ICML 2019 Workshop   https://chuxuzhang.github.io/KDD21_Tutorial.html KDD2021 Tutorial: Data Efficient Learning on Graphs   http://songcy.</description>
+      <content:encoded><![CDATA[<p><strong>这篇笔记用于收藏别人的博客</strong></p>
+<h1 id="tech-blog">Tech Blog</h1>
+<table>
+<thead>
+<tr>
+<th>Blog</th>
+<th>Author</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="https://michael-bronstein.medium.com/">https://michael-bronstein.medium.com/</a></strong></td>
+<td>Michael Bronstein</td>
+</tr>
+<tr>
+<td><strong><a href="https://geometricdeeplearning.com/">https://geometricdeeplearning.com/</a></strong></td>
+<td>Michael Bronstein</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c">https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c</a></strong></td>
+<td>Vitaly Kurin (Many Paper Notes)</td>
+</tr>
+<tr>
+<td><strong><a href="https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html">https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html</a></strong></td>
+<td>UvA DL Notebooks</td>
+</tr>
+<tr>
+<td><strong><a href="https://graph-neural-networks.github.io/index.html">https://graph-neural-networks.github.io/index.html</a></strong></td>
+<td>GNN Books</td>
+</tr>
+<tr>
+<td><strong><a href="http://prob140.org/sp17/textbook/">http://prob140.org/sp17/textbook/</a></strong></td>
+<td><a href="http://prob140.org/">Probability for Data Science</a> class at UC Berkeley</td>
+</tr>
+<tr>
+<td><strong><a href="https://graphreason.github.io/schedule.html">https://graphreason.github.io/schedule.html</a></strong></td>
+<td><a href="https://graphreason.github.io/index.html">Learning and Reasoning with Graph-Structured Representations</a> ICML 2019 Workshop</td>
+</tr>
+<tr>
+<td><strong><a href="https://chuxuzhang.github.io/KDD21_Tutorial.html">https://chuxuzhang.github.io/KDD21_Tutorial.html</a></strong></td>
+<td>KDD2021 Tutorial: Data Efficient Learning on Graphs</td>
+</tr>
+<tr>
+<td><strong><a href="http://songcy.net/posts/">http://songcy.net/posts/</a></strong></td>
+<td>Changyue Song (Kernel)</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.cs.mcgill.ca/~wlh/grl_book/">https://www.cs.mcgill.ca/~wlh/grl_book/</a></strong></td>
+<td>William L. Hamilton</td>
+</tr>
+<tr>
+<td><strong><a href="https://kexue.fm/">https://kexue.fm/</a></strong></td>
+<td>BoJone</td>
+</tr>
+<tr>
+<td><strong><a href="https://danielegrattarola.github.io/blog/">https://danielegrattarola.github.io/blog/</a></strong></td>
+<td>Daniele Grattarola (EPFL)</td>
+</tr>
+<tr>
+<td><strong><a href="https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html">https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html</a></strong></td>
+<td>Google AI Blog</td>
+</tr>
+<tr>
+<td><strong><a href="https://zhiyuchen.com/blogs/">https://zhiyuchen.com/blogs/</a></strong></td>
+<td>Zhiyu Chen</td>
+</tr>
+<tr>
+<td><strong><a href="https://andreasloukas.blog/">https://andreasloukas.blog/</a></strong></td>
+<td>Andreas Loukas (EPFL)</td>
+</tr>
+<tr>
+<td><strong><a href="https://irhum.pubpub.org/pub/gnn/release/4">https://irhum.pubpub.org/pub/gnn/release/4</a></strong></td>
+<td>Understanding Graph Neural Networks</td>
+</tr>
+<tr>
+<td><strong><a href="https://lilianweng.github.io/">https://lilianweng.github.io/</a></strong></td>
+<td>Lilian Weng</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.zhihu.com/column/marlin">https://www.zhihu.com/column/marlin</a></strong></td>
+<td>深度学习与图网络</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/roboticcam/machine-learning-notes">https://github.com/roboticcam/machine-learning-notes</a></strong></td>
+<td>Yida Xu</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.dgl.ai/pages/index.html">https://www.dgl.ai/pages/index.html</a></strong></td>
+<td>DGL</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.kexinhuang.com/tech-blog">https://www.kexinhuang.com/tech-blog</a></strong></td>
+<td>Kexin Huang</td>
+</tr>
+<tr>
+<td><strong><a href="https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8">https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8</a></strong></td>
+<td>Rishabh Anand</td>
+</tr>
+<tr>
+<td><strong><a href="https://saashanair.com/blog">https://saashanair.com/blog</a></strong></td>
+<td>Saasha Nair</td>
+</tr>
+<tr>
+<td><strong><a href="http://www.huaxiaozhuan.com/">http://www.huaxiaozhuan.com/</a></strong></td>
+<td>华校专</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/dglai/WWW20-Hands-on-Tutorial">https://github.com/dglai/WWW20-Hands-on-Tutorial</a></strong></td>
+<td>DGL</td>
+</tr>
+<tr>
+<td><strong><a href="https://blog.csdn.net/CSDNTianJi/article/details/104195306">https://blog.csdn.net/CSDNTianJi/article/details/104195306</a></strong></td>
+<td>Meng Liu</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tianyicui/pack">https://github.com/tianyicui/pack</a></td>
+<td>背包9講</td>
+</tr>
+<tr>
+<td><a href="https://www.fenghz.xyz/">https://www.fenghz.xyz/</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://sakigami-yang.me/2017/08/13/about-kernel-01/">https://sakigami-yang.me/2017/08/13/about-kernel-01/</a></td>
+<td>kernel</td>
+</tr>
+<tr>
+<td><a href="https://davidham3.github.io/blog">https://davidham3.github.io/blog</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://fenghz.github.io/index.html">https://fenghz.github.io/index.html</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://archwalker.github.io/">https://archwalker.github.io/</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="survey">Survey</h1>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="https://github.com/naganandy/graph-based-deep-learning-literature">https://github.com/naganandy/graph-based-deep-learning-literature</a></strong></td>
+<td><strong>links to conference publications in graph-based deep learning</strong> (Very, Very, Very Important)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/SherylHYX/pytorch_geometric_signed_directed">https://github.com/SherylHYX/pytorch_geometric_signed_directed</a></td>
+<td>PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning">https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning</a></td>
+<td>Paper Lists for Fair Graph Learning</td>
+</tr>
+<tr>
+<td><a href="https://github.com/thunlp/PromptPapers">https://github.com/thunlp/PromptPapers</a></td>
+<td>Must-read papers on prompt-based tuning for pre-trained language models.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zhao-tong/graph-data-augmentation-papers">https://github.com/zhao-tong/graph-data-augmentation-papers</a></td>
+<td>A curated list of graph data augmentation papers.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Thinklab-SJTU/ThinkMatch">https://github.com/Thinklab-SJTU/ThinkMatch</a></td>
+<td>Code &amp; pretrained models of novel deep graph matching methods.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/FLHonker/Awesome-Knowledge-Distillation">https://github.com/FLHonker/Awesome-Knowledge-Distillation</a></td>
+<td>Awesome Knowledge-Distillation. 分类整理的知识蒸馏paper(2014-2021)。</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zlpure/awesome-graph-representation-learning">https://github.com/zlpure/awesome-graph-representation-learning</a></td>
+<td>A curated list for awesome graph representation learning resources.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/basiralab/GNNs-in-Network-Neuroscience">https://github.com/basiralab/GNNs-in-Network-Neuroscience</a></td>
+<td>A review of papers proposing novel GNN methods with application to brain connectivity published in 2017-2020.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/flyingdoog/awesome-graph-explainability-papers">https://github.com/flyingdoog/awesome-graph-explainability-papers</a></td>
+<td>Papers about explainability of GNNs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuanqidu/awesome-graph-generation">https://github.com/yuanqidu/awesome-graph-generation</a></td>
+<td>A curated list of graph generation papers and resources.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/awesome-decision-tree-papers">https://github.com/benedekrozemberczki/awesome-decision-tree-papers</a></td>
+<td>A collection of research papers on decision, classification and regression trees with implementations.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/AstraZeneca/awesome-explainable-graph-reasoning">https://github.com/AstraZeneca/awesome-explainable-graph-reasoning</a></td>
+<td>A collection of research papers and software related to explainability in graph machine learning.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/LirongWu/awesome-graph-self-supervised-learning">https://github.com/LirongWu/awesome-graph-self-supervised-learning</a></td>
+<td>Awesome Graph Self-Supervised Learning</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Chen-Cai-OSU/awesome-equivariant-network">https://github.com/Chen-Cai-OSU/awesome-equivariant-network</a></td>
+<td>Paper list for equivariant neural network</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mengliu1998/DL4DisassortativeGraphs">https://github.com/mengliu1998/DL4DisassortativeGraphs</a></td>
+<td>Papers about developing DL methods on disassortative graphs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers">https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers</a></td>
+<td>A curated list of graph reinforcement learning papers.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ChandlerBang/awesome-self-supervised-gnn">https://github.com/ChandlerBang/awesome-self-supervised-gnn</a></td>
+<td>Papers about pretraining and self-supervised learning on Graph Neural Networks (GNN).</td>
+</tr>
+<tr>
+<td><a href="https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks">https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks</a></td>
+<td>Paper Lists for Graph Neural Networks</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jwzhanggy/IFMLab_GNN">https://github.com/jwzhanggy/IFMLab_GNN</a></td>
+<td>Graph Neural Network Models from IFM Lab</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ChandlerBang/awesome-graph-attack-papers">https://github.com/ChandlerBang/awesome-graph-attack-papers</a></td>
+<td>Adversarial attacks and defenses on Graph Neural Networks.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/safe-graph/graph-adversarial-learning-literature">https://github.com/safe-graph/graph-adversarial-learning-literature</a></td>
+<td>A curated list of adversarial attacks and defenses papers on graph-structured data.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/awesome-graph-classification">https://github.com/benedekrozemberczki/awesome-graph-classification</a></td>
+<td>A collection of important graph embedding, classification and representation learning papers with implementations.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers">https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers</a></td>
+<td>A curated list of gradient boosting research papers with implementations.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/awesome-community-detection">https://github.com/benedekrozemberczki/awesome-community-detection</a></td>
+<td>A curated list of community detection research papers with implementations.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/giannifranchi/awesome-uncertainty-deeplearning">https://github.com/giannifranchi/awesome-uncertainty-deeplearning</a></td>
+<td>This repository contains a collection of surveys, datasets, papers, and codes, for predictive uncertainty estimation in deep learning models.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="useful-repotools">Useful Repo/Tools</h1>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://acronymify.com/">http://acronymify.com/</a></td>
+<td>Model Name</td>
+</tr>
+<tr>
+<td><a href="https://csacademy.com/app/graph_editor/">https://csacademy.com/app/graph_editor/</a></td>
+<td>Graph Editor</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/guanyingc/python_plot_utils">https://github.com/guanyingc/python_plot_utils</a></strong></td>
+<td>A simple code for plotting figure, colorbar, and cropping with python</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/guanyingc/latex_paper_writing_tips">https://github.com/guanyingc/latex_paper_writing_tips</a></strong></td>
+<td>Tips for Writing a Research Paper using LaTeX</td>
+</tr>
+<tr>
+<td><a href="https://github.com/JhuoW/Pytorch_Program_Templete">https://github.com/JhuoW/Pytorch_Program_Templete</a></td>
+<td>Pytorch Program Templete GNN</td>
+</tr>
+<tr>
+<td><a href="https://github.com/graph4ai/graph4nlp">https://github.com/graph4ai/graph4nlp</a></td>
+<td>Graph4nlp is the library for the easy use of Graph Neural Networks for NLP. Welcome to visit our DLG4NLP website (<a href="https://dlg4nlp.github.io/index.html">https://dlg4nlp.github.io/index.html</a>) for various learning resources!</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/pytorch_geometric_temporal">https://github.com/benedekrozemberczki/pytorch_geometric_temporal</a></td>
+<td>PyTorch Geometric Temporal: Spatiotemporal Signal Processing with Neural Machine Learning Models (CIKM 2021)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ysig/GraKeL">https://github.com/ysig/GraKeL</a></td>
+<td>A scikit-learn compatible library for graph kernels</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jajupmochi/graphkit-learn">https://github.com/jajupmochi/graphkit-learn</a></td>
+<td>A python package for graph kernels, graph edit distances, and graph pre-image problem.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>ICLR2020 《Inductive and Unsupervised Representation Learning on Graph Structured Objects》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/seed/</link>
+      <pubDate>Mon, 28 Mar 2022 23:44:01 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/seed/</guid>
+      <description>Paper
+Code
+Introduction 无监督图学习算法基于重构损失，不可避免的需要图相似度计算（重构embedding和输入embedding的loss), 计算复杂度较高。本文提出一种通用的归纳式无监督图学习算法SEED（Sampling, Encoding, and Embedding Distributions）。通过计算采样子图的重构损失来代替整个图的重构损失。 即 先采样子图，在用GNN编码子图，最后计算子图分布的embedding来作为整个图的representation. 过程如下图所示：
+SEED: Sampling, Encoding, and Embedding Distributions Anonymous Random Walk Definition 1 (Random Anonymous Walks[1]): Given a random walk $\mathbf{w}=(w_1, \cdots, w_l)$ where $\langle w_i, w_{i+1} \rangle \in E$, the anonymous walk for $\mathbf{w}$ is defined as： $$ \mathrm{aw}(\mathbf{w}) = (\mathrm{DIS}(\mathbf{w}, w_1),\mathrm{DIS}(\mathbf{w}, w_2),\cdots, \mathrm{DIS}(\mathbf{w}, w_l) ) $$ where $\mathrm{DIS}(\mathbf{w}, w_i)$ denotes the number of distinct nodes in $\mathbf{w}$ when $w_i$ first appears in $\mathbf{w}$, i.</description>
+      <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=rkem91rtDB">Paper</a></p>
+<p><a href="https://github.com/wenwen0319/SEED-Reimplementation">Code</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>无监督图学习算法基于重构损失，不可避免的需要图相似度计算（重构embedding和输入embedding的loss), 计算复杂度较高。本文提出一种通用的归纳式无监督图学习算法<strong>SEED</strong>（Sampling, Encoding, and Embedding Distributions）。通过计算采样子图的重构损失来代替整个图的重构损失。 即 先采样子图，在用GNN编码子图，最后计算子图分布的embedding来作为整个图的representation. 过程如下图所示：</p>
+<p><img loading="lazy" src="/posts/2022-03-29-seed/pic1.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="seed-sampling-encoding-and-embedding-distributions">SEED: Sampling, Encoding, and Embedding Distributions</h1>
+<h2 id="anonymous-random-walk">Anonymous Random Walk</h2>
+<p><strong>Definition 1 (Random Anonymous Walks[1]):</strong>  Given a random walk $\mathbf{w}=(w_1, \cdots, w_l)$ where $\langle w_i, w_{i+1} \rangle \in E$, the anonymous walk for $\mathbf{w}$ is defined as：
+$$
+\mathrm{aw}(\mathbf{w}) = (\mathrm{DIS}(\mathbf{w}, w_1),\mathrm{DIS}(\mathbf{w}, w_2),\cdots, \mathrm{DIS}(\mathbf{w}, w_l) )
+$$
+where $\mathrm{DIS}(\mathbf{w}, w_i)$ denotes the number of distinct nodes in $\mathbf{w}$ when $w_i$ first appears in $\mathbf{w}$, i.e.
+$$
+\mathrm{DIS}(\mathbf{w}, w_i) = |{w_1, \cdots w_p}|, \quad p = \min_j {w_j=w_i}
+$$
+匿名随机游走和随机游走的不同在于，匿名随机游走描述了随机游走的潜在“patterns”, 不管具体被访问的节点是什么。 距离来说，给定两条随机游走序列 $\mathbf{w_1}=(v_1, v_2, v_3, v_4, v_2)$ 和$w_2=(v_2, v_1, v_3, v_4, v_1)$, 这两个RW相关联的匿名随机游走是一样的，即$\mathrm{aw}(\mathbf{w_1}) = \mathrm{aw}(\mathbf{w_2}) = (1,2,3,4,2)$, 即使$\mathbf{w_1}$和$\mathbf{w_2}$访问不同的节点。即每个节点在RW中首次被访问时的位置就是这个点在ARW中的id,如在$\mathbf{w_2}$中，$v_1$首次访问是在第二个时刻，那么他的id就是2，在ARW中用2表示。</p>
+<h2 id="sampling">Sampling</h2>
+<p>本文提出WEAVE随机游走来表示子图</p>
+<p><img loading="lazy" src="/posts/2022-03-29-seed/pic2.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>上图中所有的$a$代表属性一样的节点， 所有的$b$也代表属性一样的节点，那么构造如图中两条vanilla random walks将得到两条完全相同的随机游走序列，因为序列中的节点属性排列完全一样（这里不会去构造induced subgraph）。为了可以区分两个图，提出了WEAVE, i.e.,  random Walk with EArliest Visit timE。实际上就是为每个随机游走序列上的节点拼接他在匿名随机游走序列中的index。这样就可以区分两个属性完全一样的随机游走序列。</p>
+<p>简单来说这种方法会记录节点首次被访问的时间，这个时间作为节点的index，从而随机游走序列可以反映子图结构。</p>
+<p>一个长度为$k$的WEAVE序列可以表示为：$X=\left[\mathbf{x}^{(0)}, \mathbf{x}^{(1)}, \cdots, \mathbf{x}^{(k)}\right]$, 其中$\mathbf{x}^{(p)}$是序列上的第$p$个节点， $\mathbf{x}^{(p)}=\left[\mathbf{x}_{a}^{(p)}, \mathbf{x}_{t}^{(p)}\right]\in \mathbb{R}^{k \times (d+\ell)}$, 是两个向量的拼接，$\mathbf{x}_{a}^{(p)} \in \mathbb{R}^d$代表这个节点的node feature, $ \mathbf{x}_{t}^{(p)} \in \mathbb{R}^\ell$是是节点在匿名随机游走中的idx， 用onehot向量表示（即该节点首次被访问的时间）。</p>
+<p>最终，如果要从输入图中sample $s$条随机游走路径，将会生成$s$个子图，用矩阵表示为$\left\{X_{1}, X_{2}, \ldots, X_{s}\right\}$。</p>
+<h2 id="encoding">Encoding</h2>
+<p>用$s$个随机游走序列表示$\mathcal{G}$的$s$个子图。对每个子图使用auto encoder 计算embedding:
+$$
+\mathbf{z}=f\left(X ; \theta_{e}\right), \quad \hat{X}=g\left(\mathbf{z} ; \theta_{d}\right)
+$$
+其中$X$表示一个子图（WEAVE）, 先用$f_{\theta_e}$得到这个子图的pooling embedding, 在用$g_{\theta_d}$将子图的embedding重构为矩阵$\hat{X}$。每个子图的重构损失为：
+$$
+\mathcal{L}=||X-\hat{X}||_{2}^{2}
+$$
+通过对每个子图的$\mathcal{L}$做SGD来优化$\theta_e$和$\theta_d$来使得重构误差最小。 最终对于图$\mathcal{G}$我们可以得到它的$s$个子图表示：$\left\{\mathbf{z}_{1}, \mathbf{z}_{2}, \cdots, \mathbf{z}_{S}\right\}$.</p>
+<h2 id="embedding-distribution">Embedding Distribution</h2>
+<p>假设我们已经有了输入图$\mathcal{G}$的子图表示向量集$\left\{\mathbf{z}_{1}, \mathbf{z}_{2}, \cdots, \mathbf{z}_{S}\right\}$, 要将他们融合成一个embedding来表示整个图。可以把这个图的子图集合看做一个distribution，每个子图是这个distribution中的一个样本。 如果两个Graph的子图分布相似，那么这两个Graph的相似度应该更高。 所以目标就变为，给定两个图$\mathcal{G}$和$\mathcal{H}$, 他们的子图表示分别为$\left\{\mathbf{z}_{1}, \mathbf{z}_{2}, \cdots, \mathbf{z}_{s}\right\}$和$\left\{\mathbf{h}_{1}, \mathbf{h}_{2}, \cdots, \mathbf{h}_{s}\right\}$。这是两个分布的样本，我们要计算两个分布的距离，本文使用MMD, 目的是求两个分布的distribution embeddings, 然后求两个distribution embeddings间的距离。MMD可以参考<a href="https://jhuow.github.io/posts/mmd/">这里</a>。</p>
+<p>用$P_{\mathcal{}G}$和$P_{\mathcal{H}}$分别表示这两个图的子图分布， 两个分布之间的MMD距离可以用下式计算得到。
+$$
+\begin{aligned}
+\widehat{MMD}\left(P_{\mathcal{G}}, P_{\mathcal{H}}\right)=&amp; \frac{1}{s(s-1)} \sum_{i=1}^{s} \sum_{j \neq i}^{s} k\left(\mathbf{z}_{i}, \mathbf{z}_{j}\right)+\frac{1}{s(s-1)} \sum_{i=1}^{s} \sum_{j \neq i}^{s} k\left(\mathbf{h}_{i}, \mathbf{h}_{j}\right) \\
+&amp;-\frac{2}{s^{2}} \sum_{i=1}^{s} \sum_{j=1}^{s} k\left(\mathbf{z}_{i}, \mathbf{h}_{j}\right) \\
+=&amp;\left|\left|\hat{\mu}_{\mathcal{G}}-\hat{\mu}_{\mathcal{H}}\right|\right|_{2}^{2} .
+\end{aligned}
+$$
+该式表示的含义为，两个图中的样本$\left\{\mathbf{z}_{1}, \mathbf{z}_{2}, \cdots, \mathbf{z}_{S}\right\}$和$\left\{\mathbf{h}_{1}, \mathbf{h}_{2}, \cdots, \mathbf{h}_{s}\right\}$分别映射到一个RKHS空间中，<strong>两组样本在这个RKHS空间中的均值来表示这两个分布</strong>。即：
+$$
+\hat{\mu}_{\mathcal{G}}=\frac{1}{s} \sum_{i=1}^{s} \phi\left(\mathbf{z}_{i}\right), \quad \hat{\mu}_{\mathcal{H}}=\frac{1}{s} \sum_{i=1}^{s} \phi\left(\mathbf{h}_{i}\right)
+$$
+其中$\phi(\mathbf{z}_{i})$,$\phi(\mathbf{h}_{i})$分别表示 将向量$\mathbf{z}_{i}$和$\mathbf{h}_{i}$ 映射到一个RKHS中，所以$\phi(\cdot)$是一个kernel $k(\cdot, \cdot)$的feature map函数, i.e., $k(u,v) = \langle \phi(u), \phi(v) \rangle$。$\phi(u) = k(\cdot, u)$是kernel $k$对应RKHS中的一个函数（向量）。 所以只要确定一个kernel $k(\cdot, \cdot)$，上面的$\widehat{MMD}(P_{\mathcal{G}}, P_{\mathcal{H}})$就可以求出确定值，表示两个distribution间的距离。 但是知道两个分布在RKHS中的距离还不够，需要知道这两个分布的在RKHS间的均值距离还不够， 我们需要知道这两个分布在RKHS中被映射成了什么向量，即我们要求$\phi(\cdot)$。</p>
+<p>假设我们已经有了一个kernel， 这个kernel对应的映射函数是一个很等映射，那么$\phi(u)=u$, 分布样本在RKHS中的表示就是他们本身，即 $\phi(\mathbf{z}_{i})=\mathbf{z}_{i}$, $\phi(\mathbf{h}_{i})=\mathbf{h}_{i}$。那么这分布的表示向量就是他们的样本在RKHS上的平均（均值平均误差）：
+$$
+\hat{\mu}_{\mathcal{G}}=\frac{1}{s} \sum_{i=1}^{s} \mathbf{z}_{i}, \quad \hat{\mu}_{\mathcal{H}}=\frac{1}{s} \sum_{i=1}^{s} \mathbf{h}_{i}
+$$
+如果$k$是一个其他通用kernel, 比如RBF kernel, 那么$k(u,v) = \langle \phi(u), \phi(v) \rangle$这里的$\phi(\cdot)$是不知道的，也就是仅能知道映射后的内积值，不能知道具体的映射是什么，为了求这个映射，本文用神经网络来近似这个映射。</p>
+<p>具体来说，定义$\hat{\phi}\left(\cdot ; \theta_{m}\right)$是一个参数为$\theta_{m}$的MLP， 输入为分布的样本，那么用这个函数来对两个分布的样本$\{\mathbf{z_i}\}$和$\{\mathbf{h_i}\}$做映射, 然后用$\hat{\phi}\left(\cdot ; \theta_{m}\right)$来近似kernel真实的映射函数$\phi(\cdot)$。即：
+$$
+\hat{\mu}_{\mathcal{G}}^{\prime}=\frac{1}{s} \sum_{i=1}^{s} \hat{\phi}\left(\mathbf{z}_{i} ; \theta_{m}\right), \quad \hat{\mu}_{\mathcal{H}}^{\prime}=\frac{1}{s} \sum_{i=1}^{s} \hat{\phi}\left(\mathbf{h}_{i} ; \theta_{m}\right), \quad D\left(P_{\mathcal{G}}, P_{\mathcal{H}}\right)=\left|\left|\hat{\mu}_{\mathcal{G}}^{\prime}-\hat{\mu}_{\mathcal{H}}^{\prime}\right|\right|_{2}^{2}
+$$
+上式中的$D\left(P_{\mathcal{G}}, P_{\mathcal{H}}\right)$表示两个分布中的样本在被$\hat{\phi}\left(\cdot; \theta_{m}\right)$映射后的均值误差。用这个均值误差来近似$\widehat{MMD}(P_{\mathcal{G}}, P_{\mathcal{H}})$中由kernel $k$的映射$\phi(\cdot)$算出的Ground truth均值误差：</p>
+<p>$$J\left(\theta_{m}\right)=\left|\left|D\left(P_{\mathcal{G}}, P_{\mathcal{H}}\right)-\widehat{M M D}\left(P_{\mathcal{G}}, P_{\mathcal{H}}\right)\right|\right|_{2}^{2}$$</p>
+<p>通过最小化$J\left(\theta_{m}\right)$,来优化$\hat{\phi}\left(\cdot; \theta_{m}\right)$,使其近似称为一个kernel的feature map函数， 即可以将样本映射到一个RKHS空间中的函数。</p>
+<p>训练结束后，用$\hat{\mu}_{\mathcal{G}}^{\prime}$来表示输入图$\mathcal{G}$的最终embedding （子图分布embedding）。</p>
+<h1 id="reference">Reference</h1>
+<p>[1] Micali, S., and Zhu, Z. A. 2016. Reconstructing markov processes from independent and anonymous experiments. Discrete Applied Mathematics 200:108–122.</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Awesome Barbell Graph with Networkx</title>
       <link>https://JhuoW.github.io/posts/barbell_graph/</link>
@@ -903,584 +1302,6 @@ MIA模型（路径相关）
     </item>
     
     <item>
-      <title>长期更新-好论文解读收藏</title>
-      <link>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</link>
-      <pubDate>Sun, 28 Apr 2019 16:36:50 +0000</pubDate>
-      
-      <guid>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</guid>
-      <description>这篇笔记用于收藏别人的博客
-技术博客    Blog Author     https://michael-bronstein.medium.com/ Michael Bronstein   https://geometricdeeplearning.com/ Michael Bronstein   https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c Vitaly Kurin (Many Paper Notes)   https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html UvA DL Notebooks   https://graph-neural-networks.github.io/index.html GNN Books   http://prob140.org/sp17/textbook/ Probability for Data Science class at UC Berkeley   https://graphreason.github.io/schedule.html Learning and Reasoning with Graph-Structured Representations ICML 2019 Workshop   https://chuxuzhang.github.io/KDD21_Tutorial.html KDD2021 Tutorial: Data Efficient Learning on Graphs   http://songcy.</description>
-      <content:encoded><![CDATA[<p><strong>这篇笔记用于收藏别人的博客</strong></p>
-<h1 id="技术博客">技术博客</h1>
-<table>
-<thead>
-<tr>
-<th>Blog</th>
-<th>Author</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><a href="https://michael-bronstein.medium.com/">https://michael-bronstein.medium.com/</a></strong></td>
-<td>Michael Bronstein</td>
-</tr>
-<tr>
-<td><strong><a href="https://geometricdeeplearning.com/">https://geometricdeeplearning.com/</a></strong></td>
-<td>Michael Bronstein</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c">https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c</a></strong></td>
-<td>Vitaly Kurin (Many Paper Notes)</td>
-</tr>
-<tr>
-<td><strong><a href="https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html">https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html</a></strong></td>
-<td>UvA DL Notebooks</td>
-</tr>
-<tr>
-<td><strong><a href="https://graph-neural-networks.github.io/index.html">https://graph-neural-networks.github.io/index.html</a></strong></td>
-<td>GNN Books</td>
-</tr>
-<tr>
-<td><strong><a href="http://prob140.org/sp17/textbook/">http://prob140.org/sp17/textbook/</a></strong></td>
-<td><a href="http://prob140.org/">Probability for Data Science</a> class at UC Berkeley</td>
-</tr>
-<tr>
-<td><strong><a href="https://graphreason.github.io/schedule.html">https://graphreason.github.io/schedule.html</a></strong></td>
-<td><a href="https://graphreason.github.io/index.html">Learning and Reasoning with Graph-Structured Representations</a> ICML 2019 Workshop</td>
-</tr>
-<tr>
-<td><strong><a href="https://chuxuzhang.github.io/KDD21_Tutorial.html">https://chuxuzhang.github.io/KDD21_Tutorial.html</a></strong></td>
-<td>KDD2021 Tutorial: Data Efficient Learning on Graphs</td>
-</tr>
-<tr>
-<td><strong><a href="http://songcy.net/posts/">http://songcy.net/posts/</a></strong></td>
-<td>Changyue Song (Kernel)</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.cs.mcgill.ca/~wlh/grl_book/">https://www.cs.mcgill.ca/~wlh/grl_book/</a></strong></td>
-<td>William L. Hamilton</td>
-</tr>
-<tr>
-<td><strong><a href="https://kexue.fm/">https://kexue.fm/</a></strong></td>
-<td>BoJone</td>
-</tr>
-<tr>
-<td><strong><a href="https://danielegrattarola.github.io/blog/">https://danielegrattarola.github.io/blog/</a></strong></td>
-<td>Daniele Grattarola (EPFL)</td>
-</tr>
-<tr>
-<td><strong><a href="https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html">https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html</a></strong></td>
-<td>Google AI Blog</td>
-</tr>
-<tr>
-<td><strong><a href="https://zhiyuchen.com/blogs/">https://zhiyuchen.com/blogs/</a></strong></td>
-<td>Zhiyu Chen</td>
-</tr>
-<tr>
-<td><strong><a href="https://andreasloukas.blog/">https://andreasloukas.blog/</a></strong></td>
-<td>Andreas Loukas (EPFL)</td>
-</tr>
-<tr>
-<td><strong><a href="https://irhum.pubpub.org/pub/gnn/release/4">https://irhum.pubpub.org/pub/gnn/release/4</a></strong></td>
-<td>Understanding Graph Neural Networks</td>
-</tr>
-<tr>
-<td><strong><a href="https://lilianweng.github.io/">https://lilianweng.github.io/</a></strong></td>
-<td>Lilian Weng</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.zhihu.com/column/marlin">https://www.zhihu.com/column/marlin</a></strong></td>
-<td>深度学习与图网络</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/roboticcam/machine-learning-notes">https://github.com/roboticcam/machine-learning-notes</a></strong></td>
-<td>Yida Xu</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.dgl.ai/pages/index.html">https://www.dgl.ai/pages/index.html</a></strong></td>
-<td>DGL</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.kexinhuang.com/tech-blog">https://www.kexinhuang.com/tech-blog</a></strong></td>
-<td>Kexin Huang</td>
-</tr>
-<tr>
-<td><strong><a href="https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8">https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8</a></strong></td>
-<td>Rishabh Anand</td>
-</tr>
-<tr>
-<td><strong><a href="https://saashanair.com/blog">https://saashanair.com/blog</a></strong></td>
-<td>Saasha Nair</td>
-</tr>
-<tr>
-<td><strong><a href="http://www.huaxiaozhuan.com/">http://www.huaxiaozhuan.com/</a></strong></td>
-<td>华校专</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/dglai/WWW20-Hands-on-Tutorial">https://github.com/dglai/WWW20-Hands-on-Tutorial</a></strong></td>
-<td>DGL</td>
-</tr>
-<tr>
-<td><a href="https://github.com/tianyicui/pack">https://github.com/tianyicui/pack</a></td>
-<td>背包9講</td>
-</tr>
-<tr>
-<td><a href="https://www.fenghz.xyz/">https://www.fenghz.xyz/</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://sakigami-yang.me/2017/08/13/about-kernel-01/">https://sakigami-yang.me/2017/08/13/about-kernel-01/</a></td>
-<td>kernel</td>
-</tr>
-<tr>
-<td><a href="https://davidham3.github.io/blog">https://davidham3.github.io/blog</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://fenghz.github.io/index.html">https://fenghz.github.io/index.html</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://archwalker.github.io/">https://archwalker.github.io/</a></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h1 id="survey">Survey</h1>
-<table>
-<thead>
-<tr>
-<th>Repo</th>
-<th>Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><a href="https://github.com/naganandy/graph-based-deep-learning-literature">https://github.com/naganandy/graph-based-deep-learning-literature</a></strong></td>
-<td><strong>links to conference publications in graph-based deep learning</strong> (Very, Very, Very Important)</td>
-</tr>
-<tr>
-<td><a href="https://github.com/SherylHYX/pytorch_geometric_signed_directed">https://github.com/SherylHYX/pytorch_geometric_signed_directed</a></td>
-<td>PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning">https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning</a></td>
-<td>Paper Lists for Fair Graph Learning</td>
-</tr>
-<tr>
-<td><a href="https://github.com/thunlp/PromptPapers">https://github.com/thunlp/PromptPapers</a></td>
-<td>Must-read papers on prompt-based tuning for pre-trained language models.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/zhao-tong/graph-data-augmentation-papers">https://github.com/zhao-tong/graph-data-augmentation-papers</a></td>
-<td>A curated list of graph data augmentation papers.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/Thinklab-SJTU/ThinkMatch">https://github.com/Thinklab-SJTU/ThinkMatch</a></td>
-<td>Code &amp; pretrained models of novel deep graph matching methods.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/FLHonker/Awesome-Knowledge-Distillation">https://github.com/FLHonker/Awesome-Knowledge-Distillation</a></td>
-<td>Awesome Knowledge-Distillation. 分类整理的知识蒸馏paper(2014-2021)。</td>
-</tr>
-<tr>
-<td><a href="https://github.com/zlpure/awesome-graph-representation-learning">https://github.com/zlpure/awesome-graph-representation-learning</a></td>
-<td>A curated list for awesome graph representation learning resources.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/basiralab/GNNs-in-Network-Neuroscience">https://github.com/basiralab/GNNs-in-Network-Neuroscience</a></td>
-<td>A review of papers proposing novel GNN methods with application to brain connectivity published in 2017-2020.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/flyingdoog/awesome-graph-explainability-papers">https://github.com/flyingdoog/awesome-graph-explainability-papers</a></td>
-<td>Papers about explainability of GNNs</td>
-</tr>
-<tr>
-<td><a href="https://github.com/yuanqidu/awesome-graph-generation">https://github.com/yuanqidu/awesome-graph-generation</a></td>
-<td>A curated list of graph generation papers and resources.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-decision-tree-papers">https://github.com/benedekrozemberczki/awesome-decision-tree-papers</a></td>
-<td>A collection of research papers on decision, classification and regression trees with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/AstraZeneca/awesome-explainable-graph-reasoning">https://github.com/AstraZeneca/awesome-explainable-graph-reasoning</a></td>
-<td>A collection of research papers and software related to explainability in graph machine learning.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/LirongWu/awesome-graph-self-supervised-learning">https://github.com/LirongWu/awesome-graph-self-supervised-learning</a></td>
-<td>Awesome Graph Self-Supervised Learning</td>
-</tr>
-<tr>
-<td><a href="https://github.com/Chen-Cai-OSU/awesome-equivariant-network">https://github.com/Chen-Cai-OSU/awesome-equivariant-network</a></td>
-<td>Paper list for equivariant neural network</td>
-</tr>
-<tr>
-<td><a href="https://github.com/mengliu1998/DL4DisassortativeGraphs">https://github.com/mengliu1998/DL4DisassortativeGraphs</a></td>
-<td>Papers about developing DL methods on disassortative graphs</td>
-</tr>
-<tr>
-<td><a href="https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers">https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers</a></td>
-<td>A curated list of graph reinforcement learning papers.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/ChandlerBang/awesome-self-supervised-gnn">https://github.com/ChandlerBang/awesome-self-supervised-gnn</a></td>
-<td>Papers about pretraining and self-supervised learning on Graph Neural Networks (GNN).</td>
-</tr>
-<tr>
-<td><a href="https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks">https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks</a></td>
-<td>Paper Lists for Graph Neural Networks</td>
-</tr>
-<tr>
-<td><a href="https://github.com/jwzhanggy/IFMLab_GNN">https://github.com/jwzhanggy/IFMLab_GNN</a></td>
-<td>Graph Neural Network Models from IFM Lab</td>
-</tr>
-<tr>
-<td><a href="https://github.com/ChandlerBang/awesome-graph-attack-papers">https://github.com/ChandlerBang/awesome-graph-attack-papers</a></td>
-<td>Adversarial attacks and defenses on Graph Neural Networks.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/safe-graph/graph-adversarial-learning-literature">https://github.com/safe-graph/graph-adversarial-learning-literature</a></td>
-<td>A curated list of adversarial attacks and defenses papers on graph-structured data.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-graph-classification">https://github.com/benedekrozemberczki/awesome-graph-classification</a></td>
-<td>A collection of important graph embedding, classification and representation learning papers with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers">https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers</a></td>
-<td>A curated list of gradient boosting research papers with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-community-detection">https://github.com/benedekrozemberczki/awesome-community-detection</a></td>
-<td>A curated list of community detection research papers with implementations.</td>
-</tr>
-</tbody>
-</table>
-<h1 id="好用的工具">好用的工具</h1>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Info</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="http://acronymify.com/">http://acronymify.com/</a></td>
-<td>Model Name</td>
-</tr>
-<tr>
-<td><a href="https://csacademy.com/app/graph_editor/">https://csacademy.com/app/graph_editor/</a></td>
-<td>Graph Editor</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/guanyingc/python_plot_utils">https://github.com/guanyingc/python_plot_utils</a></strong></td>
-<td>A simple code for plotting figure, colorbar, and cropping with python</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/guanyingc/latex_paper_writing_tips">https://github.com/guanyingc/latex_paper_writing_tips</a></strong></td>
-<td>Tips for Writing a Research Paper using LaTeX</td>
-</tr>
-<tr>
-<td><a href="https://github.com/JhuoW/Pytorch_Program_Templete">https://github.com/JhuoW/Pytorch_Program_Templete</a></td>
-<td>Pytorch Program Templete GNN</td>
-</tr>
-<tr>
-<td><a href="https://github.com/graph4ai/graph4nlp">https://github.com/graph4ai/graph4nlp</a></td>
-<td>Graph4nlp is the library for the easy use of Graph Neural Networks for NLP. Welcome to visit our DLG4NLP website (<a href="https://dlg4nlp.github.io/index.html">https://dlg4nlp.github.io/index.html</a>) for various learning resources!</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/pytorch_geometric_temporal">https://github.com/benedekrozemberczki/pytorch_geometric_temporal</a></td>
-<td>PyTorch Geometric Temporal: Spatiotemporal Signal Processing with Neural Machine Learning Models (CIKM 2021)</td>
-</tr>
-</tbody>
-</table>
-<h1 id="social-diffusion">Social Diffusion</h1>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">Title</th>
-<th style="text-align:center">Unscramble</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">Social Influence Locality for Modeling Retweeting Behavior</td>
-<td style="text-align:center"><a href="http://www.datasnail.cn/papers/2018/03/01/group_influence.html">解读</a>  <a href="https://www.aminer.cn/influencelocality">代码</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Role-Aware Conformity Influence Modeling and Analysis in Social Network</td>
-<td style="text-align:center"><a href="http://www.datasnail.cn/papers/2018/03/19/social_influence_role.html">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">DeepInf:Social Influence Prediction with Deep Learning</td>
-<td style="text-align:center"><a href="https://redtongue.github.io/2018/11/10/DeepInf-Social-Influence-Prediction-with-Deep-Learning/">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Reverse Influence Sampling in Python</td>
-<td style="text-align:center"><a href="https://hautahi.com/im_ris">解读及代码</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Cost-effective Outbreak Detection in Networks（CELF）</td>
-<td style="text-align:center"><a href="https://hautahi.com/im_greedycelf">解读及代码</a> <a href="https://www.cnblogs.com/aaronhoo/p/6548760.html">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">DeepCas: an End-to-end Predictor of Information Cascades</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/24430190">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Inf2vec: Latent Representation Model for Social Influence Embedding</td>
-<td style="text-align:center"><a href="https://iii.run/archives/286.html">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">POI2Vec: Geographical Latent Representation for Predicting Future Visitors</td>
-<td style="text-align:center"><a href="https://blog.csdn.net/u014568072/article/details/78633812">解读</a></td>
-</tr>
-</tbody>
-</table>
-<h1 id="network-embedding-and-gnn">Network Embedding and GNN</h1>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">Title</th>
-<th style="text-align:center">Unscramble</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">Heterogeneous Graph Attention Network</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s/hzwp5oGspdtDyNBmq8sMsw">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Attributed Social Network Embedding</td>
-<td style="text-align:center"><a href="https://blog.csdn.net/sparkexpert/article/details/78066298">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Self-Translation Network Embedding</td>
-<td style="text-align:center"><a href="https://www.cnblogs.com/chaoran/p/9872918.html">解读1</a> <a href="https://zhuanlan.zhihu.com/p/45538566">解读2</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Self-Paced Network Embedding</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/55104326">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">CANE: Context-Aware Network Embedding for Relation Modeling</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/42750132">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">HIN2Vec: Explore Meta-paths in Heterogeneous Information Networks for Representation Learning</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s/7dsrvHp6KIvlE-VXiUH1Rw">解读1</a> <a href="http://rootlu.com/blog/2017/11/16/HIN2Vec.html/">解读2</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Embedding Temporal Network via Neighborhood Formation</td>
-<td style="text-align:center"><a href="http://rootlu.com/blog/2018/09/15/HTNE.html/">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Network Representation Learning with Rich Text Information</td>
-<td style="text-align:center"><a href="http://rootlu.com/blog/2017/08/07/TextDeepWalk.html/">解读1</a> <a href="https://blog.csdn.net/zhangbaoanhadoop/article/details/82313123">解读2</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Meta-Path Guided Embedding for Similarity Search in Large-Scale Heterogeneous Information Networks</td>
-<td style="text-align:center"><a href="http://rootlu.com/blog/2017/11/04/Esim.html/">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">SHINE: Signed Heterogeneous Information Network Embedding for Sentiment Link Prediction</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/34437681">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Context-Aware Network Embedding for Relation Modeling</td>
-<td style="text-align:center"><a href="https://www.cnblogs.com/chaoran/p/9720558.html#top">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">GAN在网络特征学习中的应用</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s/V1XX8WWstR00m_OimMrDDw">this</a></td>
-</tr>
-<tr>
-<td style="text-align:center">一文读懂「Attention is All You Need」 附代码实现</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247486960&amp;idx=1&amp;sn=1b4b9d7ec7a9f40fa8a9df6b6f53bbfb&amp;chksm=96e9d270a19e5b668875392da1d1aaa28ffd0af17d44f7ee81c2754c78cc35edf2e35be2c6a1&amp;scene=21#wechat_redirect">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">node2vec: Scalable Feature Learning for Networks</td>
-<td style="text-align:center"><a href="https://blog.csdn.net/nemoyy/article/details/81842536">解读1</a> <a href="http://rootlu.com/blog/2017/09/28/Node2vec.html/">解读2</a> <a href="https://zhuanlan.zhihu.com/p/38432396">解读3</a></td>
-</tr>
-<tr>
-<td style="text-align:center">PTE:Predictive Text Embedding through Large-scale</td>
-<td style="text-align:center"><a href="http://rootlu.com/blog/2017/09/12/PTE.html/">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">struc2vec: Learning Node Representations from Structural Identity</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/42559966">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">AspEm: Embedding Learning by Aspects in HINs</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/46067193">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Max-Margin DeepWalk: Discriminative Learning of Network Representation</td>
-<td style="text-align:center"><a href="https://www.jianshu.com/p/be27d1be7a79">解读1</a> <a href="https://zhuanlan.zhihu.com/p/22660025">解读2</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Structural Deep Network Embedding</td>
-<td style="text-align:center"><a href="http://www.rootlu.com/blog/2017/11/14/SDNE.html/">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Learning Structural Node Embeddings via Diffusion Wavelets</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/50212921">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">HARP: Hierarchical Representation Learning for Networks</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/32525850">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Dynamic Network Embedding by Modeling Triadic Closure Process</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/34544862">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">RaRE: Social Rank Regulated Large-scale Network Embedding</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/44755895">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">TransNet: Translation-Based Network Representation Learning for Social Relation Extraction</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/35700043">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">GraphGAN: Graph Representation Learning with Generative Adversarial Nets</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/47622003">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Graph Convolutional Network</td>
-<td style="text-align:center"><a href="https://www.zhihu.com/question/54504471">解答</a></td>
-</tr>
-<tr>
-<td style="text-align:center">GraRep: Learning Graph Representations with Global Structural Information</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/46446600">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Deep Dynamic Network Embedding for Link Prediction</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/43224084">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Representation Learning for Attributed Multiplex Heterogeneous Network</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s?__biz=MzU1MTkwNzIyOQ==&amp;mid=2247488986&amp;idx=1&amp;sn=518dee71731df7013ab0c610a0bb2b98&amp;chksm=fb8b6f28ccfce63eec8a61c592b4d56f9a530a052e6339006fab617bedfdcd6e64996e0d1cf8&amp;mpshare=1&amp;scene=1&amp;srcid=&amp;key=5472509901065d0595e5a5c5f212483c3d2f3efeeaef7669474af772e5e8c26230f46e4993f58e1ce0750728887bcacdbbfaeee9ed04016d855c9d372554841a90a974c8f49359d359e196635f9f0a9c&amp;ascene=1&amp;uin=MjU1NDA0MzIyOA%3D%3D&amp;devicetype=Windows+10&amp;version=62060825&amp;lang=zh_CN&amp;pass_ticket=Lc9QD7DhlGI4GwJMmLL%2Fqb%2FjUlOsqjZa063bAf%2FwTgv87Ysjj0jQmYfggMpsJh6o">GATNE</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Inductive Representation Learning on Large Graphs</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/62750137">GraphSAGE</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/44197242">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Graph Convolutional Neural Networks for Web-Scale Recommender Systems</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/62471519">PinSAGE</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Semi-Supervised Classification with Graph Convolutional Networks</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/65276194">Semi-GCN</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Joint Type Inference on Entities and Relations via Graph Convolutional Networks</td>
-<td style="text-align:center"><a href="https://blog.csdn.net/a609640147/article/details/93212524">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">图卷积神经网络（GCN）</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/71200936">GCN</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Adaptive SamplingTowards Fast Graph Representation Learning</td>
-<td style="text-align:center"><a href="https://jhy1993.github.io/Jhy1993.github.io/2019/05/28/18NIPS_Adaptive-Sampling-Towards-Fast-Graph-Representation-Learning/">解读</a></td>
-</tr>
-<tr>
-<td style="text-align:center">ProNE: Fast and Scalable Network Representation Learning</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/77063856">ProNE</a></td>
-</tr>
-<tr>
-<td style="text-align:center">ROTATE:Knowledge graph embedding by relational rotate in complex space</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s/R-KLHsYLbb8WHRjk6gwrhw">Rotate</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Signed Graph Convolutional Network</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s?__biz=MzI2MDE5MTQxNg==&amp;mid=2649692736&amp;idx=1&amp;sn=1d4ca82f51e467cb4318f92348b3c11f&amp;chksm=f276df97c501568136ac61346d1fec16acc3d9a02dcc6185aec4d7064255e4d2ed383190eac4&amp;token=1159444933&amp;lang=zh_CN#rd">SGCN</a></td>
-</tr>
-<tr>
-<td style="text-align:center">GAT: Graph Attention Network</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s?__biz=MzI2MDE5MTQxNg==&amp;mid=2649694052&amp;idx=1&amp;sn=6132e91e1e6619bd9432025d4a52481c&amp;chksm=f276dab3c50153a585e71c3ac4f5742c0009d31eb4c40f423b9d7719675037993ca1e30286dd&amp;token=1221786093&amp;lang=zh_CN#rd">GAT</a> <a href="https://zhuanlan.zhihu.com/p/34232818">GAT2</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Large-Scale Learnable Graph Convolutional Networks</td>
-<td style="text-align:center"><a href="https://www.jianshu.com/p/ada8730913ce">LGCN</a> <a href="https://zhuanlan.zhihu.com/p/48834333">LGCN2</a> <a href="https://zhuanlan.zhihu.com/p/53205116">LGCN3</a> <a href="https://davidham3.github.io/blog/2018/09/17/large-scale-learnable-graph-convolutional-networks/">LGCN4</a> <a href="https://blog.csdn.net/yyl424525/article/details/100057863">LGCN5</a> <a href="https://www.jianshu.com/p/a099dfd46c61">代码分析</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Hierarchical Graph Representation Learning with Differentiable Pooling</td>
-<td style="text-align:center"><a href="https://blog.csdn.net/wanchaochaochao/article/details/81091295">DiffPool</a> <a href="https://blog.csdn.net/weixin_40740160/article/details/83022408">DiffPool</a></td>
-</tr>
-</tbody>
-</table>
-<h1 id="ml--dl">ML &amp; DL</h1>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">Title</th>
-<th style="text-align:center">Unscramble</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">常见散度与距离(KL散度，JS散度，Wasserstein距离，互信息MI)</td>
-<td style="text-align:center"><a href="https://jhy1993.github.io/Jhy1993.github.io/2019/03/25/%E5%B8%B8%E8%A7%81%E6%95%A3%E5%BA%A6%E8%B7%9D%E7%A6%BB/">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">【简化数据】奇异值分解(SVD)</td>
-<td style="text-align:center"><a href="https://blog.csdn.net/u012162613/article/details/42214205">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">AUC的计算与近似</td>
-<td style="text-align:center"><a href="https://jhy1993.github.io/Jhy1993.github.io/2018/12/25/AUC%E7%9A%84%E8%AE%A1%E7%AE%97%E4%B8%8E%E8%BF%91%E4%BC%BC/">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">PCA</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/44371812">Here</a> <a href="https://www.matongxue.com/madocs/1025.html">Here</a> <a href="https://blog.csdn.net/hustqb/article/details/78394058">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">AdaBoost</td>
-<td style="text-align:center"><a href="https://blog.csdn.net/px_528/article/details/72963977">Here</a> <a href="https://blog.csdn.net/guyuealian/article/details/70995333">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Batch Normalization</td>
-<td style="text-align:center"><a href="https://zhuanlan.zhihu.com/p/38176412">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">矩阵的正定及半正定</td>
-<td style="text-align:center"><a href="https://www.zhihu.com/question/22098422">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">精确率、召回率、F1 值、ROC、AUC</td>
-<td style="text-align:center"><a href="https://www.zhihu.com/question/30643044">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">Hierarchical Softmax</td>
-<td style="text-align:center"><a href="qiancy.com/2016/08/17/word2vec-hierarchical-softmax/">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">傅立叶变换</td>
-<td style="text-align:center"><a href="https://mp.weixin.qq.com/s/kPbmne-PDd7nMsRrs0FigA">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">卷积神经网络（CNN）之一维卷积、二维卷积、三维卷积详解</td>
-<td style="text-align:center"><a href="https://www.cnblogs.com/szxspark/p/8445406.html">Here</a></td>
-</tr>
-<tr>
-<td style="text-align:center">变分自编码器（VAE）</td>
-<td style="text-align:center"><a href="https://fenghz.github.io/Variational-AutoEncoder/">Here</a></td>
-</tr>
-</tbody>
-</table>
-]]></content:encoded>
-    </item>
-    
-    <item>
       <title>社交网络影响最大化（Influence Maximization）中的IC，LT模型</title>
       <link>https://JhuoW.github.io/posts/2019-03-20-ic-lt/</link>
       <pubDate>Wed, 20 Mar 2019 21:34:08 +0000</pubDate>
@@ -1502,9 +1323,9 @@ The Linear Threshold Model (LT Model) LT模型，即线性阈值模型。基本�
     </item>
     
     <item>
-      <title>BiNE</title>
+      <title>《BiNE:Bipartite Network Embedding》 SIGIR18 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/bine/</link>
-      <pubDate>Wed, 13 Mar 2019 22:01:15 +0000</pubDate>
+      <pubDate>Wed, 13 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/bine/</guid>
       <description>论文地址：BiNE
@@ -1868,8 +1689,9 @@ May The Force Be With You </description>
     </item>
     
     
+    
     <item>
-      <title>HTNE:《Embedding Temporal Network via Neighborhood Formation》阅读笔记</title>
+      <title>SIGIR2018 《HTNE Embedding Temporal Network via Neighborhood Formation》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/htne/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -1936,7 +1758,6 @@ $$\log \mathcal{L}=\sum_{x\in{\mathcal{V}}}{\sum_{y\in{\mathcal{H}_x}}}{\log{p(y
 <p>最后，由于softmax过程是calculating expensive，所以采用负采样优化损失函数。</p>
 ]]></content:encoded>
     </item>
-    
     
   </channel>
 </rss>

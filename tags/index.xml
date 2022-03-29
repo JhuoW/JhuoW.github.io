@@ -10,7 +10,27 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 27 Mar 2022 15:38:50 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 29 Mar 2022 11:03:50 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>paper</title>
+      <link>https://JhuoW.github.io/tags/paper/</link>
+      <pubDate>Tue, 29 Mar 2022 11:03:50 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/paper/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>GNN</title>
+      <link>https://JhuoW.github.io/tags/gnn/</link>
+      <pubDate>Mon, 28 Mar 2022 23:44:01 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/gnn/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
     <item>
       <title>Networkx</title>
       <link>https://JhuoW.github.io/tags/networkx/</link>
@@ -102,16 +122,6 @@
     </item>
     
     <item>
-      <title>paper</title>
-      <link>https://JhuoW.github.io/tags/paper/</link>
-      <pubDate>Sun, 28 Apr 2019 16:36:50 +0000</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/paper/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
       <title>IM</title>
       <link>https://JhuoW.github.io/tags/im/</link>
       <pubDate>Wed, 20 Mar 2019 21:34:08 +0000</pubDate>
@@ -124,7 +134,7 @@
     <item>
       <title>Bipartite Network</title>
       <link>https://JhuoW.github.io/tags/bipartite-network/</link>
-      <pubDate>Wed, 13 Mar 2019 22:01:15 +0000</pubDate>
+      <pubDate>Wed, 13 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/tags/bipartite-network/</guid>
       <description></description>
@@ -134,7 +144,7 @@
     <item>
       <title>SGA</title>
       <link>https://JhuoW.github.io/tags/sga/</link>
-      <pubDate>Wed, 13 Mar 2019 22:01:15 +0000</pubDate>
+      <pubDate>Wed, 13 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/tags/sga/</guid>
       <description></description>

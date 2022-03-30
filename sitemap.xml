@@ -3,15 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://JhuoW.github.io/categories/</loc>
-    <lastmod>2022-03-30T13:51:57+08:00</lastmod>
+    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/</loc>
+    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
+    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/mcts/</loc>
+    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/mcts/</loc>
+    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/notebook/</loc>
+    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/</loc>
+    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/</loc>
+    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/gnn/</loc>
     <lastmod>2022-03-30T13:51:57+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/gnn/</loc>
-    <lastmod>2022-03-30T13:51:57+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/</loc>
     <lastmod>2022-03-30T13:51:57+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/neo-gnns/</loc>
@@ -20,19 +38,10 @@
     <loc>https://JhuoW.github.io/categories/paper/</loc>
     <lastmod>2022-03-30T13:51:57+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/posts/</loc>
-    <lastmod>2022-03-30T13:51:57+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/</loc>
-    <lastmod>2022-03-30T13:51:57+08:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/posts/graphtrans/</loc>
     <lastmod>2022-03-30T10:37:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</loc>
-    <lastmod>2022-03-29T11:03:50+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/notebook/</loc>
     <lastmod>2022-03-29T11:03:50+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/papers/</loc>
@@ -59,9 +68,6 @@
     <loc>https://JhuoW.github.io/tags/kernel/</loc>
     <lastmod>2022-03-26T22:39:20+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
-    <lastmod>2022-03-26T22:39:20+08:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/posts/rkhs_kernel/</loc>
     <lastmod>2022-03-26T22:39:20+08:00</lastmod>
   </url><url>
@@ -77,10 +83,10 @@
     <loc>https://JhuoW.github.io/tags/clustering/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/spectral-clustering/</loc>
+    <loc>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</loc>
+    <loc>https://JhuoW.github.io/tags/spectral-clustering/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/m-nmf/</loc>

@@ -10,7 +10,141 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 07 Sep 2019 09:11:09 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/machine-leaning/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 27 Mar 2022 10:45:08 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/machine-leaning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Maximum Mean Discrepancy</title>
+      <link>https://JhuoW.github.io/posts/mmd/</link>
+      <pubDate>Sun, 27 Mar 2022 10:45:08 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/mmd/</guid>
+      <description>Mean Discrepancy (MD)均值差异 判断2个分布$p$ 和$q$是否相同。
+$p$分布生成一个样本空间$\mathbb{P}$ (从$p$中采样$m$个样本)
+$q$分布生成一个样本空间$\mathbb{Q}$（从$q$中采样$n$个样本）
+函数$f$的输入为 分布生成的样本空间
+如果 $$ \begin{equation} \begin{aligned} \mathrm{mean}(f(\mathbb{P})) == \mathrm{mean}(f(\mathbb{Q})) \\ i.e., \frac{1}{m}\sum^m_{i=1}f(p_i) = \frac{1}{n}\sum^n_{i=1}f(q_i) \end{aligned} \end{equation} $$
+则$p$和$q$是同一分布。
+MD can be defined as $$ \begin{equation} \begin{aligned} \mathrm{MD}&amp;amp;=|\mathrm{mean}(f(\mathbb{P})) -\mathrm{mean}(f(\mathbb{Q})) | \\ &amp;amp;= |\frac{1}{m}\sum^m_{i=1}f(p_i) - \frac{1}{n}\sum^n_{i=1}f(q_i)| \end{aligned} \end{equation} $$
+Maximum Mean Discrepancy (MMD) 最大均值差异 定义 MMD: 在函数集$\mathcal{F}=\{f_1, f_2, \cdots \}$中， 找到一个函数$f^*$， 使得$|\mathrm{mean}(f^*(\mathbb{P})) -\mathrm{mean}(f^*(\mathbb{Q})) |$ 最大。 这个最大值就是两个分布之间的最大均值差异（MMD）。MMD =0 表示两个分布相同。 $$ \operatorname{MMD}[\mathcal{F}, p, q]:=\sup _{f \in \mathcal{F}}\left(\mathbf{E}_{x \sim p}[f(x)]-\mathbf{E}_{y \sim q}[f(y)]\right) $$ 其中$\mathbf{E}_{x \sim p}[f(x)]$表示分布$p$在函数$f$下的均值， $\sup$为上确界直接理解为max就好。</description>
+      <content:encoded><![CDATA[<h1 id="mean-discrepancy-md均值差异">Mean Discrepancy (MD)均值差异</h1>
+<p>判断2个分布$p$ 和$q$是否相同。</p>
+<p>$p$分布生成一个样本空间$\mathbb{P}$ (从$p$中采样$m$个样本)</p>
+<p>$q$分布生成一个样本空间$\mathbb{Q}$（从$q$中采样$n$个样本）</p>
+<p>函数$f$的输入为 分布生成的样本空间</p>
+<p>如果
+$$
+\begin{equation}
+\begin{aligned}
+\mathrm{mean}(f(\mathbb{P})) == \mathrm{mean}(f(\mathbb{Q})) \\
+i.e., \frac{1}{m}\sum^m_{i=1}f(p_i) = \frac{1}{n}\sum^n_{i=1}f(q_i)
+\end{aligned}
+\end{equation}
+$$</p>
+<p>则$p$和$q$是同一分布。</p>
+<p><strong>MD</strong> can be defined as
+$$
+\begin{equation}
+\begin{aligned}
+\mathrm{MD}&amp;=|\mathrm{mean}(f(\mathbb{P})) -\mathrm{mean}(f(\mathbb{Q})) | \\
+&amp;= |\frac{1}{m}\sum^m_{i=1}f(p_i) - \frac{1}{n}\sum^n_{i=1}f(q_i)|
+\end{aligned}
+\end{equation}
+$$</p>
+<h1 id="maximum-mean-discrepancy-mmd-最大均值差异">Maximum Mean Discrepancy (MMD) 最大均值差异</h1>
+<h2 id="定义">定义</h2>
+<p><strong>MMD:</strong>  在函数集$\mathcal{F}=\{f_1, f_2, \cdots \}$中， 找到一个函数$f^*$， 使得$|\mathrm{mean}(f^*(\mathbb{P})) -\mathrm{mean}(f^*(\mathbb{Q})) |$ 最大。 这个最大值就是两个分布之间的<strong>最大均值差异</strong>（MMD）。MMD =0 表示两个分布相同。
+$$
+\operatorname{MMD}[\mathcal{F}, p, q]:=\sup _{f \in \mathcal{F}}\left(\mathbf{E}_{x \sim p}[f(x)]-\mathbf{E}_{y \sim q}[f(y)]\right)
+$$
+其中$\mathbf{E}_{x \sim p}[f(x)]$表示分布$p$在函数$f$下的均值， $\sup$为上确界直接理解为max就好。</p>
+<h2 id="条件">条件</h2>
+<p>为了准确判断分布$p$和$q$之间的距离，需要找到一个合适的函数，使得两个分布在这个函数上的距离尽可能大，但搜索空间不能过于大，所以函数空间$\mathcal{F}$要满足两个条件：</p>
+<p><strong>C1:</strong> 函数集$\mathcal{F}$要足够丰富， 使得MMD尽可能准确</p>
+<p><strong>C2:</strong> 考虑数据集样本数量，随着数据集的增大，MMD要能迅速收敛，要求$\mathcal{F}$足够restrictive (函数集不能无限大)</p>
+<p>所以利用<a href="https://jhuow.github.io/posts/rkhs_kernel/">kernel</a> 方法，即， 将两个分布的样本空间映射到一个高维或者无限维的空间$\mathcal{H}$中，如果两个分布的样本在$\mathcal{H}$中的均值依然相等，那么这两个分布相等，MMD=0。两个分布在$\mathcal{H}$中的最大均值为MMD。</p>
+<p><strong>因此，当$\mathcal{F}$是再生核Hilbert Space 上的单位球（unit ball）时，可以满足以上两个条件</strong>。 即，将$\mathcal{F}$定义为某个kernel对应的RKHS中的函数， 例如，</p>
+<p>给定一个Gaussian Kernel: $k(u,v) = \{\exp({-\frac{||u-v||^2}{2\sigma}})\}_\sigma$, 这个kernel函数是一个Hilbert Space的再生核，那么这个空间可以表示为</p>
+<p>$$
+\begin{equation}
+\mathcal{H}_k = \operatorname{span}({\Phi(x): x \in \mathcal{X}})=\left\{f(\cdot)=\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right): m \in \mathbf{N}, x_{i} \in \mathcal{X}, \alpha_{i} \in \mathbf{R}\right\} \tag{1}
+\end{equation}
+$$
+空间$\mathcal{X}$中的每个元素$x_i$都对应于一个函数$k(\cdot,x_i)=k_{x_i}(\cdot)$, 那么$\mathcal{X}$中的所有元素所产生的函数$\{k_{x_i}(\cdot)\}_{x_i \in \mathcal{X}}$ 可以span成一个<strong>Function Space</strong>, 如公式1所示， 这个function space中的每个function可以由&quot;basis functions&quot;$\{k_{x_i}(\cdot)\}_{x_i \in \mathcal{X}}$ 通过线性组合得到。那么</p>
+<p>$$f(\cdot)=\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right)$$</p>
+<p>可以表示kernel $k(\cdot, \cdot)$的RKHS中的每个function。 每个valid kernel都有一个RKHS $\mathcal{H}_k$与它对应。</p>
+<p>我们将MMD的候选函数集$\mathcal{F}$定义为某一个kernel $k(\cdot,\cdot)$所对应的RKHS $\mathcal{H}_k$中的函数，这样就可以满足所有候选函数都在$\mathcal{H}_k$中(足够多)，同时如果kernel是Gaussian Kernel, 相当于把样本空间映射到无限高维来做MD,更加准确。</p>
+<p>另外，我们限制范式norm$||f||_{\mathcal{H}_k} \leq 1$来避免上界取到无限大</p>
+<h2 id="回到mmd">回到MMD</h2>
+<p>已知$\mathcal{F}=\{f_1(\cdot), f_2(\cdot), \cdots \}$中的每个函数都是一个高斯核函数$k(\cdot,\cdot)$的RKHS中的函数，要从$\mathcal{H}_k$中选一个函数$f^*(\cdot)$，使得两个分布的样本间距离在$k(\cdot,\cdot)$的RKHS上最大。</p>
+<p>因为$f(\cdot)$是$\mathcal{H}_k$中的一个函数，那么$f(\cdot)$可以表示为$\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right)$, 此时，下式一定成立（参考<a href="https://jhuow.github.io/posts/rkhs_kernel/">这里</a>）：</p>
+<p>$$
+f(x) = \langle f(\cdot), k(\cdot, x) \rangle_{\mathcal{H}_k}
+$$
+$k(\cdot, x) = \Phi(x)$表示将$x$映射到空间$\mathcal{H}_{k}$上的值，即$x$在$\mathcal{H}_{k}$上的表示。 若$k$是Gaussian Kernel, 那么$k(\cdot, x)$就是$x$在无限维空间上的表示。</p>
+<p>连续空间中$\mathbf{E}_{x \sim p}[f(x)]$可以写为：
+$$
+\begin{equation}
+\begin{aligned}
+\mathbf{E}_{x \sim p}[f(x)] &amp;= \int_x p(x)f(x) dx\\
+&amp; = \int_x p(x) \langle f(\cdot), k(\cdot, x) \rangle_{\mathcal{H}_k} dx \\
+&amp;= \langle \int_x p(x)f(\cdot) dx, \int_x p(x)k(\cdot, x) dx \rangle_{\mathcal{H}_k}\\
+&amp;= \langle f(\cdot), \mu_p\rangle_{\mathcal{H}_k}
+\end{aligned}
+\end{equation}
+$$
+其中$\mu_p = \int_x p(x)k(\cdot, x) dx$.</p>
+<p>因此，MMD可以改写为：
+$$
+\begin{equation}
+\begin{aligned}
+\operatorname{MMD}(\mathrm{p}, \mathrm{q}, \mathcal{H})&amp;:=\sup_{f \in \mathcal{H},|f|_{\mathcal{H}} \leq 1}(\underset{\mathrm{p}(\boldsymbol{x})}{\mathbb{E}}[f(\boldsymbol{x})]-\underset{\mathrm{q}(\boldsymbol{y})}{\mathbb{E}}[f(\boldsymbol{y})])\\
+&amp;=\sup_{f \in \mathcal{H},|f|_{\mathcal{H}_k} \leq 1}\left(\left\langle\mu_{\mathrm{p}}-\mu_{\mathrm{q}}, f\right\rangle_{\mathcal{H}_k}\right)
+\end{aligned}
+\end{equation}
+$$
+利用内积性质：$\langle a, b \rangle \leq ||a|| ||b||$， 因为
+$$
+||f(\cdot)||_{\mathcal{H}_k}\leq 1
+$$
+,
+$$
+\left\langle\mu_{\mathrm{p}}-\mu_{\mathrm{q}}, f\right\rangle_{\mathcal{H}_k} \leq ||\mu_{\mathrm{p}}-\mu_{\mathrm{q}}||_{\mathcal{H}_k}||f||_{\mathcal{H}_k}
+$$
+Then,
+$$
+\sup_{f \in \mathcal{H},|f|_{\mathcal{H}_k} \leq 1}\left(\left\langle\mu_{\mathrm{p}}-\mu_{\mathrm{q}}, f\right\rangle_{\mathcal{H}_k}\right) =||\mu_{\mathrm{p}}-\mu_{\mathrm{q}}||_{\mathcal{H}_k}
+$$
+其中$\mu_p = \int_x p(x)k(\cdot, x) dx$, $\mu_q = \int_y q(y)k(\cdot, y) dy$ 分别表示分布的期望(均值)。 然而期望无法直接计算，因此用样本空间的均值代替分布的期望：
+$$
+\begin{equation}
+\begin{aligned}
+\mathrm{M M D}(p,q,\mathcal{H}_k) &amp; \approx \mathrm{M M D}(X,Y,\mathcal{F}_{\mathcal{H}_k})\\ &amp;=\left|\left|\frac{1}{n} \sum_{i=1}^{n} f(x_i)-\frac{1}{m} \sum_{j=1}^{m} f(x_j)\right|\right|_{\mathcal{H}_k}
+\end{aligned}
+\end{equation}
+$$</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+\mathrm{M M D}^2(p,q,\mathcal{H}_k) &amp; \approx \mathrm{M M D}^2(X,Y,\mathcal{F}_{\mathcal{H}_k})\\
+&amp;=\left|\left|\frac{1}{n} \sum_{i=1}^{n} f(x_i)-\frac{1}{m} \sum_{j=1}^{m} f(x_j)\right|\right|_{\mathcal{H}_k}^{2}\\
+&amp;= \left|\left|\frac{1}{n^{2}} \sum_{i}^{n} \sum_{i^{\prime}}^{n} \left\langle f(x_i),f(x_i^{\prime})\right\rangle-\frac{2}{n m} \sum_{i}^{n} \sum_{j}^{m} \left\langle f(x_i), f(y_j)\right\rangle+\frac{1}{m^{2}} \sum_{j}^{m} \sum_{j^{\prime}}^{m} \left\langle f(y_j), f(y_j^{\prime})\right\rangle\right|\right|_{\mathcal{H}_k} \\
+&amp; = \frac{1}{n^2} K_{x, x^\prime}-\frac{2}{nm} K_{x, y}+\frac{1}{m^{2}} K_{y, y^{\prime}}
+\end{aligned}
+\end{equation}
+$$</p>
+<p>令
+$$
+K=\begin{bmatrix} K_{x, x^{\prime}} &amp; K_{x, y} \\ K_{x, y}&amp; K_{y, y^{\prime}} \end{bmatrix}
+$$</p>
+<p>$$
+M=\begin{bmatrix}\frac{1}{n^{2}} &amp;-\frac{1}{n m} \\ -\frac{1}{n m}&amp; \frac{1}{m^{3}} \end{bmatrix}
+$$</p>
+<p>最后：
+$$
+\mathrm{M M D}^2(X,Y,\mathcal{F}_{\mathcal{H}_k}) = tr(KM)
+$$</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>谱聚类 Spectral Clustering 笔记</title>
       <link>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</link>

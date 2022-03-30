@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>papers on JhuoW‘s Notes</title>
+    <link>https://JhuoW.github.io/tags/papers/</link>
+    <description>Recent content in papers on JhuoW‘s Notes</description>
+    <image>
+      <url>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 29 Mar 2022 11:03:50 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/papers/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Blog, Tools and Survey</title>
+      <link>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</link>
+      <pubDate>Tue, 29 Mar 2022 11:03:50 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</guid>
+      <description>这篇笔记用于收藏别人的博客
+Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Bronstein   https://geometricdeeplearning.com/ Michael Bronstein   https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c Vitaly Kurin (Many Paper Notes)   https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html UvA DL Notebooks   https://graph-neural-networks.github.io/index.html GNN Books   http://prob140.org/sp17/textbook/ Probability for Data Science class at UC Berkeley   https://graphreason.github.io/schedule.html Learning and Reasoning with Graph-Structured Representations ICML 2019 Workshop   https://chuxuzhang.github.io/KDD21_Tutorial.html KDD2021 Tutorial: Data Efficient Learning on Graphs   http://songcy.</description>
+      <content:encoded><![CDATA[<p><strong>这篇笔记用于收藏别人的博客</strong></p>
+<h1 id="tech-blog">Tech Blog</h1>
+<table>
+<thead>
+<tr>
+<th>Blog</th>
+<th>Author</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="https://michael-bronstein.medium.com/">https://michael-bronstein.medium.com/</a></strong></td>
+<td>Michael Bronstein</td>
+</tr>
+<tr>
+<td><strong><a href="https://geometricdeeplearning.com/">https://geometricdeeplearning.com/</a></strong></td>
+<td>Michael Bronstein</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c">https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c</a></strong></td>
+<td>Vitaly Kurin (Many Paper Notes)</td>
+</tr>
+<tr>
+<td><strong><a href="https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html">https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html</a></strong></td>
+<td>UvA DL Notebooks</td>
+</tr>
+<tr>
+<td><strong><a href="https://graph-neural-networks.github.io/index.html">https://graph-neural-networks.github.io/index.html</a></strong></td>
+<td>GNN Books</td>
+</tr>
+<tr>
+<td><strong><a href="http://prob140.org/sp17/textbook/">http://prob140.org/sp17/textbook/</a></strong></td>
+<td><a href="http://prob140.org/">Probability for Data Science</a> class at UC Berkeley</td>
+</tr>
+<tr>
+<td><strong><a href="https://graphreason.github.io/schedule.html">https://graphreason.github.io/schedule.html</a></strong></td>
+<td><a href="https://graphreason.github.io/index.html">Learning and Reasoning with Graph-Structured Representations</a> ICML 2019 Workshop</td>
+</tr>
+<tr>
+<td><strong><a href="https://chuxuzhang.github.io/KDD21_Tutorial.html">https://chuxuzhang.github.io/KDD21_Tutorial.html</a></strong></td>
+<td>KDD2021 Tutorial: Data Efficient Learning on Graphs</td>
+</tr>
+<tr>
+<td><strong><a href="http://songcy.net/posts/">http://songcy.net/posts/</a></strong></td>
+<td>Changyue Song (Kernel)</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.cs.mcgill.ca/~wlh/grl_book/">https://www.cs.mcgill.ca/~wlh/grl_book/</a></strong></td>
+<td>William L. Hamilton</td>
+</tr>
+<tr>
+<td><strong><a href="https://kexue.fm/">https://kexue.fm/</a></strong></td>
+<td>BoJone</td>
+</tr>
+<tr>
+<td><strong><a href="https://danielegrattarola.github.io/blog/">https://danielegrattarola.github.io/blog/</a></strong></td>
+<td>Daniele Grattarola (EPFL)</td>
+</tr>
+<tr>
+<td><strong><a href="https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html">https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html</a></strong></td>
+<td>Google AI Blog</td>
+</tr>
+<tr>
+<td><strong><a href="https://zhiyuchen.com/blogs/">https://zhiyuchen.com/blogs/</a></strong></td>
+<td>Zhiyu Chen</td>
+</tr>
+<tr>
+<td><strong><a href="https://andreasloukas.blog/">https://andreasloukas.blog/</a></strong></td>
+<td>Andreas Loukas (EPFL)</td>
+</tr>
+<tr>
+<td><strong><a href="https://irhum.pubpub.org/pub/gnn/release/4">https://irhum.pubpub.org/pub/gnn/release/4</a></strong></td>
+<td>Understanding Graph Neural Networks</td>
+</tr>
+<tr>
+<td><strong><a href="https://lilianweng.github.io/">https://lilianweng.github.io/</a></strong></td>
+<td>Lilian Weng</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.zhihu.com/column/marlin">https://www.zhihu.com/column/marlin</a></strong></td>
+<td>深度学习与图网络</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/roboticcam/machine-learning-notes">https://github.com/roboticcam/machine-learning-notes</a></strong></td>
+<td>Yida Xu</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.dgl.ai/pages/index.html">https://www.dgl.ai/pages/index.html</a></strong></td>
+<td>DGL</td>
+</tr>
+<tr>
+<td><strong><a href="https://www.kexinhuang.com/tech-blog">https://www.kexinhuang.com/tech-blog</a></strong></td>
+<td>Kexin Huang</td>
+</tr>
+<tr>
+<td><strong><a href="https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8">https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8</a></strong></td>
+<td>Rishabh Anand</td>
+</tr>
+<tr>
+<td><strong><a href="https://saashanair.com/blog">https://saashanair.com/blog</a></strong></td>
+<td>Saasha Nair</td>
+</tr>
+<tr>
+<td><strong><a href="http://www.huaxiaozhuan.com/">http://www.huaxiaozhuan.com/</a></strong></td>
+<td>华校专</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/dglai/WWW20-Hands-on-Tutorial">https://github.com/dglai/WWW20-Hands-on-Tutorial</a></strong></td>
+<td>DGL</td>
+</tr>
+<tr>
+<td><strong><a href="https://blog.csdn.net/CSDNTianJi/article/details/104195306">https://blog.csdn.net/CSDNTianJi/article/details/104195306</a></strong></td>
+<td>Meng Liu</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tianyicui/pack">https://github.com/tianyicui/pack</a></td>
+<td>背包9講</td>
+</tr>
+<tr>
+<td><a href="https://www.fenghz.xyz/">https://www.fenghz.xyz/</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://sakigami-yang.me/2017/08/13/about-kernel-01/">https://sakigami-yang.me/2017/08/13/about-kernel-01/</a></td>
+<td>kernel</td>
+</tr>
+<tr>
+<td><a href="https://davidham3.github.io/blog">https://davidham3.github.io/blog</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://fenghz.github.io/index.html">https://fenghz.github.io/index.html</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://archwalker.github.io/">https://archwalker.github.io/</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="survey">Survey</h1>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="https://github.com/naganandy/graph-based-deep-learning-literature">https://github.com/naganandy/graph-based-deep-learning-literature</a></strong></td>
+<td><strong>links to conference publications in graph-based deep learning</strong> (Very, Very, Very Important)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/SherylHYX/pytorch_geometric_signed_directed">https://github.com/SherylHYX/pytorch_geometric_signed_directed</a></td>
+<td>PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning">https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning</a></td>
+<td>Paper Lists for Fair Graph Learning</td>
+</tr>
+<tr>
+<td><a href="https://github.com/thunlp/PromptPapers">https://github.com/thunlp/PromptPapers</a></td>
+<td>Must-read papers on prompt-based tuning for pre-trained language models.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zhao-tong/graph-data-augmentation-papers">https://github.com/zhao-tong/graph-data-augmentation-papers</a></td>
+<td>A curated list of graph data augmentation papers.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Thinklab-SJTU/ThinkMatch">https://github.com/Thinklab-SJTU/ThinkMatch</a></td>
+<td>Code &amp; pretrained models of novel deep graph matching methods.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/FLHonker/Awesome-Knowledge-Distillation">https://github.com/FLHonker/Awesome-Knowledge-Distillation</a></td>
+<td>Awesome Knowledge-Distillation. 分类整理的知识蒸馏paper(2014-2021)。</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zlpure/awesome-graph-representation-learning">https://github.com/zlpure/awesome-graph-representation-learning</a></td>
+<td>A curated list for awesome graph representation learning resources.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/basiralab/GNNs-in-Network-Neuroscience">https://github.com/basiralab/GNNs-in-Network-Neuroscience</a></td>
+<td>A review of papers proposing novel GNN methods with application to brain connectivity published in 2017-2020.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/flyingdoog/awesome-graph-explainability-papers">https://github.com/flyingdoog/awesome-graph-explainability-papers</a></td>
+<td>Papers about explainability of GNNs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yuanqidu/awesome-graph-generation">https://github.com/yuanqidu/awesome-graph-generation</a></td>
+<td>A curated list of graph generation papers and resources.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/awesome-decision-tree-papers">https://github.com/benedekrozemberczki/awesome-decision-tree-papers</a></td>
+<td>A collection of research papers on decision, classification and regression trees with implementations.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/AstraZeneca/awesome-explainable-graph-reasoning">https://github.com/AstraZeneca/awesome-explainable-graph-reasoning</a></td>
+<td>A collection of research papers and software related to explainability in graph machine learning.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/LirongWu/awesome-graph-self-supervised-learning">https://github.com/LirongWu/awesome-graph-self-supervised-learning</a></td>
+<td>Awesome Graph Self-Supervised Learning</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Chen-Cai-OSU/awesome-equivariant-network">https://github.com/Chen-Cai-OSU/awesome-equivariant-network</a></td>
+<td>Paper list for equivariant neural network</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mengliu1998/DL4DisassortativeGraphs">https://github.com/mengliu1998/DL4DisassortativeGraphs</a></td>
+<td>Papers about developing DL methods on disassortative graphs</td>
+</tr>
+<tr>
+<td><a href="https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers">https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers</a></td>
+<td>A curated list of graph reinforcement learning papers.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ChandlerBang/awesome-self-supervised-gnn">https://github.com/ChandlerBang/awesome-self-supervised-gnn</a></td>
+<td>Papers about pretraining and self-supervised learning on Graph Neural Networks (GNN).</td>
+</tr>
+<tr>
+<td><a href="https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks">https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks</a></td>
+<td>Paper Lists for Graph Neural Networks</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jwzhanggy/IFMLab_GNN">https://github.com/jwzhanggy/IFMLab_GNN</a></td>
+<td>Graph Neural Network Models from IFM Lab</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ChandlerBang/awesome-graph-attack-papers">https://github.com/ChandlerBang/awesome-graph-attack-papers</a></td>
+<td>Adversarial attacks and defenses on Graph Neural Networks.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/safe-graph/graph-adversarial-learning-literature">https://github.com/safe-graph/graph-adversarial-learning-literature</a></td>
+<td>A curated list of adversarial attacks and defenses papers on graph-structured data.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/awesome-graph-classification">https://github.com/benedekrozemberczki/awesome-graph-classification</a></td>
+<td>A collection of important graph embedding, classification and representation learning papers with implementations.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers">https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers</a></td>
+<td>A curated list of gradient boosting research papers with implementations.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/awesome-community-detection">https://github.com/benedekrozemberczki/awesome-community-detection</a></td>
+<td>A curated list of community detection research papers with implementations.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/giannifranchi/awesome-uncertainty-deeplearning">https://github.com/giannifranchi/awesome-uncertainty-deeplearning</a></td>
+<td>This repository contains a collection of surveys, datasets, papers, and codes, for predictive uncertainty estimation in deep learning models.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="useful-repotools">Useful Repo/Tools</h1>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://acronymify.com/">http://acronymify.com/</a></td>
+<td>Model Name</td>
+</tr>
+<tr>
+<td><a href="https://csacademy.com/app/graph_editor/">https://csacademy.com/app/graph_editor/</a></td>
+<td>Graph Editor</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/guanyingc/python_plot_utils">https://github.com/guanyingc/python_plot_utils</a></strong></td>
+<td>A simple code for plotting figure, colorbar, and cropping with python</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/guanyingc/latex_paper_writing_tips">https://github.com/guanyingc/latex_paper_writing_tips</a></strong></td>
+<td>Tips for Writing a Research Paper using LaTeX</td>
+</tr>
+<tr>
+<td><a href="https://github.com/JhuoW/Pytorch_Program_Templete">https://github.com/JhuoW/Pytorch_Program_Templete</a></td>
+<td>Pytorch Program Templete GNN</td>
+</tr>
+<tr>
+<td><a href="https://github.com/graph4ai/graph4nlp">https://github.com/graph4ai/graph4nlp</a></td>
+<td>Graph4nlp is the library for the easy use of Graph Neural Networks for NLP. Welcome to visit our DLG4NLP website (<a href="https://dlg4nlp.github.io/index.html">https://dlg4nlp.github.io/index.html</a>) for various learning resources!</td>
+</tr>
+<tr>
+<td><a href="https://github.com/benedekrozemberczki/pytorch_geometric_temporal">https://github.com/benedekrozemberczki/pytorch_geometric_temporal</a></td>
+<td>PyTorch Geometric Temporal: Spatiotemporal Signal Processing with Neural Machine Learning Models (CIKM 2021)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ysig/GraKeL">https://github.com/ysig/GraKeL</a></td>
+<td>A scikit-learn compatible library for graph kernels</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jajupmochi/graphkit-learn">https://github.com/jajupmochi/graphkit-learn</a></td>
+<td>A python package for graph kernels, graph edit distances, and graph pre-image problem.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+]]></content:encoded>
+    </item>
+    
+  </channel>
+</rss>

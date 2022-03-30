@@ -14,7 +14,7 @@
     <loc>https://JhuoW.github.io/categories/notebook/</loc>
     <lastmod>2022-03-29T11:03:50+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/paper/</loc>
+    <loc>https://JhuoW.github.io/tags/papers/</loc>
     <lastmod>2022-03-29T11:03:50+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/</loc>
@@ -44,6 +44,9 @@
     <loc>https://JhuoW.github.io/tags/networkx/</loc>
     <lastmod>2022-03-27T15:38:50+08:00</lastmod>
   </url><url>
+    <loc>https://JhuoW.github.io/categories/machine-leaning/</loc>
+    <lastmod>2022-03-27T10:45:08+08:00</lastmod>
+  </url><url>
     <loc>https://JhuoW.github.io/posts/mmd/</loc>
     <lastmod>2022-03-27T10:45:08+08:00</lastmod>
   </url><url>
@@ -56,13 +59,16 @@
     <loc>https://JhuoW.github.io/posts/rkhs_kernel/</loc>
     <lastmod>2022-03-26T22:39:20+08:00</lastmod>
   </url><url>
+    <loc>https://JhuoW.github.io/posts/diffpool/</loc>
+    <lastmod>2019-12-19T19:32:36+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/paper/</loc>
+    <lastmod>2019-12-19T19:32:36+00:00</lastmod>
+  </url><url>
     <loc>https://JhuoW.github.io/tags/algorithm/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/clustering/</loc>
-    <lastmod>2019-09-07T09:11:09+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/machine-leaning/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/spectral-clustering/</loc>
@@ -70,6 +76,18 @@
   </url><url>
     <loc>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</loc>
     <lastmod>2019-09-07T09:11:09+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/m-nmf/</loc>
+    <lastmod>2019-05-29T10:46:44+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/community-detection/</loc>
+    <lastmod>2019-05-29T10:46:44+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/mf/</loc>
+    <lastmod>2019-05-29T10:46:44+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/network-embedding/</loc>
+    <lastmod>2019-05-29T10:46:44+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/diffusion/</loc>
     <lastmod>2019-05-12T22:09:38+00:00</lastmod>
@@ -101,47 +119,41 @@
     <loc>https://JhuoW.github.io/categories/influence-maximization/</loc>
     <lastmod>2019-03-20T21:34:08+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/social-network-analysis/</loc>
-    <lastmod>2019-03-20T21:34:08+00:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/posts/2019-03-20-ic-lt/</loc>
     <lastmod>2019-03-20T21:34:08+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/bipartite-network/</loc>
     <lastmod>2019-03-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/network-embedding/</loc>
-    <lastmod>2019-03-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/sga/</loc>
-    <lastmod>2019-03-13T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/posts/bine/</loc>
     <lastmod>2019-03-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/attention/</loc>
-    <lastmod>2019-01-22T11:02:29+00:00</lastmod>
+    <loc>https://JhuoW.github.io/posts/graphgan/</loc>
+    <lastmod>2019-01-22T16:57:05+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/hawkes-process/</loc>
+    <loc>https://JhuoW.github.io/tags/gan/</loc>
+    <lastmod>2019-01-22T16:57:05+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/graph-softmax/</loc>
+    <lastmod>2019-01-22T16:57:05+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/attention/</loc>
     <lastmod>2019-01-22T11:02:29+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2019-01-22-ne-edge-labels/</loc>
     <lastmod>2019-01-22T11:02:29+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/computer-vision/</loc>
-    <lastmod>2018-04-02T15:43:44+00:00</lastmod>
+    <loc>https://JhuoW.github.io/tags/hawkes-process/</loc>
+    <lastmod>2019-01-22T11:02:29+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/sdne/</loc>
+    <lastmod>2019-01-21T15:34:36+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/contours/</loc>
     <lastmod>2018-04-02T15:43:44+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/pic-closed-edge/</loc>
     <lastmod>2018-04-02T15:43:44+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/project/</loc>
-    <lastmod>2018-04-02T15:43:44+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/deep-learning/</loc>
-    <lastmod>2018-01-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/optimizer/</loc>
     <lastmod>2018-01-28T00:00:00+00:00</lastmod>

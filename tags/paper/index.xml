@@ -10,325 +10,67 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 29 Mar 2022 11:03:50 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/paper/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Dec 2019 19:32:36 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/paper/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Blog, Tools and Survey</title>
-      <link>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</link>
-      <pubDate>Tue, 29 Mar 2022 11:03:50 +0000</pubDate>
+      <title>NIPS2018 《DiffPool： Hierarchical Graph Representation Learning with Differentiable Pooling》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/diffpool/</link>
+      <pubDate>Thu, 19 Dec 2019 19:32:36 +0000</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</guid>
-      <description>这篇笔记用于收藏别人的博客
-Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Bronstein   https://geometricdeeplearning.com/ Michael Bronstein   https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c Vitaly Kurin (Many Paper Notes)   https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html UvA DL Notebooks   https://graph-neural-networks.github.io/index.html GNN Books   http://prob140.org/sp17/textbook/ Probability for Data Science class at UC Berkeley   https://graphreason.github.io/schedule.html Learning and Reasoning with Graph-Structured Representations ICML 2019 Workshop   https://chuxuzhang.github.io/KDD21_Tutorial.html KDD2021 Tutorial: Data Efficient Learning on Graphs   http://songcy.</description>
-      <content:encoded><![CDATA[<p><strong>这篇笔记用于收藏别人的博客</strong></p>
-<h1 id="tech-blog">Tech Blog</h1>
-<table>
-<thead>
-<tr>
-<th>Blog</th>
-<th>Author</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><a href="https://michael-bronstein.medium.com/">https://michael-bronstein.medium.com/</a></strong></td>
-<td>Michael Bronstein</td>
-</tr>
-<tr>
-<td><strong><a href="https://geometricdeeplearning.com/">https://geometricdeeplearning.com/</a></strong></td>
-<td>Michael Bronstein</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c">https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c</a></strong></td>
-<td>Vitaly Kurin (Many Paper Notes)</td>
-</tr>
-<tr>
-<td><strong><a href="https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html">https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html</a></strong></td>
-<td>UvA DL Notebooks</td>
-</tr>
-<tr>
-<td><strong><a href="https://graph-neural-networks.github.io/index.html">https://graph-neural-networks.github.io/index.html</a></strong></td>
-<td>GNN Books</td>
-</tr>
-<tr>
-<td><strong><a href="http://prob140.org/sp17/textbook/">http://prob140.org/sp17/textbook/</a></strong></td>
-<td><a href="http://prob140.org/">Probability for Data Science</a> class at UC Berkeley</td>
-</tr>
-<tr>
-<td><strong><a href="https://graphreason.github.io/schedule.html">https://graphreason.github.io/schedule.html</a></strong></td>
-<td><a href="https://graphreason.github.io/index.html">Learning and Reasoning with Graph-Structured Representations</a> ICML 2019 Workshop</td>
-</tr>
-<tr>
-<td><strong><a href="https://chuxuzhang.github.io/KDD21_Tutorial.html">https://chuxuzhang.github.io/KDD21_Tutorial.html</a></strong></td>
-<td>KDD2021 Tutorial: Data Efficient Learning on Graphs</td>
-</tr>
-<tr>
-<td><strong><a href="http://songcy.net/posts/">http://songcy.net/posts/</a></strong></td>
-<td>Changyue Song (Kernel)</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.cs.mcgill.ca/~wlh/grl_book/">https://www.cs.mcgill.ca/~wlh/grl_book/</a></strong></td>
-<td>William L. Hamilton</td>
-</tr>
-<tr>
-<td><strong><a href="https://kexue.fm/">https://kexue.fm/</a></strong></td>
-<td>BoJone</td>
-</tr>
-<tr>
-<td><strong><a href="https://danielegrattarola.github.io/blog/">https://danielegrattarola.github.io/blog/</a></strong></td>
-<td>Daniele Grattarola (EPFL)</td>
-</tr>
-<tr>
-<td><strong><a href="https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html">https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html</a></strong></td>
-<td>Google AI Blog</td>
-</tr>
-<tr>
-<td><strong><a href="https://zhiyuchen.com/blogs/">https://zhiyuchen.com/blogs/</a></strong></td>
-<td>Zhiyu Chen</td>
-</tr>
-<tr>
-<td><strong><a href="https://andreasloukas.blog/">https://andreasloukas.blog/</a></strong></td>
-<td>Andreas Loukas (EPFL)</td>
-</tr>
-<tr>
-<td><strong><a href="https://irhum.pubpub.org/pub/gnn/release/4">https://irhum.pubpub.org/pub/gnn/release/4</a></strong></td>
-<td>Understanding Graph Neural Networks</td>
-</tr>
-<tr>
-<td><strong><a href="https://lilianweng.github.io/">https://lilianweng.github.io/</a></strong></td>
-<td>Lilian Weng</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.zhihu.com/column/marlin">https://www.zhihu.com/column/marlin</a></strong></td>
-<td>深度学习与图网络</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/roboticcam/machine-learning-notes">https://github.com/roboticcam/machine-learning-notes</a></strong></td>
-<td>Yida Xu</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.dgl.ai/pages/index.html">https://www.dgl.ai/pages/index.html</a></strong></td>
-<td>DGL</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.kexinhuang.com/tech-blog">https://www.kexinhuang.com/tech-blog</a></strong></td>
-<td>Kexin Huang</td>
-</tr>
-<tr>
-<td><strong><a href="https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8">https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8</a></strong></td>
-<td>Rishabh Anand</td>
-</tr>
-<tr>
-<td><strong><a href="https://saashanair.com/blog">https://saashanair.com/blog</a></strong></td>
-<td>Saasha Nair</td>
-</tr>
-<tr>
-<td><strong><a href="http://www.huaxiaozhuan.com/">http://www.huaxiaozhuan.com/</a></strong></td>
-<td>华校专</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/dglai/WWW20-Hands-on-Tutorial">https://github.com/dglai/WWW20-Hands-on-Tutorial</a></strong></td>
-<td>DGL</td>
-</tr>
-<tr>
-<td><strong><a href="https://blog.csdn.net/CSDNTianJi/article/details/104195306">https://blog.csdn.net/CSDNTianJi/article/details/104195306</a></strong></td>
-<td>Meng Liu</td>
-</tr>
-<tr>
-<td><a href="https://github.com/tianyicui/pack">https://github.com/tianyicui/pack</a></td>
-<td>背包9講</td>
-</tr>
-<tr>
-<td><a href="https://www.fenghz.xyz/">https://www.fenghz.xyz/</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://sakigami-yang.me/2017/08/13/about-kernel-01/">https://sakigami-yang.me/2017/08/13/about-kernel-01/</a></td>
-<td>kernel</td>
-</tr>
-<tr>
-<td><a href="https://davidham3.github.io/blog">https://davidham3.github.io/blog</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://fenghz.github.io/index.html">https://fenghz.github.io/index.html</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://archwalker.github.io/">https://archwalker.github.io/</a></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h1 id="survey">Survey</h1>
-<table>
-<thead>
-<tr>
-<th>Repo</th>
-<th>Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><a href="https://github.com/naganandy/graph-based-deep-learning-literature">https://github.com/naganandy/graph-based-deep-learning-literature</a></strong></td>
-<td><strong>links to conference publications in graph-based deep learning</strong> (Very, Very, Very Important)</td>
-</tr>
-<tr>
-<td><a href="https://github.com/SherylHYX/pytorch_geometric_signed_directed">https://github.com/SherylHYX/pytorch_geometric_signed_directed</a></td>
-<td>PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning">https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning</a></td>
-<td>Paper Lists for Fair Graph Learning</td>
-</tr>
-<tr>
-<td><a href="https://github.com/thunlp/PromptPapers">https://github.com/thunlp/PromptPapers</a></td>
-<td>Must-read papers on prompt-based tuning for pre-trained language models.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/zhao-tong/graph-data-augmentation-papers">https://github.com/zhao-tong/graph-data-augmentation-papers</a></td>
-<td>A curated list of graph data augmentation papers.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/Thinklab-SJTU/ThinkMatch">https://github.com/Thinklab-SJTU/ThinkMatch</a></td>
-<td>Code &amp; pretrained models of novel deep graph matching methods.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/FLHonker/Awesome-Knowledge-Distillation">https://github.com/FLHonker/Awesome-Knowledge-Distillation</a></td>
-<td>Awesome Knowledge-Distillation. 分类整理的知识蒸馏paper(2014-2021)。</td>
-</tr>
-<tr>
-<td><a href="https://github.com/zlpure/awesome-graph-representation-learning">https://github.com/zlpure/awesome-graph-representation-learning</a></td>
-<td>A curated list for awesome graph representation learning resources.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/basiralab/GNNs-in-Network-Neuroscience">https://github.com/basiralab/GNNs-in-Network-Neuroscience</a></td>
-<td>A review of papers proposing novel GNN methods with application to brain connectivity published in 2017-2020.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/flyingdoog/awesome-graph-explainability-papers">https://github.com/flyingdoog/awesome-graph-explainability-papers</a></td>
-<td>Papers about explainability of GNNs</td>
-</tr>
-<tr>
-<td><a href="https://github.com/yuanqidu/awesome-graph-generation">https://github.com/yuanqidu/awesome-graph-generation</a></td>
-<td>A curated list of graph generation papers and resources.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-decision-tree-papers">https://github.com/benedekrozemberczki/awesome-decision-tree-papers</a></td>
-<td>A collection of research papers on decision, classification and regression trees with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/AstraZeneca/awesome-explainable-graph-reasoning">https://github.com/AstraZeneca/awesome-explainable-graph-reasoning</a></td>
-<td>A collection of research papers and software related to explainability in graph machine learning.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/LirongWu/awesome-graph-self-supervised-learning">https://github.com/LirongWu/awesome-graph-self-supervised-learning</a></td>
-<td>Awesome Graph Self-Supervised Learning</td>
-</tr>
-<tr>
-<td><a href="https://github.com/Chen-Cai-OSU/awesome-equivariant-network">https://github.com/Chen-Cai-OSU/awesome-equivariant-network</a></td>
-<td>Paper list for equivariant neural network</td>
-</tr>
-<tr>
-<td><a href="https://github.com/mengliu1998/DL4DisassortativeGraphs">https://github.com/mengliu1998/DL4DisassortativeGraphs</a></td>
-<td>Papers about developing DL methods on disassortative graphs</td>
-</tr>
-<tr>
-<td><a href="https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers">https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers</a></td>
-<td>A curated list of graph reinforcement learning papers.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/ChandlerBang/awesome-self-supervised-gnn">https://github.com/ChandlerBang/awesome-self-supervised-gnn</a></td>
-<td>Papers about pretraining and self-supervised learning on Graph Neural Networks (GNN).</td>
-</tr>
-<tr>
-<td><a href="https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks">https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks</a></td>
-<td>Paper Lists for Graph Neural Networks</td>
-</tr>
-<tr>
-<td><a href="https://github.com/jwzhanggy/IFMLab_GNN">https://github.com/jwzhanggy/IFMLab_GNN</a></td>
-<td>Graph Neural Network Models from IFM Lab</td>
-</tr>
-<tr>
-<td><a href="https://github.com/ChandlerBang/awesome-graph-attack-papers">https://github.com/ChandlerBang/awesome-graph-attack-papers</a></td>
-<td>Adversarial attacks and defenses on Graph Neural Networks.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/safe-graph/graph-adversarial-learning-literature">https://github.com/safe-graph/graph-adversarial-learning-literature</a></td>
-<td>A curated list of adversarial attacks and defenses papers on graph-structured data.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-graph-classification">https://github.com/benedekrozemberczki/awesome-graph-classification</a></td>
-<td>A collection of important graph embedding, classification and representation learning papers with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers">https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers</a></td>
-<td>A curated list of gradient boosting research papers with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-community-detection">https://github.com/benedekrozemberczki/awesome-community-detection</a></td>
-<td>A curated list of community detection research papers with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/giannifranchi/awesome-uncertainty-deeplearning">https://github.com/giannifranchi/awesome-uncertainty-deeplearning</a></td>
-<td>This repository contains a collection of surveys, datasets, papers, and codes, for predictive uncertainty estimation in deep learning models.</td>
-</tr>
-</tbody>
-</table>
-<h1 id="useful-repotools">Useful Repo/Tools</h1>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Info</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="http://acronymify.com/">http://acronymify.com/</a></td>
-<td>Model Name</td>
-</tr>
-<tr>
-<td><a href="https://csacademy.com/app/graph_editor/">https://csacademy.com/app/graph_editor/</a></td>
-<td>Graph Editor</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/guanyingc/python_plot_utils">https://github.com/guanyingc/python_plot_utils</a></strong></td>
-<td>A simple code for plotting figure, colorbar, and cropping with python</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/guanyingc/latex_paper_writing_tips">https://github.com/guanyingc/latex_paper_writing_tips</a></strong></td>
-<td>Tips for Writing a Research Paper using LaTeX</td>
-</tr>
-<tr>
-<td><a href="https://github.com/JhuoW/Pytorch_Program_Templete">https://github.com/JhuoW/Pytorch_Program_Templete</a></td>
-<td>Pytorch Program Templete GNN</td>
-</tr>
-<tr>
-<td><a href="https://github.com/graph4ai/graph4nlp">https://github.com/graph4ai/graph4nlp</a></td>
-<td>Graph4nlp is the library for the easy use of Graph Neural Networks for NLP. Welcome to visit our DLG4NLP website (<a href="https://dlg4nlp.github.io/index.html">https://dlg4nlp.github.io/index.html</a>) for various learning resources!</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/pytorch_geometric_temporal">https://github.com/benedekrozemberczki/pytorch_geometric_temporal</a></td>
-<td>PyTorch Geometric Temporal: Spatiotemporal Signal Processing with Neural Machine Learning Models (CIKM 2021)</td>
-</tr>
-<tr>
-<td><a href="https://github.com/ysig/GraKeL">https://github.com/ysig/GraKeL</a></td>
-<td>A scikit-learn compatible library for graph kernels</td>
-</tr>
-<tr>
-<td><a href="https://github.com/jajupmochi/graphkit-learn">https://github.com/jajupmochi/graphkit-learn</a></td>
-<td>A python package for graph kernels, graph edit distances, and graph pre-image problem.</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+      <guid>https://JhuoW.github.io/posts/diffpool/</guid>
+      <description>论文地址： DiffPool
+Introduction 传统的GNN算法在Node-level的任务如节点分类、链路预测上有着较好的效果。但是，现有的GNN方法由于其存在平面化的局限性，因此无法学习图的层级表示（意味着无法预测整个图的标签），顾无法实现图分类任务。举个栗子，一个Graph，可以分成600个subgraph，每个节点都存在于其中的某个subgraph（一个节点只存在于一个subgraph中），每个subgraph拥有一个标签，如何预测subgraph的标签是这篇文章主要想解决的问题。传统的GNN的图分类方法都是为Graph中的所有节点生成Embedding，然后将对这些Embedding做全局聚合（池化），如简单的把属于同一个subgraph的节点求和或者输入到MLP中生成一个标签向量来表示整个subgraph，但是这样可能忽略的图的层级结构信息。
+本文提出了一种端到端的可微可微图池化模块DiffPool，原理如下图所示：
+在深度GNN中的每层中为节点学习可微的软簇分配，将节点映射到簇中，这些簇作为新的节点作为下一层GNN的输入。上图的Original Network部分是一个Subgraph，传统的方法是直接求出这个Subgraph中每个节点的Embedding，然后相加或输入到一个神经网络中，得到一个预测向量，这种方法可以称为“全局池化”。DiffPool中，假设第$l$层的输入是$1000$个簇（如果是第一层输入就是1000个节点），我们先设置第$l+1$层需要输入的簇的个数（假设为$100$），也就是第$l$层输出的簇个数，然后在$l$层中通过一个分配矩阵将$1000$个簇做合并，合并成100个“节点”，然后将这100个节点输入到$l+1$层中，最后图中的节点数逐渐减少，最后，图中的节点只有一个，这个节点的embedding就是整个图的表示，然后将图输入到一个多层感知机MLP中，得到预测向量，在于真值的one-hot向量做cross-entropy，得到Loss。
+Model：DiffPool 一个Graph表示为$\mathcal{G} = (A,F)$，其中$A \in {0,1}^{n \times n}$是Graph的邻接矩阵，$F \in \mathbb{R}^{n \times d}$表示节点特征矩阵，每个节点有$d$维的特征。给定一个带标签的子图集$\mathcal{D}=\left\{\left(G_{1}, y_{1}\right),\left(G_{2}, y_{2}\right), \ldots\right\}$， 其中 $y_{i} \in \mathcal{Y}$表示每个子图$G_i \in \mathcal{G}$的标签，任务目标是寻找映射$f: \mathcal{G} \rightarrow \mathcal{Y}$，将图映射到标签集。我们需要一个过程来将每个子图转化为一个有限维度的向量$\mathbb{R}^D$。
+Graph Neural Networks 一般，GNN可以表示成&amp;quot;Message Passing&amp;quot;框架： $$ H^{(k)}=M\left(A, H^{(k-1)} ; \theta^{(k)}\right) $$ 其中$H^{(k)} \in \mathbb{R}^{n \times d}$表示GNN迭代$k$次后的node embedding，$M$是一个Message扩散函数，由邻接矩阵$A$和一个可训练的参数$\theta^{(k)}$决定。$H^{(k-1)}$是由前一个message passing过程生成的node embedding。当$k = 1$时，第一个GNN的输入为$H^{(0)}$是原始的节点特征$H^{(0)} = F$。
+GNN的一个主要目标是设计一个Message Passage函数$M$，GCN（kipf.2016）是一种流行的GNN，$M$的实现方式是将线性变换和ReLU非线性激活结合起来: $$ H^{(k)}=M\left(A, H^{(k-1)} ; W^{(k)}\right)=\operatorname{ReLU}\left(\tilde{D}^{-\frac{1}{2}} \tilde{A} \tilde{D}^{-\frac{1}{2}} H^{(k-1)} W^{(k-1)}\right) $$ 其中，$\tilde{A} = A+I$是一个加上自环的邻接矩阵，$\tilde{D}=\sum_{j} \tilde{A}_{i j}$是$\tilde{A}$的度矩阵，$W^{(k)} \in \mathbb{R}^{d \times d}$是一个可训练的权重矩阵，$W$与节点个数以及每个节点的度无关，可以看做一个特征增强矩阵，用来规定GCN的输出维度。</description>
+      <content:encoded><![CDATA[<p>论文地址： <a href="https://dl.acm.org/doi/pdf/10.5555/3327345.3327389">DiffPool</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>传统的GNN算法在Node-level的任务如节点分类、链路预测上有着较好的效果。但是，现有的GNN方法由于其存在平面化的局限性，因此无法学习图的层级表示（意味着无法预测整个图的标签），顾无法实现图分类任务。举个栗子，一个Graph，可以分成600个subgraph，每个节点都存在于其中的某个subgraph（一个节点只存在于一个subgraph中），每个subgraph拥有一个标签，如何预测subgraph的标签是这篇文章主要想解决的问题。传统的GNN的图分类方法都是为Graph中的所有节点生成Embedding，然后将对这些Embedding做全局聚合（池化），如简单的把属于同一个subgraph的节点求和或者输入到MLP中生成一个标签向量来表示整个subgraph，但是这样可能忽略的图的层级结构信息。</p>
+<p>本文提出了一种端到端的可微可微图池化模块<strong>DiffPool</strong>，原理如下图所示：</p>
+<p><img loading="lazy" src="/posts/2019-12-19-diffpool/1.png" alt=""  />
+</p>
+<p>在深度GNN中的每层中为节点学习可微的软簇分配，将节点映射到簇中，这些簇作为新的节点作为下一层GNN的输入。上图的Original Network部分是一个Subgraph，传统的方法是直接求出这个Subgraph中每个节点的Embedding，然后相加或输入到一个神经网络中，得到一个预测向量，这种方法可以称为“全局池化”。<strong>DiffPool</strong>中，假设第$l$层的输入是$1000$个簇（如果是第一层输入就是1000个节点），我们先设置第$l+1$层需要输入的簇的个数（假设为$100$），也就是第$l$层输出的簇个数，然后在$l$层中通过一个分配矩阵将$1000$个簇做合并，合并成100个“节点”，然后将这100个节点输入到$l+1$层中，最后图中的节点数逐渐减少，最后，图中的节点只有一个，这个节点的embedding就是整个图的表示，然后将图输入到一个多层感知机MLP中，得到预测向量，在于真值的one-hot向量做cross-entropy，得到Loss。</p>
+<h1 id="modeldiffpool">Model：DiffPool</h1>
+<p>一个Graph表示为$\mathcal{G} = (A,F)$，其中$A \in {0,1}^{n \times n}$是Graph的邻接矩阵，$F \in \mathbb{R}^{n \times d}$表示节点特征矩阵，每个节点有$d$维的特征。给定一个带标签的子图集$\mathcal{D}=\left\{\left(G_{1}, y_{1}\right),\left(G_{2}, y_{2}\right), \ldots\right\}$， 其中 $y_{i} \in \mathcal{Y}$表示每个子图$G_i \in \mathcal{G}$的标签，任务目标是寻找映射$f: \mathcal{G} \rightarrow \mathcal{Y}$，将图映射到标签集。我们需要一个过程来将每个子图转化为一个有限维度的向量$\mathbb{R}^D$。</p>
+<h2 id="graph-neural-networks">Graph Neural Networks</h2>
+<p>一般，GNN可以表示成&quot;Message Passing&quot;框架：
+$$
+H^{(k)}=M\left(A, H^{(k-1)} ; \theta^{(k)}\right)
+$$
+其中$H^{(k)} \in \mathbb{R}^{n \times d}$表示GNN迭代$k$次后的node embedding，$M$是一个Message扩散函数，由邻接矩阵$A$和一个可训练的参数$\theta^{(k)}$决定。$H^{(k-1)}$是由前一个message passing过程生成的node embedding。当$k = 1$时，第一个GNN的输入为$H^{(0)}$是原始的节点特征$H^{(0)} = F$。</p>
+<p>GNN的一个主要目标是设计一个Message Passage函数$M$，GCN（kipf.2016）是一种流行的GNN，$M$的实现方式是将线性变换和ReLU非线性激活结合起来:
+$$
+H^{(k)}=M\left(A, H^{(k-1)} ; W^{(k)}\right)=\operatorname{ReLU}\left(\tilde{D}^{-\frac{1}{2}} \tilde{A} \tilde{D}^{-\frac{1}{2}} H^{(k-1)} W^{(k-1)}\right)
+$$
+其中，$\tilde{A} = A+I$是一个加上自环的邻接矩阵，$\tilde{D}=\sum_{j} \tilde{A}_{i j}$是$\tilde{A}$的度矩阵，$W^{(k)} \in \mathbb{R}^{d \times d}$是一个可训练的权重矩阵，$W$与节点个数以及每个节点的度无关，可以看做一个特征增强矩阵，用来规定GCN的输出维度。</p>
+<p>一个完整的GNN模型会迭代$K$次来输出最终的node embedding$Z = H^{(K)} \in \mathbb{R}^{n \times d}$。对于GCN，GAT，GraphSage，$K$一般取2-6。文中为了简单表示，忽略了GNN的内部结构，用$Z=GNN(A,X)$来表示一个任意的执行$K$次的GNN模块。</p>
+<h2 id="gnn和池化层的堆叠">GNN和池化层的堆叠</h2>
+<p>这篇工作的目标是定义一个一般的，端到端的可微策略，允许以层级的方式堆叠多个GNN模块。给定原始的邻接矩阵$A \in \mathbb{R}^{n \times n}$，$Z=GNN(A,X)$十一GNN模块的输出（假设这个GNN模块做了3次迭代）。我们需要定义一个策略来输出一个新的粗化图，这个粗化图包含$m$个节点，$m &lt; n$，它的邻接矩阵一个带权重的邻接矩阵$A&rsquo; \in \mathbb{R}^{m \times m}$，同时，输出node embedding $Z&rsquo; \in \mathbb{R}^{m \times d}$。这个粗化图（$m$个节点的图）作为下一层GNN的输入 （将$A&rsquo;$和$Z&rsquo;$输入下一个GNN层）。最后所有节点粗化为只有一个节点的图，这个节点的embedding就是这个subgraph的表示。因此，目标为：如何使用上一层GNN的输出结果，对节点做合并或池化，是的图中的节点减少，再将粗化的图输入到下一个GNN中。</p>
+<h2 id="基于可学习分配的可微分池化">基于可学习分配的可微分池化</h2>
+<p><strong>DiffPool</strong>通过对一个GNN模块的输出学习一个聚类分配矩阵来解决这个问题。可微池化层根据$l-1$层的GNN模块（假设是一个3次迭代的GNN模块）产生的node embedding来对节点做合并，从而产生一个粗化图，这个粗化图作为$l$层GNN模块的输入，最终，整个subgraph被粗化为一个cluster，可以看做一个节点。</p>
+<h3 id="用分配矩阵进行池化">用分配矩阵进行池化</h3>
+<p>$S^{(l)} \in \mathbb{R}^{n_{l} \times n_{l+1}}$表示第$l$层的聚类分配矩阵，$S^{(l)}$的每一行表示第l层的每个节点（cluster）,每一列表示$l+1$层的每个cluster（节点）。$S^{(l)}_{ij}$表示第$l$层的节点$i$属于第$l+1$层cluster $j$的概率，所以$S^{(l)}$是个概率矩阵。</p>
+<p>假如已经有了第$l$层的节点分配矩阵$S^{(l)}$，将第$l$层的邻接矩阵表示为$A^{(l)}$，将第$l$层GNN模块的输出节点特征（node embedding）表示为$Z^{(l)}$，通过DiffPool层可以将第$l$层的图粗化为$\left(A^{(l+1)}, X^{(l+1)}\right)=\operatorname{DIFFPOOL}\left(A^{(l)}, Z^{(l)}\right)$，其中，$A^{(l+1)}$是$l+1$层图的邻接矩阵，是一个粗化后的图，$X^{(l+1)}$是下一层的输入特征（node/cluster embedding）：
+$$
+\begin{aligned}
+&amp;X^{(l+1)}=S^{(l)^{T}} Z^{(l)} \in \mathbb{R}^{n_{l+1} \times d}\
+&amp;A^{(l+1)}=S^{(l)^{T}} A^{(l)} S^{(l)} \in \mathbb{R}^{n_{l+1} \times n_{l+1}}
+\end{aligned}
+$$
+上面第一个公式将第$l$层节点嵌入$Z^{(l)}$转化为下一层的输入特征$X^{(l+1)}$。第二个公式将第$l$层的邻接矩阵转化为$l+1$层的粗化图邻接矩阵$A^{(l+1)}$。$n_{l+1}$是$l+1$层节点（cluster）的数量。最后，将$A^{(l+1)}$和$X^{(l+1)}$作为下一层GNN的输入。这样图中的节点就由$n_l$个下降到$n_{l+1}$个。</p>
+<h3 id="学习分配矩阵s">学习分配矩阵S</h3>
+<p>第$l$层的输入特征$X^{(l)}$，用一个GNN模块（代码中是一个3层的GCN）得到node embedding：
+$$
+Z^{(l)}=\mathrm{GNN}_{l, \text { embed }}\left(A^{(l)}, X^{(l)}\right)
+$$
+用另外一个GNN模块（代码中是一个3层的GCN）在用一个softmax转化为概率矩阵来的到节点分配矩阵：
+$$
+S^{(l)}=\operatorname{softmax}\left(\mathrm{GNN}_{l, \mathrm{pool}}\left(A^{(l)}, X^{(l)}\right)\right)
+$$
+$S^{(l)}$是一个$n_l \times n_{l+1}$的全链接矩阵，$S^{(l)}_{ij}$表示第$l$层的节点$i$属于第$l+1$层cluster $j$的概率。</p>
+<p>$l=0$时，第一层GNN的输入是subgraph的原始邻接矩阵$A$和特征矩阵$F$，倒数第二层$l=L-1$时的分配矩阵$S^{(L-1)}$是一个全1向量，那么最后将所以节点归为一类，产生一个代表整个图的嵌入向量。</p>
+<p>所以，把图节点的合并过程称为分层的图表示学习（Hierarchical Graph Representation Learning）。</p>
 ]]></content:encoded>
     </item>
     

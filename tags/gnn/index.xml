@@ -71,7 +71,7 @@ $$
 \hat{\mu}_{\mathcal{G}}=\frac{1}{s} \sum_{i=1}^{s} \phi\left(\mathbf{z}_{i}\right), \quad \hat{\mu}_{\mathcal{H}}=\frac{1}{s} \sum_{i=1}^{s} \phi\left(\mathbf{h}_{i}\right)
 $$
 其中$\phi(\mathbf{z}_{i})$,$\phi(\mathbf{h}_{i})$分别表示 将向量$\mathbf{z}_{i}$和$\mathbf{h}_{i}$ 映射到一个RKHS中，所以$\phi(\cdot)$是一个kernel $k(\cdot, \cdot)$的feature map函数, i.e., $k(u,v) = \langle \phi(u), \phi(v) \rangle$。$\phi(u) = k(\cdot, u)$是kernel $k$对应RKHS中的一个函数（向量）。 所以只要确定一个kernel $k(\cdot, \cdot)$，上面的$\widehat{MMD}(P_{\mathcal{G}}, P_{\mathcal{H}})$就可以求出确定值，表示两个distribution间的距离。 但是知道两个分布在RKHS中的距离还不够，需要知道这两个分布的在RKHS间的均值距离还不够， 我们需要知道这两个分布在RKHS中被映射成了什么向量，即我们要求$\phi(\cdot)$。</p>
-<p>假设我们已经有了一个kernel， 这个kernel对应的映射函数是一个很等映射，那么$\phi(u)=u$, 分布样本在RKHS中的表示就是他们本身，即 $\phi(\mathbf{z}_{i})=\mathbf{z}_{i}$, $\phi(\mathbf{h}_{i})=\mathbf{h}_{i}$。那么这分布的表示向量就是他们的样本在RKHS上的平均（均值平均误差）：
+<p>假设我们已经有了一个kernel， 这个kernel对应的映射函数是一个恒等映射，那么$\phi(u)=u$, 分布样本在RKHS中的表示就是他们本身，即 $\phi(\mathbf{z}_{i})=\mathbf{z}_{i}$, $\phi(\mathbf{h}_{i})=\mathbf{h}_{i}$。那么这分布的表示向量就是他们的样本在RKHS上的平均（均值平均误差）：
 $$
 \hat{\mu}_{\mathcal{G}}=\frac{1}{s} \sum_{i=1}^{s} \mathbf{z}_{i}, \quad \hat{\mu}_{\mathcal{H}}=\frac{1}{s} \sum_{i=1}^{s} \mathbf{h}_{i}
 $$

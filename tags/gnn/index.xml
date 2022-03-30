@@ -10,7 +10,145 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 28 Mar 2022 23:44:01 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/gnn/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 30 Mar 2022 13:51:57 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/gnn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NeurIPS2021 《Neo-GNNs:Neighborhood Overlap-aware Graph Neural Networks for Link Prediction》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/neo-gnns/</link>
+      <pubDate>Wed, 30 Mar 2022 13:51:57 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/neo-gnns/</guid>
+      <description>Paper
+Introduction 由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure。
+ Link prediction heuristics: 基于预定义的假设的链路预测。举几个例子[1]：
+  Common Neighbors (CN)： 公共邻居较多的节点存在边（heuristic），则需要计算节点对间的公共邻居。 Preferential Attachment (PA): 一个节点当前的连接越多，那么它越有可能接受到新的连接（heuristic）,这需要统计每个节点的度, i.e., $P A(x, y)=|N(x)| *|N(y)|$ Katz Index heuristic: $\sum^{\infty}_{\ell=1} \beta^{\ell}|walks(x,y)=\ell|$ 表示从$x$到$y$的所有路径数， $0&amp;lt;\beta&amp;lt;1$， 表示越长的路径权重越低。 katz Index作为Link prediction heuristic假设来作为边是否存在的预测。  本文提出了Neighborhood Overlap-aware Graph Neural Networks (Neo-GNNs)来从邻接矩阵中学习结构信息，并且估计重叠多跳邻域用于link prediction。</description>
+      <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=Ic9vRN3VpZ">Paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 <strong>Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure</strong>。</p>
+<blockquote>
+<p><strong>Link prediction heuristics:</strong>  基于预定义的假设的链路预测。举几个例子[1]：</p>
+</blockquote>
+<ol>
+<li>Common Neighbors (CN)： 公共邻居较多的节点存在边（heuristic），则需要计算节点对间的公共邻居。</li>
+<li>Preferential Attachment (PA): 一个节点当前的连接越多，那么它越有可能接受到新的连接（heuristic）,这需要统计每个节点的度, i.e., $P A(x, y)=|N(x)| *|N(y)|$</li>
+<li>Katz Index heuristic: $\sum^{\infty}_{\ell=1} \beta^{\ell}|walks(x,y)=\ell|$ 表示从$x$到$y$的所有路径数， $0&lt;\beta&lt;1$， 表示越长的路径权重越低。 katz Index作为Link prediction heuristic假设来作为边是否存在的预测。</li>
+</ol>
+<p>本文提出了Neighborhood Overlap-aware Graph Neural Networks (Neo-GNNs)来从邻接矩阵中学习结构信息，并且估计重叠多跳邻域用于link prediction。</p>
+<h1 id="preliminaries">Preliminaries</h1>
+<h2 id="gnns-for-link-prediction">GNNs for Link Prediction</h2>
+<p>$$
+\hat{y}_{i j}=\sigma\left(s\left(h_{i}^{(L)}, h_{j}^{(L)}\right)\right)
+$$</p>
+<p>其中$s(\cdot, \cdot)$ 是一个相似度计算函数 e.g., inner product or MLP. $h_{i}^{(L)}$为 $v_i$的 node embedding.</p>
+<h2 id="neighborhood-overlap-based-heuristic-methods">Neighborhood Overlap-based Heuristic Methods</h2>
+<p>就是上面提到的CN heuristic。Common Neighbors 通过count节点的公共邻居来衡量两个节点之间的链路存在分数$\mathrm{link}(u,v)$：
+$$
+S_{C N}(u, v)=|\mathcal{N}(u) \cap \mathcal{N}(v)|=\sum_{k \in \mathcal{N}(u) \cap \mathcal{N}(v)} 1
+$$
+CN的缺点在于不能衡量公共节点的权重。</p>
+<p>Resource Allocation (RA) 认为度叫小的节点因更加重要， 所以用度的倒数来加权公共节点：
+$$
+S_{R A}(u, v)=\sum_{k \in \mathcal{N}(u) \cap \mathcal{N}(v)} \frac{1}{d_{k}}
+$$</p>
+<p>Adamic-Adar：通过使用节点 $u$ 和$v$之间的共同邻居度的倒数对数，与 RA 相比，Adamic-Adar 对更高度的惩罚相对减少：
+$$
+S_{A A}(u, v)=\sum_{k \in \mathcal{N}(u) \cap \mathcal{N}(v)} \frac{1}{\log d_{k}}
+$$
+上述基于公共邻居的方法存在两个局限，1. 需要手动设计邻居结构特征，比如CN的公共邻居结构特征为1， RA的结构特征为$\frac{1}{d}$, AA 的邻居结构特征为$\frac{1}{\log d}$。 2. 忽略了node features</p>
+<p>本文提出的Neo-GNN从邻接矩阵中学习结构特征，并且结合了node feature信息来做Link prediction。</p>
+<h1 id="model-neo-gnns">Model: Neo-GNNs</h1>
+<p>定义structural feature generator $\mathcal{F}_{\theta}$:
+$$
+x_{i}^{\text {struct }}=\mathcal{F}_{\theta}\left(A_{i}\right)=f_{\theta_{n o d e}}\left(\sum_{j \in \mathcal{N}_{i}} f_{\theta_{e d g e}}\left(A_{i j}\right)\right)
+$$
+输入节点$i$的邻居$A_i$，提取自邻接矩阵$A$, Neo-GNNs 只是用$A$作为输入来获得节点的结构特征。 其中，$f_{\theta_{e d g e}}(A_{ij})$生成节点$i$的局部边特征，然后聚合起来用$f_{\theta_{n o d e}}$生成节点$i$的总体结构特征$x_{i}^{\text {struct }}$， 作为节点$i$的structural feature，表示反映了节点$i$的局部结构。其中$f_{\theta_{n o d e}}$和$f_{\theta_{e d g e}}$是两个MLP。 也可以把上面的$A$替换成$A$的幂的组合，那就是$k$跳以内邻域的结构特征。</p>
+<p>得到了节点的邻居结构特征$x_{i}^{\text {struct }}$后， 要用<strong>重叠邻居的结构特征</strong>来计算两个节点的相似度分数。 传统的GNN无法计算重叠邻域的结构特征的原因有两个：1. normalized adjacency matrix: 归一化邻接矩阵阻止了GNN计数邻居数量（我的理解是因为Norm adj上的元素为小数）2. 远低于节点数的hidden representation维度$d \ll N$：低维度的节点表示向量使得在neighborhood aggregration后 节点邻域特征难以区分。</p>
+<p><img loading="lazy" src="/posts/2022-03-30-NeoGNN/frameworks.png#center" alt=""  />
+</p>
+<p>本文提出了邻域重叠感知的聚合模式。 注意，上面的节点邻域特征是一个scale, 即$x_{i}^{\text {struct }} \in \mathbb{R}^1$, 整个图的节点邻域结构特征可以表示为$X^{struct} \in \mathbb{R}^{N \times N}$, 为一个对角阵，对角线元素为每个节点的邻域<strong>结构</strong>特征，如Figure 1所示。也就是$X^{struct}$的每一行为一个节点的局部结构特征表示向量，作为这个节点的结构特征。</p>
+<p>那么$Z = AX^{struct}$就可以为节点聚合结构特征。 因为$X^{struct}_i$表示节点$v_i$的structural feature (neighborhood structural), 所以$Z_i$表示节点$i$的1-st neighborhood structural feature, 所以$z_{i}^{T} z_{j}=\sum_{k \in \mathcal{N}(i) \cap \mathcal{N}(j)}\left(x_{k}^{s t r u c t}\right)^{2}$表可以表示节点$i$和节点$j$的重叠邻域。</p>
+<p><strong>注意</strong> $X_{i}^{\text {struct }}$表示节点$i$自身的结构特征。 而$Z_i$表示节点$i$的邻居的结构特征聚合, 所以$z_{i}^{T} z_{j}$表示节点$i$邻居的结构特征和节点$j$邻居的结构特征的相似度。 $x_i^T x_j$表示节点$i$自身的结构特征和节点$j$自身的结构特征的相似度。</p>
+<p>进一步，考虑多跳邻居：
+$$
+Z=g_{\Phi}\left(\sum_{l=1}^{L} \beta^{l-1} A^{l} X^{\text {struct }}\right)
+$$</p>
+<p>$A^lX^{struct}$的第$i$行表示节点$i$ 的$l$跳邻居特征。 $Z_i$表示节点$i$在$L$跳以内的邻居结构特征总和。</p>
+<p>除了考虑结构特征来预测链接外，还应考虑node features，直接用GNN：
+$$
+H=\operatorname{GNN}\left(X, \tilde{A}_{G N N} ; W\right)
+$$
+最终节点$i$和节点$j$的相似度分数表示为：
+$$
+\left.\hat{y}_{i j}=\alpha \cdot \sigma\left(z_{i}^{T} z_{j}\right)+(1-\alpha) \cdot \sigma\left(s\left(h_{i}, h_{j}\right)\right)\right)
+$$
+即为邻域结构相似度 与 特征相似度 的加权平均。</p>
+<p>最终损失函数要求 3种相似度衡量标准（基于邻域结构，基于节点feature, 两者加权平均）都可以你和真实的相似度，即：
+$$
+\mathcal{L}=\sum_{(i, j) \in D}\left(\lambda_{1} B C E\left(\hat{y}_{i j}, y_{i j}\right)+\lambda_{2} B C E\left(\sigma\left(z_{i}^{T} z_{j}\right), y_{i j}\right)+\lambda_{3} B C E\left(\sigma\left(s\left(h_{i}, h_{j}\right)\right), y_{i j}\right)\right)
+$$
+其中$BCE(\cdot, \cdot)$为 binary cross entropy loss。</p>
+<h1 id="reference">Reference</h1>
+<p>[1] Link Prediction Based on Graph Neural Networks. NeurIPS 2018.</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>NeurIPS2021 《Representing Long-Range Context for Graph Neural Networks with Global Attention》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/graphtrans/</link>
+      <pubDate>Wed, 30 Mar 2022 10:37:41 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/graphtrans/</guid>
+      <description>Paper
+Introduction 加深GNN层数来增加感受野会导致优化不稳定性，比如梯度消失和oversmoothing。 因此本文采用Transformer-based self-attention来学习成对节点间的长距离关系，并且提出一种新型的readout池化机制来学习global graph embedding。即在一个GNN模块后接一个置换不变（permutation-invariant）Transformer, GNN模块捕获local信息，Transformer捕获global信息。
+GNN作为一种专门的架构医学系节点直接邻域结构的局部表示， 而Transformer作为全局推理模块以位置无关的方式计算所有成对节点的交互。作者认为，一个没有positional encoding的Transformer是置换不变的，因此很适合图。
+Motivation 强关系Inductive bias(我的理解是Homophily假设) 鼓励学习局部短距离的关联性。 而对于长距离相关性，结构化较低的模块（不需要过于考虑图的结构信息）更受欢迎。
+GraphTrans leaves learning long-range dependencies to Transformer, 通过Transformer来学习图中所有节点对的依赖关系而不是只关注局部邻居。
+下图中展示了一个子图的attention map。一共有17个节点，横坐标表示目标节点，纵坐标表示源节点，第$i$行第$j$列表示节点$i$在Transformer中聚合$j$的attention权重。第18行为一个特殊的$&amp;lt;CLS&amp;gt;$token 作为图的readout embedding。结合本文的SOTA效果，表面在学习长距离依赖时不考虑图结构先验（spatial priors）对Graph summarization（graph-level representation）是有必要的
+Model GNN Module 一个通用的GNN模块： $$ \boldsymbol{h}_{v}^{\ell}=f_{\ell}\left(\boldsymbol{h}_{v}^{\ell-1},\left\{\boldsymbol{h}_{u}^{\ell-1} \mid u \in \mathcal{N}(v)\right\}\right), \quad \ell=1, \ldots, L_{\mathrm{GNN}} $$
+Transformer Module 通过上面的GNN模块，我们可以得到每个节点的embedding $h_{v}^{L_{\mathrm{GNN}}}$, 将所有节点作为Transformer的Input。传统Transformer中输入先计算Self-attention（当前输入的$Q$向量和所有节点的$K$向量做内积得到输入节点和其他节点的att值，再用这个att值来为当前输入节点加权聚合所有节点的$V$向量），聚合后再和自身相加做residual,然后在做Layer Norm, 即对节点$i$的表示做Layer Norm 为$x_i^\prime = \frac{x_i-m}{\sigma}$, 其中$m$为$x_i$的均值， $\sigma$为$x_i$的标准差。
+这里的Transformer不同的是， 先对所有节点做一次MLP，然后直接计算Layer Norm: $$ \overline{\boldsymbol{h}}_{v}^{0}=\operatorname{LayerNorm}\left(\boldsymbol{W}^{\text {Proj }} \boldsymbol{h}_{v}^{L_{\mathrm{GNN}}}\right) $$ 其中$\boldsymbol{W}^{\text {Proj }} \in \mathbb{R}^{d_{\mathrm{TF}} \times d_{L_{\mathrm{GNN}}}}$， 把GNN的输出维度转为TF的输入维度$d_{\mathrm{TF}}$。将所有节点的GNN node embeddings作为Transformer的输入（无positional encoding）。 每个节点的$Q$, $K$和$V$向量分别用$\boldsymbol{W}_{\ell}^{Q}, \boldsymbol{W}_{\ell}^{K}, \boldsymbol{W}_{\ell}^{V} \in \mathbb{R}^{d_{\mathrm{TF}} / n_{\text {head }} \times d_{\mathrm{TF}} / n_{\text {head }}}$计算， 对于第$\ell$层 Transformer, 节点$v$ 的$Q$向量$Q_v = \boldsymbol{W}_{\ell}^{Q} \overline{\boldsymbol{h}}_{v}^{\ell-1}$和节点$u$的$K$向量$K_u = \boldsymbol{W}_{\ell}^{K} \overline{\boldsymbol{h}}_{u}^{\ell-1}$做内积，得到两个节点之间的attention。然后用$\alpha_{v, u}^{\ell}$来为节点$v$聚合其他所有节点的$V$向量$V_u = \boldsymbol{W}_{\ell}^{V} \overline{\boldsymbol{h}}_{u}^{\ell-1}$, 如下所示: $$ a_{v, u}^{\ell}=\left(\boldsymbol{W}_{\ell}^{Q} \overline{\boldsymbol{h}}_{v}^{\ell-1}\right)^{\top}\left(\boldsymbol{W}_{\ell}^{K} \overline{\boldsymbol{h}}_{u}^{\ell-1}\right) / \sqrt{d_{\mathrm{TF}}} \tag{1} $$</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/pdf/2201.08821.pdf">Paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>加深GNN层数来增加感受野会导致优化不稳定性，比如梯度消失和oversmoothing。 因此本文采用Transformer-based self-attention来学习成对节点间的长距离关系，并且提出一种新型的readout池化机制来学习global graph embedding。即在一个GNN模块后接一个置换不变（permutation-invariant）Transformer, GNN模块捕获local信息，Transformer捕获global信息。</p>
+<p>GNN作为一种专门的架构医学系节点<strong>直接邻域结构的局部表示</strong>， 而Transformer作为全局推理模块以位置无关的方式计算所有成对节点的交互。作者认为，一个没有positional encoding的Transformer是置换不变的，因此很适合图。</p>
+<h1 id="motivation">Motivation</h1>
+<p>强关系Inductive bias(我的理解是Homophily假设) 鼓励学习局部短距离的关联性。 而对于长距离相关性，结构化较低的模块（不需要过于考虑图的结构信息）更受欢迎。</p>
+<p><strong>GraphTrans leaves learning long-range dependencies to Transformer</strong>, 通过Transformer来学习图中所有节点对的依赖关系而不是只关注局部邻居。</p>
+<p>下图中展示了一个子图的attention map。一共有17个节点，横坐标表示目标节点，纵坐标表示源节点，第$i$行第$j$列表示节点$i$在Transformer中聚合$j$的attention权重。第18行为一个特殊的$&lt;CLS&gt;$token 作为图的readout embedding。结合本文的SOTA效果，表面在学习长距离依赖时不考虑图结构先验（spatial priors）对Graph summarization（graph-level representation）是有必要的</p>
+<p><img loading="lazy" src="/posts/2022-03-30-GraphTrans/pic2.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="model">Model</h1>
+<p><img loading="lazy" src="/posts/2022-03-30-GraphTrans/pic1.png#center" alt="你想输入的替代文字"  />
+</p>
+<h2 id="gnn-module">GNN Module</h2>
+<p>一个通用的GNN模块：
+$$
+\boldsymbol{h}_{v}^{\ell}=f_{\ell}\left(\boldsymbol{h}_{v}^{\ell-1},\left\{\boldsymbol{h}_{u}^{\ell-1} \mid u \in \mathcal{N}(v)\right\}\right), \quad \ell=1, \ldots, L_{\mathrm{GNN}}
+$$</p>
+<h2 id="transformer-module">Transformer Module</h2>
+<p>通过上面的GNN模块，我们可以得到每个节点的embedding $h_{v}^{L_{\mathrm{GNN}}}$, 将所有节点作为Transformer的Input。传统Transformer中输入先计算Self-attention（当前输入的$Q$向量和所有节点的$K$向量做内积得到输入节点和其他节点的att值，再用这个att值来为当前输入节点加权聚合所有节点的$V$向量），聚合后再和自身相加做residual,然后在做Layer Norm, 即对节点$i$的表示做Layer Norm 为$x_i^\prime = \frac{x_i-m}{\sigma}$, 其中$m$为$x_i$的均值， $\sigma$为$x_i$的标准差。</p>
+<p>这里的Transformer不同的是， 先对所有节点做一次MLP，然后直接计算Layer Norm:
+$$
+\overline{\boldsymbol{h}}_{v}^{0}=\operatorname{LayerNorm}\left(\boldsymbol{W}^{\text {Proj }} \boldsymbol{h}_{v}^{L_{\mathrm{GNN}}}\right)
+$$
+其中$\boldsymbol{W}^{\text {Proj }} \in \mathbb{R}^{d_{\mathrm{TF}} \times d_{L_{\mathrm{GNN}}}}$， 把GNN的输出维度转为TF的输入维度$d_{\mathrm{TF}}$。将所有节点的GNN node embeddings作为Transformer的输入（无positional encoding）。 每个节点的$Q$, $K$和$V$向量分别用$\boldsymbol{W}_{\ell}^{Q}, \boldsymbol{W}_{\ell}^{K}, \boldsymbol{W}_{\ell}^{V} \in \mathbb{R}^{d_{\mathrm{TF}} / n_{\text {head }} \times d_{\mathrm{TF}} / n_{\text {head }}}$计算， 对于第$\ell$层 Transformer,  节点$v$ 的$Q$向量$Q_v = \boldsymbol{W}_{\ell}^{Q} \overline{\boldsymbol{h}}_{v}^{\ell-1}$和节点$u$的$K$向量$K_u = \boldsymbol{W}_{\ell}^{K} \overline{\boldsymbol{h}}_{u}^{\ell-1}$做内积，得到两个节点之间的attention。然后用$\alpha_{v, u}^{\ell}$来为节点$v$聚合其他所有节点的$V$向量$V_u = \boldsymbol{W}_{\ell}^{V} \overline{\boldsymbol{h}}_{u}^{\ell-1}$, 如下所示:
+$$
+a_{v, u}^{\ell}=\left(\boldsymbol{W}_{\ell}^{Q} \overline{\boldsymbol{h}}_{v}^{\ell-1}\right)^{\top}\left(\boldsymbol{W}_{\ell}^{K} \overline{\boldsymbol{h}}_{u}^{\ell-1}\right) / \sqrt{d_{\mathrm{TF}}} \tag{1}
+$$</p>
+<p>$$
+\alpha_{v, u}^{\ell}=\operatorname{softmax}_{u \in \mathcal{V}}\left(a_{v, u}^{\ell}\right) \tag{2}
+$$</p>
+<p>$$
+\overline{\boldsymbol{h}}_{v}^{\prime \ell}=\sum_{w \in \mathcal{V}} \alpha_{v, u}^{\ell} \boldsymbol{W}_{\ell}^{V} \overline{\boldsymbol{h}}_{u}^{\ell-1} \tag{3}
+$$</p>
+<h2 id="cls--embedding-as-a-gnn-readout-method">&lt;CLS&gt;  embedding as a GNN “readout” method</h2>
+<p>Graph Pooling 部分旨在基于node embedding，得到整个图的一个global embedding. 大多数pooling方法为简单的mean,sum, 或者构造一个virtual node连接到所有节点并参与训练，这个virtual node聚合所有节点的信息作为global embedding。</p>
+<p>本文提出special-token readout module。具体来说，对Transformer的输入$[\overline{\boldsymbol{h}}_{v}^{0}]_{v\in V}$, where $\overline{\boldsymbol{h}}_{v}^{0} \in \mathcal{R}^{d_{TF}}$我们添加一个额外的可学习embedding （可以被认为是一个额外virtual node）$\bar{h}_{\langle\mathrm{CLS}\rangle} \in \mathbb{R}^{d_{\mathrm{TF}}}$, 这样 Transformer 的输入就变为$[\overline{\boldsymbol{h}}_{v}^{0}]_{v \in V} \cup \bar{h}_{\langle\mathrm{CLS}\rangle}$, 因为训练过程中$\overline{\boldsymbol{h}}_{v}^{0}$回聚合来自所有节点的信息，所以用它来作为readout embedding。 最终Transformer输出的token embedding $\overline{\boldsymbol{h}}_{&lt;\mathrm{CLS}&gt;}^{L_{\mathrm{TF}}}$ 再过一层MLP后用Softmax输出图的prediction:
+$$
+y=\operatorname{softmax}\left(\boldsymbol{W}^{\mathrm{out}} \overline{\boldsymbol{h}}_{&lt;\mathrm{CLS}&gt;}^{L_{\mathrm{TF}}}\right)
+$$</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>ICLR2020 《Inductive and Unsupervised Representation Learning on Graph Structured Objects》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/seed/</link>

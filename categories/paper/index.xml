@@ -631,8 +631,6 @@ $$\Phi(e)=\Phi(u) \oplus \Phi(v)$$<br>
 $$h^{(k)}=f(W^{(k)}h^{(k-1)}+b^{(k)})$$<br>
 其中 $h^{(0)}=\Phi(e)$，$f$是除最后一层外采用relu激活函数，最后一层采用sigmoid函数激活,最后一层输出为$\hat{y_i}$。最后最小化二元交叉熵损失函数：</p>
 <p>$$\mathcal{L}_r=\sum^{|L|}_{i=1} H(y_i,\hat{y_i}) + (1-y_i) \cdot \log (1-\hat{y_i})$$</p>
-<h3 id="conclusion">Conclusion</h3>
-<p>这篇论文从原理到方法实现都非常简单，稍后我也将尝试复现这篇论文，边的标签信息是以前NE方法所没有考虑到的，但这篇论问的局限性是没有考虑边的方向以及权重，这是可以拓展的方向。</p>
 ]]></content:encoded>
     </item>
     
@@ -707,6 +705,147 @@ $$\mathcal{L_{reg}}=\frac{1}{2}\sum_{k=1}^k({||W^{(k)}||^2_F+||\hat{W}^{k}||_F^2
 <h3 id="optimization">Optimization</h3>
 <p>使用SGD来优化$\mathcal{L_{mix}}$。具体算法如下：<br>
 <img loading="lazy" src="/posts/2019-01-21-SDNE/al.png#center" alt="你想输入的替代文字"  />
+</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>ICLR2018 《Graph Attention Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/gat/</link>
+      <pubDate>Fri, 14 Sep 2018 23:01:31 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/gat/</guid>
+      <description>论文地址：GAT
+Introduction 本文介绍了一种新型的神经网络架构用来处理图结构。即__Graph Attention Networks__(GATs)。该方法利用masked self-attentional layer，即通过网络层的堆叠，可以获取网络中每个节点的领域特征，同时为领域中的不同节点指定不同的权重。这样做的好处是可以不需要各种高成本的矩阵运算也不依赖于的图结构信息。通过这种方式，GAT可以解决基于谱的图神经网络存在的问题，同时，GAT可以使用用归纳（inductive）和直推（transductive）问题。
+归纳学习:先从训练样本中学习到一定的模式，然后利用其对测试样本进行预测（即首先从特殊到一般，然后再从一般到特殊），这类模型如常见的贝叶斯模型。
+直推学习:先观察特定的训练样本，然后对特定的测试样本做出预测（从特殊到特殊），这类模型如k近邻、SVM等。
+Architecture 图$G$中有$N$个节点，他们的特征向量为：$\textbf{h}={\vec{h_1},\vec{h_2},&amp;hellip;,\vec{h_N}}$，其中，$\vec{h_i} \in \mathbb{R}^F$，$F$是每个节点特征数。我们的目的是输出一个新的节点特征向量集$\textbf{h&amp;rsquo;}={\vec{h_1&amp;rsquo;},\vec{h_2&amp;rsquo;},&amp;hellip;,\vec{h_N&amp;rsquo;}}$，其中$\vec{h_i&amp;rsquo;} \in \mathbb{R}^{F&amp;rsquo;}$。 本质就是修改特征向量的维度（Network embedding）
+为了获得足够的表达能力以将输入特征变换为更高级别的特征，需要至少一个可学习的线性变换。因此，以任意节点$i$和$j$为例，分别对节点$i$和节点$j$的特征向量做线性变换$W \in \mathbb{R}^{F \times F&amp;rsquo;}$，这样 就将$\vec{h_i}$和$\vec{h_j}$从$F$维的向量转化为$F&amp;rsquo;$维的向量： $$ e_{ij} = a(W\vec{h_i},W\vec{h_j}) $$ 上式中，分别对$\vec{h_i}$和$\vec{h_j}$做线性变换，然后使用self-attention为图中的每一个节点分配注意力（权重）。上式中，注意力机制$a$是一个$\mathbb{R}^{F&amp;rsquo;} \times \mathbb{R}^{F&amp;rsquo;} \to \mathbb{R}$的映射。最终得到的$e_{ij}$是节点$j$对节点$i$的影响力系数（一个实数）。
+但是，上面的方法考虑其他节点对$i$的影响时，将图中的所有节点都纳入了考虑范围，这样就丢失了图的结构信息。因此，本文引入masked attention机制，即计算影响力系数$e_{ij}$时， 仅考虑节点$i$的一部分邻居节点 $j \in \mathcal{N}_i$（$i$也属于$\mathcal{N}_i$）。使用softmax将节点$i$部分邻居的注意力系数分配到(0,1)上： $$ \alpha_{ij} = \mathrm{softmax}_j(e_{ij}) = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}_i}\exp(e_{ik})} $$ 在本文中，$a$是一个单层前馈神经网络，参数是一个权重向量$\vec{\text{a}} \in \mathbb{R}^{2F&amp;rsquo;}$，然后使用负半轴斜率为0.2的LeakyReLU作为非线性激活函数： $$ \alpha_{ij} = \frac{\exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_j}]))}{\sum_{k\in \mathcal{N}_i} \exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_k}]))} $$ 其中$||$表示向量的连接操作。上述过程可以用下图表示：
+这样，我们就可以获得节点$j$对节点$i$的注意力系数$\alpha_{ij}$，那么，节点$i$最终的输出特征$\vec{h_i&amp;rsquo;}$就是对$\mathcal{N}_i$中所有节点的加权（加注意力）求和： $$ \vec{h_i&amp;rsquo;} = \sigma (\sum_{j \in \mathcal{N}_i}\alpha_{ij} W\vec{h_j}) $$
+另外，本文使用multi-head attention来稳定self-attention的学习过程，如下图所示：</description>
+      <content:encoded><![CDATA[<p>论文地址：<a href="https://arxiv.org/abs/1710.10903">GAT</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>本文介绍了一种新型的神经网络架构用来处理图结构。即__Graph Attention Networks__(<strong>GATs</strong>)。该方法利用masked self-attentional layer，即通过网络层的堆叠，可以获取网络中每个节点的领域特征，同时为领域中的不同节点指定不同的权重。这样做的好处是可以不需要各种高成本的矩阵运算也不依赖于的图结构信息。通过这种方式，GAT可以解决基于谱的图神经网络存在的问题，同时，GAT可以使用用归纳（inductive）和直推（transductive）问题。</p>
+<p><strong>归纳学习</strong>:先从训练样本中学习到一定的模式，然后利用其对测试样本进行预测（即首先从特殊到一般，然后再从一般到特殊），这类模型如常见的贝叶斯模型。</p>
+<p><strong>直推学习</strong>:先观察特定的训练样本，然后对特定的测试样本做出预测（从特殊到特殊），这类模型如k近邻、SVM等。</p>
+<h1 id="architecture">Architecture</h1>
+<p>图$G$中有$N$个节点，他们的特征向量为：$\textbf{h}={\vec{h_1},\vec{h_2},&hellip;,\vec{h_N}}$，其中，$\vec{h_i} \in \mathbb{R}^F$，$F$是每个节点特征数。我们的目的是输出一个新的节点特征向量集$\textbf{h&rsquo;}={\vec{h_1&rsquo;},\vec{h_2&rsquo;},&hellip;,\vec{h_N&rsquo;}}$，其中$\vec{h_i&rsquo;} \in \mathbb{R}^{F&rsquo;}$。 本质就是修改特征向量的维度（Network embedding）</p>
+<p>为了获得足够的表达能力以将输入特征变换为更高级别的特征，需要至少一个可学习的线性变换。因此，以任意节点$i$和$j$为例，分别对节点$i$和节点$j$的特征向量做线性变换$W \in \mathbb{R}^{F \times F&rsquo;}$，这样 就将$\vec{h_i}$和$\vec{h_j}$从$F$维的向量转化为$F&rsquo;$维的向量：
+$$
+e_{ij} = a(W\vec{h_i},W\vec{h_j})
+$$
+上式中，分别对$\vec{h_i}$和$\vec{h_j}$做线性变换，然后使用self-attention为图中的每一个节点分配注意力（权重）。上式中，注意力机制$a$是一个$\mathbb{R}^{F&rsquo;} \times \mathbb{R}^{F&rsquo;} \to \mathbb{R}$的映射。最终得到的$e_{ij}$是节点$j$对节点$i$的影响力系数（一个实数）。</p>
+<p>但是，上面的方法考虑其他节点对$i$的影响时，将图中的所有节点都纳入了考虑范围，这样就丢失了图的结构信息。因此，本文引入<strong>masked attention</strong>机制，即计算影响力系数$e_{ij}$时， 仅考虑节点$i$的<strong>一部分邻居节点</strong> $j \in \mathcal{N}_i$（$i$也属于$\mathcal{N}_i$）。使用softmax将节点$i$部分邻居的注意力系数分配到(0,1)上：
+$$
+\alpha_{ij} = \mathrm{softmax}_j(e_{ij}) = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}_i}\exp(e_{ik})}
+$$
+在本文中，$a$是一个单层前馈神经网络，参数是一个权重向量$\vec{\text{a}} \in \mathbb{R}^{2F&rsquo;}$，然后使用负半轴斜率为0.2的<a href="https://blog.csdn.net/sinat_33027857/article/details/80192789">LeakyReLU</a>作为非线性激活函数：
+$$
+\alpha_{ij} = \frac{\exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_j}]))}{\sum_{k\in \mathcal{N}_i} \exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_k}]))}
+$$
+其中$||$表示向量的连接操作。上述过程可以用下图表示：</p>
+<p><img loading="lazy" src="/posts/2019-04-14-GAT/1.png#center" alt=""  />
+</p>
+<p>这样，我们就可以获得节点$j$对节点$i$的注意力系数$\alpha_{ij}$，那么，节点$i$最终的输出特征$\vec{h_i&rsquo;}$就是对$\mathcal{N}_i$中所有节点的加权（加注意力）求和：
+$$
+\vec{h_i&rsquo;} = \sigma (\sum_{j \in \mathcal{N}_i}\alpha_{ij} W\vec{h_j})
+$$</p>
+<p>另外，本文使用<strong>multi-head attention</strong>来稳定self-attention的学习过程，如下图所示：</p>
+<p><img loading="lazy" src="/posts/2019-04-14-GAT/2.png#center" alt=""  />
+</p>
+<p>图中是$K=3$ heads的multi-head attention，不同颜色的箭头表示一个独立的attention计算，每个邻居节点做三次attention计算。每次attention计算就是一个普通的self-attention，输出的结果是一个$\vec{h_i&rsquo;}$。multi-head attention为每个节点$i$输出3个不同的$\vec{h_i&rsquo;}$,，然后将这三个向量做连接或者取平均，得到最终的$\vec{h_i&rsquo;}$：
+$$
+\vec{h_i&rsquo;} = ||^K_{k=1} \sigma\left(\sum_{j \in \mathcal{N}_{i}} \alpha_{i j}^{k} \mathbf{W}^{k} \vec{h}_{j}\right)
+$$
+上式为把不同$k$的向量做连接操作，其中$\alpha_{ij}^k$和$\mathbf{W}^{k}$表示第$k$个head的结果，我们可以注意到，最终输出的结果是$KF&rsquo;$维的。除了concat之外，我们还可以通过求平均的方式来获得$\vec{h_i&rsquo;}$:
+$$
+\vec{h^\prime_i}=\sigma\left(\frac{1}{K} \sum_{k=1}^{K} \sum_{j \in \mathcal{N}_{i}} \alpha_{i j}^{k} \mathbf{W}^{k} \vec{h}_{j}\right)
+$$</p>
+<h1 id="comparisions">Comparisions</h1>
+<ul>
+<li>
+<p>GAT是计算高效的。self-attention是在所有边上并行计算，并且输出的特征在所有边上并行计算，从而不需要昂贵的矩阵计算和特征分解。单个head的GAT的时间复杂度为$O\left(|V| F F^{\prime}+|E| F^{\prime}\right)$，其中$F$是输入的特征数，$|V|$和$|E|$分别是节点数和边数。复杂度与GCN相同。</p>
+</li>
+<li>
+<p>与GCN不同的是，GAT为同一邻域中的节点分配不同的重要性（different importance），提升了模型容量。</p>
+</li>
+<li>
+<p>注意机制以共享的方式应用于图中的所有边（共享$\mathbf{W}$），因此它不依赖于对全局图结构的预先访问或其所有节点的（特征）。这样有以下提升：</p>
+<ul>
+<li>不必是无向图。如果$i \to j$不存在,可以直接不用计算$\alpha_{ij}$。</li>
+<li>可直接应用于归纳学习。</li>
+</ul>
+</li>
+<li>
+<p>GAT可以被描述为一种特殊的<a href="http://openaccess.thecvf.com/content_cvpr_2017/papers/Monti_Geometric_Deep_Learning_CVPR_2017_paper.pdf">MoNet(Geometric deep learning on graphs and manifolds using mixture model cnns)</a>。</p>
+</li>
+</ul>
+<h1 id="reference">Reference</h1>
+<p>参考：</p>
+<p>GCN：https://arxiv.org/abs/1609.02907</p>
+<p><a href="https://zhuanlan.zhihu.com/p/34232818">https://zhuanlan.zhihu.com/p/34232818</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/59176692">https://zhuanlan.zhihu.com/p/59176692</a></p>
+<p><a href="https://arxiv.org/abs/1710.10903">https://arxiv.org/abs/1710.10903</a></p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>KDD2017 《metapath2vec:Scalable Representation Learning for Heterogeneous Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/metapath2vec/</link>
+      <pubDate>Fri, 29 Jun 2018 16:29:18 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/metapath2vec/</guid>
+      <description>论文地址： metapath2vec
+Introduction 真实网络中通常包含多种类型的节点和关系，这些节点和关系共同组成了异质信息网络（Heterogeneous Information Network），传统的NE方法如DeepWalk, Line , node2vec更多关注与同质网络从而忽略了网络的异质性。针对这个问题，这篇文章提出了metapath2vec基于meta-path的随机游走来构建节点的异质邻域，采用异质Skip-gram模型来学习节点的representation。 另外，在负采样时也考虑异质性，从而进一步提出了metapath2vec++。如下：
+Definition Definition 1: 异质网络： $G = (V,E,T)$，其中每个节点和边分别对应一个映射 $\phi(v) : V \rightarrow T_{V}$ 和$\varphi(e) : E \rightarrow T_{E}$。 其中$T_V$和$T_E$分别表示节点的类型集合以及关系的类型集合。且$\left|T_{V}\right|+\left|T_{E}\right|&amp;gt;2$。
+Definition 2: 异质网络表示学习 为网络中的节点学习一个$d$维的表示 $\mathrm{X} \in \mathbb{R}^{|V| \times d}$，$d \ll|V|$。节点的向量表示可以捕获节点间结构和语义关系。
+Model metapath2vec Skip-Gram模型是给定一个节点，预测向下文节点的概率。metapath2vec的目的是考虑多种类型节点和多种类型关系的情况下，最大化网络概率。为了将异质信息融入skip-gram模型中，首先提出异质skip-gram。
+Heterogeneous Skip-Gram 对于节点类型$|T_V| &amp;gt; 1$的网络$G$， 给定一个节点$v$，需要最大化属于类型$t \in T_V$的异质上下文节点的概率： $$ \arg \max_{\theta} \sum_{v \in V} \sum_{t \in T_{V}} \sum_{c_{t} \in N_{t}(v)} \log p\left(c_{t} | v ; \theta\right) $$ 其中，$N_t(v)$表示$v$属于第$t$个类型的邻居节点。 $p\left(c_{t} | v ; \theta\right)$ 表示给定节点$v$，它的$t$类型邻域概率： $p\left(c_{t} | v ; \theta\right)=\frac{e^{X_{c_{t}} \cdot X_{v}}}{\sum_{u \in V} e^{X_{u} \cdot X_{v}}}$，是一个softmax函数，$X_v$是节点$v$的表示。由于softmax函数的分母每一次都要遍历所有节点，所以采用负采样改进$\log p(\cdot)$ 如下： $$ \log \sigma\left(X_{c_{t}} \cdot X_{v}\right)+\sum_{m=1}^{M} \mathbb{E}_{u^{m} \sim P(u)}\left[\log \sigma\left(-X_{u^{m}} \cdot X_{v}\right)\right] $$ 其中 $\sigma(x)=\frac{1}{1+e^{-x}}$。</description>
+      <content:encoded><![CDATA[<p>论文地址： <a href="https://ericdongyx.github.io/papers/KDD17-dong-chawla-swami-metapath2vec.pdf">metapath2vec</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>真实网络中通常包含多种类型的节点和关系，这些节点和关系共同组成了异质信息网络（Heterogeneous Information Network），传统的NE方法如DeepWalk, Line , node2vec更多关注与同质网络从而忽略了网络的异质性。针对这个问题，这篇文章提出了metapath2vec基于meta-path的随机游走来构建节点的异质邻域，采用异质Skip-gram模型来学习节点的representation。 另外，在负采样时也考虑异质性，从而进一步提出了metapath2vec++。如下：</p>
+<p><img loading="lazy" src="/posts/2019-06-29-metapath/1.png" alt=""  />
+</p>
+<h1 id="definition">Definition</h1>
+<p><strong>Definition 1:</strong> 异质网络： $G = (V,E,T)$，其中每个节点和边分别对应一个映射 $\phi(v) : V \rightarrow T_{V}$ 和$\varphi(e) : E \rightarrow T_{E}$。 其中$T_V$和$T_E$分别表示节点的类型集合以及关系的类型集合。且$\left|T_{V}\right|+\left|T_{E}\right|&gt;2$。</p>
+<p><strong>Definition 2:</strong> 异质网络表示学习 为网络中的节点学习一个$d$维的表示 $\mathrm{X} \in \mathbb{R}^{|V| \times d}$，$d \ll|V|$。节点的向量表示可以捕获节点间结构和语义关系。</p>
+<h1 id="model">Model</h1>
+<h2 id="metapath2vec">metapath2vec</h2>
+<p>Skip-Gram模型是给定一个节点，预测向下文节点的概率。metapath2vec的目的是考虑多种类型节点和多种类型关系的情况下，最大化网络概率。为了将异质信息融入skip-gram模型中，首先提出异质skip-gram。</p>
+<h3 id="heterogeneous-skip-gram">Heterogeneous Skip-Gram</h3>
+<p>对于节点类型$|T_V| &gt; 1$的网络$G$， 给定一个节点$v$，需要最大化属于类型$t \in T_V$的异质上下文节点的概率：
+$$
+\arg \max_{\theta} \sum_{v \in V} \sum_{t \in T_{V}} \sum_{c_{t} \in N_{t}(v)} \log p\left(c_{t} | v ; \theta\right)
+$$
+其中，$N_t(v)$表示$v$属于第$t$个类型的邻居节点。 $p\left(c_{t} | v ; \theta\right)$ 表示给定节点$v$，它的$t$类型邻域概率： $p\left(c_{t} | v ; \theta\right)=\frac{e^{X_{c_{t}} \cdot X_{v}}}{\sum_{u \in V} e^{X_{u} \cdot X_{v}}}$，是一个softmax函数，$X_v$是节点$v$的表示。由于softmax函数的分母每一次都要遍历所有节点，所以采用负采样改进$\log p(\cdot)$ 如下：
+$$
+\log \sigma\left(X_{c_{t}} \cdot X_{v}\right)+\sum_{m=1}^{M} \mathbb{E}_{u^{m} \sim P(u)}\left[\log \sigma\left(-X_{u^{m}} \cdot X_{v}\right)\right]
+$$
+其中 $\sigma(x)=\frac{1}{1+e^{-x}}$。</p>
+<h3 id="meta-path-based-random-walks">Meta-Path-Based Random Walks</h3>
+<p>在第$i$步时，转移概率$p(v^{i+1}|v^i)$表示为忽略节点类型情况下$v^i$的邻居分布。但是，PathSim提出，异质信息网络中的随机游走偏向于高度可见的节点，即具有主导数量路径的节点，所以 本文设计了基于元路径的随机游走来生成path，从而能够捕获不同类型节点间的结构联系和语义关系，提出了促进异构网络结构转换为metapath2vec的skip-gram。</p>
+<p>一个meta-path模式$\mathcal{P}: V_{1} \stackrel{R_{1}}{\longrightarrow} V_{2} \stackrel{R_{2}}{\longrightarrow} \dots V_{t} \stackrel{R_{t}}{\longrightarrow} V_{t+1} \cdots \stackrel{R_{l-1}}{\longrightarrow} V_{l}$， 其中 $R=R_{1} \circ R_{2} \circ \cdots \circ R_{l-1}$ 节点类型$V_{1}$到$V_{l}$之间的组合关系。那么节点间的跳转概率定义为：
+$$
+p\left(v^{i+1} | v_{t}^{i}, \mathcal{P}\right)=\left\{\begin{array}{cc}{\frac{1}{\left|N_{t+1}\left(v_{t}^{i}\right)\right|}} &amp; {\left(v^{i+1}, v_{t}^{i}\right) \in E, \phi\left(v^{i+1}\right)=t+1} \\
+{0} &amp; {\left(v^{i+1}, v_{t}^{i}\right) \in E, \phi\left(v^{i+1}\right) \neq t+1} \\
+{0} &amp; {\left(v^{i+1}, v_{t}^{i}\right) \notin E}\end{array}\right.
+$$
+其中$v^i_t \in V_t$，$N_{t+1}\left(v_{t}^{i}\right)$表示属于$t$类型的节点$v$的属于$t+1$类型的邻居。如果下一个节点$v^{i+1}$和$v^i_t$之间有边，并且$v^{i+1}$是$t+1$类型的节点 那么转移概率服从平均分布。其中，$v^{i+1}$服从meta-path所定义的下移节点类型。如图（a）中，原路径为$OAPVPAO$，那么节点$a_4$的下一个节点必然要是$P$类。 由于meta-path的对称性，所以：
+$$
+p\left(v^{i+1} | v_{t}^{i}\right)=p\left(v^{i+1} | v_{1}^{i}\right), \text { if } t=l
+$$</p>
+<h2 id="metapath2vec-1">metapath2vec++</h2>
+<p>由于softmax做归一化时没有考虑节点类型，分母是对所有节点求和，所以为了融合节点类型，给出<strong>Heterogeneous negative sampling</strong>:
+$$
+p\left(c_{t} | v ; \theta\right)=\frac{e^{X_{c_{t}} \cdot X_{v}}}{\sum_{u_{t} \in V_{t}} e^{X_{u_{t}} \cdot X_{v}}}
+$$
+<strong>如图（c）所示，metapath2vec++对每种类型节点指定不同的一组多项式分布</strong>，相当于在输出层根据节点类型，把异质网络分解成不同的同质网络，同样采用负采用的方法简化计算：
+$$
+O(\mathrm{X})=\log \sigma\left(X_{c_{t}} \cdot X_{v}\right)+\sum_{m=1}^{M} \mathbb{E}_{u_{t}^{m} \sim P_{t}\left(u_{t}\right)}\left[\log \sigma\left(-X_{u_{t}^{m}} \cdot X_{v}\right)\right]
+$$
+算法如下：</p>
+<p><img loading="lazy" src="/posts/2019-06-29-metapath/2.png#center" alt=""  />
 </p>
 ]]></content:encoded>
     </item>

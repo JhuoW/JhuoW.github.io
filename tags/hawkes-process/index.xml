@@ -61,8 +61,6 @@ $$\Phi(e)=\Phi(u) \oplus \Phi(v)$$<br>
 $$h^{(k)}=f(W^{(k)}h^{(k-1)}+b^{(k)})$$<br>
 其中 $h^{(0)}=\Phi(e)$，$f$是除最后一层外采用relu激活函数，最后一层采用sigmoid函数激活,最后一层输出为$\hat{y_i}$。最后最小化二元交叉熵损失函数：</p>
 <p>$$\mathcal{L}_r=\sum^{|L|}_{i=1} H(y_i,\hat{y_i}) + (1-y_i) \cdot \log (1-\hat{y_i})$$</p>
-<h3 id="conclusion">Conclusion</h3>
-<p>这篇论文从原理到方法实现都非常简单，稍后我也将尝试复现这篇论文，边的标签信息是以前NE方法所没有考虑到的，但这篇论问的局限性是没有考虑边的方向以及权重，这是可以拓展的方向。</p>
 ]]></content:encoded>
     </item>
     

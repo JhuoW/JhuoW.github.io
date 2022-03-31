@@ -13,10 +13,10 @@
     <lastBuildDate>Wed, 30 Mar 2022 18:09:58 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Monte Carlo Tree Search</title>
-      <link>https://JhuoW.github.io/posts/mcts/</link>
+      <link>https://JhuoW.github.io/posts/monte-carlo-tree-search/</link>
       <pubDate>Wed, 30 Mar 2022 18:09:58 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/mcts/</guid>
+      <guid>https://JhuoW.github.io/posts/monte-carlo-tree-search/</guid>
       <description>单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits） 单一状态$s$, $k$种action（$k$个摇臂）。
 在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?
 多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。

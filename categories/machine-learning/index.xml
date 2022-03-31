@@ -118,7 +118,7 @@ $$</p>
 </ul>
 <p>A: 该局面被访问中黑棋胜利次数。对于黑棋表示己方胜利次数，对于白棋表示己方失败次数（对方胜利次数)；</p>
 <p>B: 该局面被访问的总次数</p>
-<p>初始状态：<img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png" alt=""  />
+<p>初始状态：<img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
 </p>
 <p>根节点（12/21）是当前局面，该局面被访问过21次，其中黑棋访问该局面后最终获胜12次。 黑执棋方遇到该局面（根节点局面）开始选择下一步action。</p>
 <h3 id="选择-1">选择</h3>
@@ -163,15 +163,15 @@ $$
 $$
 则黑棋选择action 使得局面变为(1/1)。右图中可见(1/1)为叶子节点， 白棋面对该局面暂时无候选局面（action）,则进入下一个步骤，拓展。</p>
 <h3 id="拓展-1">拓展</h3>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png" alt=""  />
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
 </p>
 <p>白棋执棋方面对局面(1/1),因为已经是叶子节点， 所以(1/1)会随机产生一个未被访问过的新节点，初始化为(0/0),接着在该节点下进行模拟。 进入第三部， 模拟。</p>
 <h3 id="模拟-1">模拟</h3>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq3.png" alt=""  />
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq3.png#center" alt=""  />
 </p>
 <p>黑棋执棋方面局面（0/0），开始进行游戏仿真， 假设经过一些列仿真后，最终白棋获胜，即从更节点到最终模拟结束的叶子节点黑棋失败了。 进入第四部，回溯</p>
 <h3 id="回溯">回溯</h3>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq4.png" alt=""  />
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq4.png#center" alt=""  />
 </p>
 <p>根据仿真结果来更新该仿真路径上的每个节点的A/B值。 因为该次模拟最终白棋获胜，所以向上回溯路径上的所有父节点，父节点的A不变，B+1。 若最终黑棋获胜，则父节点的A+1, B+1。</p>
 <p><strong>在有限时间里， MCTS会不断重复4个步骤，所有节点的A,B 值会不断变化</strong></p>

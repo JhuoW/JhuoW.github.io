@@ -488,12 +488,28 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <td>A python package for graph kernels, graph edit distances, and graph pre-image problem.</td>
 </tr>
 <tr>
-<td></td>
-<td></td>
+<td><a href="https://github.com/pliang279/awesome-phd-advice">https://github.com/pliang279/awesome-phd-advice</a></td>
+<td>Collection of advice for prospective and current PhD students</td>
 </tr>
 <tr>
-<td></td>
-<td></td>
+<td><a href="https://github.com/MLEveryday/100-Days-Of-ML-Code">https://github.com/MLEveryday/100-Days-Of-ML-Code</a></td>
+<td>100-Days-Of-ML-Code中文版</td>
+</tr>
+<tr>
+<td><a href="https://github.com/d2l-ai/d2l-zh">https://github.com/d2l-ai/d2l-zh</a></td>
+<td>《动手学深度学习》</td>
+</tr>
+<tr>
+<td><a href="https://github.com/lukas-blecher/LaTeX-OCR">https://github.com/lukas-blecher/LaTeX-OCR</a></td>
+<td>pix2tex: Using a ViT to convert images of equations into LaTeX code.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/thunlp/OpenPrompt">https://github.com/thunlp/OpenPrompt</a></td>
+<td>An Open-Source Framework for Prompt-Learning.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/snap-stanford/GraphGym">https://github.com/snap-stanford/GraphGym</a></td>
+<td>Platform for designing and evaluating Graph Neural Networks (GNN)</td>
 </tr>
 </tbody>
 </table>

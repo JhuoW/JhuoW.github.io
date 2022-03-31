@@ -626,12 +626,28 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <td>A python package for graph kernels, graph edit distances, and graph pre-image problem.</td>
 </tr>
 <tr>
-<td></td>
-<td></td>
+<td><a href="https://github.com/pliang279/awesome-phd-advice">https://github.com/pliang279/awesome-phd-advice</a></td>
+<td>Collection of advice for prospective and current PhD students</td>
 </tr>
 <tr>
-<td></td>
-<td></td>
+<td><a href="https://github.com/MLEveryday/100-Days-Of-ML-Code">https://github.com/MLEveryday/100-Days-Of-ML-Code</a></td>
+<td>100-Days-Of-ML-Code中文版</td>
+</tr>
+<tr>
+<td><a href="https://github.com/d2l-ai/d2l-zh">https://github.com/d2l-ai/d2l-zh</a></td>
+<td>《动手学深度学习》</td>
+</tr>
+<tr>
+<td><a href="https://github.com/lukas-blecher/LaTeX-OCR">https://github.com/lukas-blecher/LaTeX-OCR</a></td>
+<td>pix2tex: Using a ViT to convert images of equations into LaTeX code.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/thunlp/OpenPrompt">https://github.com/thunlp/OpenPrompt</a></td>
+<td>An Open-Source Framework for Prompt-Learning.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/snap-stanford/GraphGym">https://github.com/snap-stanford/GraphGym</a></td>
+<td>Platform for designing and evaluating Graph Neural Networks (GNN)</td>
 </tr>
 </tbody>
 </table>
@@ -2410,6 +2426,454 @@ May The Force Be With You </description>
 ]]></content:encoded>
     </item>
     
+    
+    <item>
+      <title>Photo Gallery</title>
+      <link>https://JhuoW.github.io/gallery/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/gallery/</guid>
+      <description>I’ve been fascinated by photography.😄
+The photos are taken with my Nikon F3 + 50/1.4 and FUJIFILM X-T30II + XF16-80mm F4.
+   1st
+      10th
+      11th
+      12th
+      13th
+      14th
+      15th
+      16th</description>
+      <content:encoded><![CDATA[<p>I’ve been fascinated by photography.😄</p>
+<p>The photos are taken with my <em>Nikon F3 + 50/1.4</em>  and <em>FUJIFILM X-T30II + XF16-80mm F4</em>.</p>
+<p>
+<link rel="stylesheet" href=https://JhuoW.github.io/css/hugo-easy-gallery.css />
+
+<div class="gallery caption-position-none caption-effect-slide hover-effect-zoom hover-transition" itemscope itemtype="http://schema.org/ImageGallery">
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//1.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//1.jpg" alt="1st" />
+				    </div>
+			      <figcaption>
+		          <p>1st</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//1.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//10.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//10.jpg" alt="10th" />
+				    </div>
+			      <figcaption>
+		          <p>10th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//10.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//11.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//11.jpg" alt="11th" />
+				    </div>
+			      <figcaption>
+		          <p>11th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//11.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//12.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//12.jpg" alt="12th" />
+				    </div>
+			      <figcaption>
+		          <p>12th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//12.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//13.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//13.jpg" alt="13th" />
+				    </div>
+			      <figcaption>
+		          <p>13th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//13.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//14.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//14.jpg" alt="14th" />
+				    </div>
+			      <figcaption>
+		          <p>14th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//14.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//15.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//15.jpg" alt="15th" />
+				    </div>
+			      <figcaption>
+		          <p>15th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//15.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//16.png');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//16.png" alt="16th" />
+				    </div>
+			      <figcaption>
+		          <p>16th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//16.png" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//17.png');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//17.png" alt="17th" />
+				    </div>
+			      <figcaption>
+		          <p>17th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//17.png" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//18.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//18.jpg" alt="18th" />
+				    </div>
+			      <figcaption>
+		          <p>18th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//18.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//19.png');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//19.png" alt="19th" />
+				    </div>
+			      <figcaption>
+		          <p>19th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//19.png" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//2.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//2.jpg" alt="2nd" />
+				    </div>
+			      <figcaption>
+		          <p>2nd</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//2.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//20.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//20.jpg" alt="20th" />
+				    </div>
+			      <figcaption>
+		          <p>20th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//20.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//21.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//21.jpg" alt="21st" />
+				    </div>
+			      <figcaption>
+		          <p>21st</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//21.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//22.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//22.jpg" alt="22nd" />
+				    </div>
+			      <figcaption>
+		          <p>22nd</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//22.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//23.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//23.jpg" alt="23rd" />
+				    </div>
+			      <figcaption>
+		          <p>23rd</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//23.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//24.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//24.jpg" alt="24th" />
+				    </div>
+			      <figcaption>
+		          <p>24th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//24.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//25.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//25.jpg" alt="25th" />
+				    </div>
+			      <figcaption>
+		          <p>25th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//25.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//26.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//26.jpg" alt="26th" />
+				    </div>
+			      <figcaption>
+		          <p>26th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//26.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//27.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//27.jpg" alt="27th" />
+				    </div>
+			      <figcaption>
+		          <p>27th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//27.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//28.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//28.jpg" alt="28th" />
+				    </div>
+			      <figcaption>
+		          <p>28th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//28.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//29.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//29.jpg" alt="29th" />
+				    </div>
+			      <figcaption>
+		          <p>29th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//29.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//3.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//3.jpg" alt="3rd" />
+				    </div>
+			      <figcaption>
+		          <p>3rd</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//3.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//30.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//30.jpg" alt="30th" />
+				    </div>
+			      <figcaption>
+		          <p>30th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//30.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//31.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//31.jpg" alt="31st" />
+				    </div>
+			      <figcaption>
+		          <p>31st</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//31.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//32.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//32.jpg" alt="32nd" />
+				    </div>
+			      <figcaption>
+		          <p>32nd</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//32.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//33.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//33.jpg" alt="33rd" />
+				    </div>
+			      <figcaption>
+		          <p>33rd</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//33.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//4.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//4.jpg" alt="4th" />
+				    </div>
+			      <figcaption>
+		          <p>4th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//4.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//5.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//5.jpg" alt="5th" />
+				    </div>
+			      <figcaption>
+		          <p>5th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//5.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//6.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//6.jpg" alt="6th" />
+				    </div>
+			      <figcaption>
+		          <p>6th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//6.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//7.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//7.jpg" alt="7th" />
+				    </div>
+			      <figcaption>
+		          <p>7th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//7.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//8.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//8.jpg" alt="8th" />
+				    </div>
+			      <figcaption>
+		          <p>8th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//8.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+				<div class="box">
+				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+				    <div class="img" style="background-image: url('https://JhuoW.github.io//img//9.jpg');" >
+				      <img itemprop="thumbnail" src="https://JhuoW.github.io//img//9.jpg" alt="9th" />
+				    </div>
+			      <figcaption>
+		          <p>9th</p>
+			      </figcaption>
+				    <a href="https://JhuoW.github.io//img//9.jpg" itemprop="contentUrl"></a>
+				  </figure>
+				</div>
+</div>
+ 
+
+
+
+  
+
+
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe.min.css" integrity="sha256-sCl5PUOGMLfFYctzDW3MtRib0ctyUvI9Qsmq2wXOeBY=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/default-skin/default-skin.min.css" integrity="sha256-BFeI1V+Vh1Rk37wswuOYn5lsTcaU96hGaI7OUVCLjPc=" crossorigin="anonymous" />
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+</p>
+]]></content:encoded>
+    </item>
     
     
     <item>

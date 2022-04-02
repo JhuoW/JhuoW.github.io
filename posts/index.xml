@@ -21,7 +21,7 @@
       <content:encoded><![CDATA[<h1 id="introduction">Introduction</h1>
 <p>The spectral graph theory studies the properties of graphs via the eigenvalues and eigenvectors of their associated graph matrices: the adjacency matrix and the graph Laplacian and its variants. The Laplacian allows a natural link between discrete representations, such as graphs, and continuous representations, such as vector spaces and manifolds.  The most important application of the Laplacian is spectral clustering that corresponds to a computationally tractable solution to the graph partitionning problem. Another application is spectral matching that solves for graph matching.</p>
 <h1 id="basic-notations">Basic notations</h1>
-<p>We consider simple graphs (no multiple edges or loops), $\mathcal{G}={\mathcal{V}, \mathcal{E}}$ :</p>
+<p>We consider simple graphs (no multiple edges or loops), $\mathcal{G}=(\mathcal{V}, \mathcal{E})$ :</p>
 <ul>
 <li>
 <p>$\mathcal{V}(\mathcal{G})=\left\{v_{1}, \ldots, v_{n}\right\}$ is called the vertex set with $n=|\mathcal{V}|$;</p>
@@ -278,7 +278,7 @@ $$</p>
 <h1 id="the-laplacian-of-a-graph-with-one-connected-component">The Laplacian of a graph with one connected component</h1>
 <ul>
 <li>
-<p>Lu $=\lambda \boldsymbol{u}$.</p>
+<p>$Lu =\lambda \boldsymbol{u}$.</p>
 </li>
 <li>
 <p>$\mathbf{L} \mathbf{1}_{n}=\mathbf{0}, \lambda_{1}=0$ is the smallest eigenvalue.</p>
@@ -505,7 +505,7 @@ $$</p>
 $$</p>
 <h1 id="the-graph-pca">The graph PCA</h1>
 <ul>
-<li>The mean (remember that $\sum_{j=1}^{n} \boldsymbol{u}<em>{i}\left(v</em>{j}\right)=0$ ):</li>
+<li>The mean (remember that $\sum_{j=1}^{n} \boldsymbol{u}_{i}\left(v_{j}\right)=0$ ):</li>
 </ul>
 <p>$$
 \overline{\boldsymbol{x}}=\frac{1}{n} \sum_{i=1}^{n} \boldsymbol{x}_{j}=\boldsymbol{\Lambda}_{k}^{-\frac{1}{2}}\left(\begin{array}{c}
@@ -701,9 +701,78 @@ $$</p>
 \boldsymbol{\mu}_{i}=\frac{\sum_{j=1}^{n} r_{j i} \boldsymbol{y}_{j}}{\sum_{j=1}^{n} r_{j i}}
 $$</p>
 <p>(4) Convergence: Repeat until no more change in the assignments.</p>
+<h1 id="the-laplacian-and-the-rayleigh-quotient">The Laplacian and the Rayleigh quotient</h1>
+<p>As usual, for a graph $G=(V, E)$, let $A$ be its adjacency matrix and $D$ be the diagonal matrix with $D(v, v)=d_{v}$. Then, the random walk on $G$ will be taken according to the transition matrix $P=D^{-1} A$. We also define the stationary distribution $\pi$ with $\pi(x)=d_{x} / \operatorname{vol} G$.</p>
+<p>Our discussion of random walks on $G$ left off with the result</p>
+<p>$$
+\left|\left|f P^{t}-\pi\right|\right|_{2} \leq \max_{i \neq 0}\left|\rho_{i}\right|^{t} \frac{\max_{x} \sqrt{d_{x}}}{\min_{y} \sqrt{d_{y}}}
+$$</p>
+<p>where $f$ is a probability distribution (i.e. $f \geq 0$ and $\sum_{x} f(x)=1$ ) and $1=\rho_{0} \geq \rho_{1} \geq \ldots \geq \rho_{n-1}$ are the eigenvalues of $P$. This inequality implies that convergence to the stationary distribution $\pi$ will follow if $\max \left\{\left|\rho_{1}\right|,\left|\rho_{n-1}\right|\right\}&lt;1$.</p>
+<p>The transition probability matrix $P$ is similar to the matrix $M=D^{\frac{1}{2}} P D^{-\frac{1}{2}}$, so $P$ and $M$ have the same eigenvalues. We previously introduced the Laplacian of the graph as $\mathcal{L}=I-M$, so it has eigenvalues $0=\lambda_{0} \leq \lambda_{1} \leq \ldots \leq \lambda_{n-1}$ (where $\lambda_{i}=1-\rho_{i}$ ).</p>
+<p>The main tool we&rsquo;ll use to study the spectrum of $\mathcal{L}$ is the Rayleigh quotient $R(f)$ of $\mathcal{L}$, defined (for our purposes) as</p>
+<p>$$
+R(f)=\frac{f L f^{*}}{f D f^{*}}
+$$</p>
+<p>where $L=D-A$ is the combinatorial Laplacian. This is the same as the usual sense of the Rayleigh quotient $g \mathcal{L} g^{*} / g g^{*}$ with the subtitution $f=g D^{-\frac{1}{2}}$. Following this equivalence, if the $\phi_{i}$ are the eigenvectors of $\mathcal{L}$, we&rsquo;ll call the $\psi_{i}=\phi_{i} D^{-\frac{1}{2}}$ the harmonic eigenvectors of $\mathcal{L}$.</p>
+<p>Employing the Rayleigh quotient, we see that the eigenvalue $\lambda_{1}$ can be written as</p>
+<p>$$
+\lambda_{1}=\inf_{\substack{f \\ \sum_{x} f(x) d_{x}=0}} R(f) .
+$$</p>
+<p>Since the eigenvector associated with $\lambda_{0}$ is $\phi_{0}=1 D^{\frac{1}{2}}$, the condition $\sum_{x} f(x) d_{x}=0$ is an orthogonality condition. Such variational characterizations can also be made for the other eigenvalues:</p>
+<p>$$
+\lambda_{n-1}=\sup _{f} R(f)
+$$</p>
+<p>and, in general,
+$$
+\lambda_{i}=\sup_{h_{0}, h_{1}, \ldots, h_{i-1}}
+\inf_{\substack{f: \\ \sum_{x} f(x) h_{j}(x) d_{x}=0 \\ \forall j \in{0, \ldots, i-1}}}  R(f)
+$$
+The following characterization of the Rayleigh quotient (demonstrated last time) will be useful later:
+$$
+R(f)=\frac{\sum_{x \sim y}(f(x)-f(y))^{2}}{\sum_{x} f^{2}(x) d_{x}} .
+$$</p>
+<p>To this point, we have done a lot of linear algebra. We are not here to teach linear algebra; we are here to take linear algebra one step further to understand what is happening in the graph.</p>
+<h1 id="the-cheeger-ratio-and-the-cheeger-constant">The Cheeger Ratio and The Cheeger Constant</h1>
+<p>In many areas of mathematics the questions of &ldquo;best&rdquo; comes into play. What is the best bound for a given constant? What is the best way of row reducing a certain matrix? In this section, we will describe a way to make the &ldquo;best possible cut&rdquo; of a graph $G=(V, E)$, where a cut may be either an edge-cut or a vertex-cut, and this cut will split $G$ into two disconnected pieces.</p>
+<p>We would like a way to measure the quality of a cut that is made to $G$. That is, would it be better to cut 4 edges which cause us to lose 20 vertices, or is it better to cut 10 edges which would result in the removal of 120 vetices?</p>
+<p>Suppose we are given a graph $G=(V, E)$ and a subset $S \subseteq V$. We wish to define the folling two sets:</p>
+<p>$$
+\partial S={{u, v} \mid u \in S, v \notin S}
+$$</p>
+<p>and</p>
+<p>$$
+\delta S={v \notin S \mid v \sim u, u \in S} .
+$$</p>
+<p>Definition 1 For any vertex set $W$, the volume of $W$ is given by</p>
+<p>$$
+\operatorname{vol}(W)=\sum_{x W} d_{x},
+$$</p>
+<p>where $d_{x}$ is the degree of $\mathrm{x}$ in $W$.</p>
+<p>Definition 2 The Cheerger Ratio for a vertex set $S$ is</p>
+<p>$$
+h(S)=\frac{|\partial S|}{\min {\operatorname{vol}(S), \operatorname{vol}(\bar{S})}},
+$$</p>
+<p>where $\bar{S}=V-S$.</p>
+<p>It is first worth noting that in terms of this defintion of the Cheeger ratio, we are gauging the quality of our cut by taking a measure of what&rsquo;s been cut off of $G$. There are other forms of the Cheeger ratio as well. For example, we can use $|\delta S|$ instead of $|\partial S|,|S|($ or $\bar{S})$ instead of $\operatorname{vol}(S)$ (or $\operatorname{vol}(\bar{S}))$, or $|S||\bar{S}|$ instead of $\min {\operatorname{vol}(S), \operatorname{vol}(\bar{S})}$.</p>
+<p>Definition 3 For any graph $G=(V, E)$, the Cheeger Constant of $G$ is given by</p>
+<p>$$
+h_{G}=\min_S h(S) .
+$$</p>
+<p>Now, if we consider the case where $\operatorname{vol}(S) \leq \frac{1}{2} \operatorname{vol}(G)$, then we can see that</p>
+<p>$$
+|\partial S| \geq h_{G}(\operatorname{vol}(S)) .
+$$</p>
+<h1 id="the-cheeger-inequality">The Cheeger Inequality</h1>
+<p>Given a graph $G$, we can define $\lambda_{1}$ to be the first nontrivial eignevalue of the Laplacian, $\mathcal{L}$, of $G$.</p>
+<p>For any graph $G$,</p>
+<p>$$
+2 h_{G} \geq \lambda_{1} \geq \frac{h_{G}^{2}}{2}
+$$</p>
 <h1 id="reference">Reference</h1>
 <p><a href="https://csustan.csustan.edu/~tom/Clustering/GraphLaplacian-tutorial.pdf">https://csustan.csustan.edu/~tom/Clustering/GraphLaplacian-tutorial.pdf</a></p>
 <p><a href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf">https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf</a></p>
+<p><a href="https://mathweb.ucsd.edu/~fan/teach/262/notes/paul/10_5_notes.pdf">https://mathweb.ucsd.edu/~fan/teach/262/notes/paul/10_5_notes.pdf</a></p>
+<p><a href="https://mathweb.ucsd.edu/~fan/teach/262/notes/paul/10_5_notes.pdf">https://mathweb.ucsd.edu/~fan/teach/262/notes/paul/10_5_notes.pdf</a></p>
 ]]></content:encoded>
     </item>
     

@@ -642,6 +642,7 @@ $$</p>
 \operatorname{NCut}\left(A_{1}, \ldots, A_{k}\right):=\frac{1}{2} \sum_{i=1}^{k} \frac{W\left(A_{i}, \bar{A}_{i}\right)}{\operatorname{vol}\left(A_{i}\right)}
 $$</p>
 <h1 id="what-is-spectral-clustering">What is spectral clustering?</h1>
+<p>See my <a href="https://jhuow.fun/posts/2019-09-07-spectral-clustering/">Blog</a> of Spectral Clustering (in Chinese).</p>
 <ul>
 <li>
 <p>Both ratio-cut and normalized-cut minimizations are NP-hard problems</p>

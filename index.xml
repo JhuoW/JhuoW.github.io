@@ -10,7 +10,702 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 02 Apr 2022 10:34:01 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 02 Apr 2022 15:00:20 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Everything about Graph Laplacian</title>
+      <link>https://JhuoW.github.io/posts/laplacian/</link>
+      <pubDate>Sat, 02 Apr 2022 15:00:20 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/laplacian/</guid>
+      <description>Introduction The spectral graph theory studies the properties of graphs via the eigenvalues and eigenvectors of their associated graph matrices: the adjacency matrix and the graph Laplacian and its variants. The Laplacian allows a natural link between discrete representations, such as graphs, and continuous representations, such as vector spaces and manifolds. The most important application of the Laplacian is spectral clustering that corresponds to a computationally tractable solution to the graph partitionning problem.</description>
+      <content:encoded><![CDATA[<h1 id="introduction">Introduction</h1>
+<p>The spectral graph theory studies the properties of graphs via the eigenvalues and eigenvectors of their associated graph matrices: the adjacency matrix and the graph Laplacian and its variants. The Laplacian allows a natural link between discrete representations, such as graphs, and continuous representations, such as vector spaces and manifolds.  The most important application of the Laplacian is spectral clustering that corresponds to a computationally tractable solution to the graph partitionning problem. Another application is spectral matching that solves for graph matching.</p>
+<h1 id="basic-notations">Basic notations</h1>
+<p>We consider simple graphs (no multiple edges or loops), $\mathcal{G}={\mathcal{V}, \mathcal{E}}$ :</p>
+<ul>
+<li>
+<p>$\mathcal{V}(\mathcal{G})=\left\{v_{1}, \ldots, v_{n}\right\}$ is called the vertex set with $n=|\mathcal{V}|$;</p>
+</li>
+<li>
+<p>$\mathcal{E}(\mathcal{G})=\left\{e_{i j}\right\}$ is called the edge set with $m=|\mathcal{E}|$;</p>
+</li>
+<li>
+<p>An edge $e_{i j}$ connects vertices $v_{i}$ and $v_{j}$ if they are adjacent or neighbors. One possible notation for adjacency is $v_{i} \sim v_{j}$;</p>
+</li>
+<li>
+<p>The number of neighbors of a node $v$ is called the degree of $v$ and is denoted by $d(v), d\left(v_{i}\right)=\sum_{v_{i} \sim v_{j}} e_{i j}$. If all the nodes of a graph have the same degree, the graph is regular; The nodes of an Eulerian graph have even degree.</p>
+</li>
+<li>
+<p>A graph is complete if there is an edge between every pair of vertices.</p>
+</li>
+</ul>
+<h1 id="subgraph-of-a-graph">Subgraph of a graph</h1>
+<ul>
+<li>
+<p>$\mathcal{H}$ is a subgraph of $\mathcal{G}$ if $\mathcal{V}(\mathcal{H}) \subseteq \mathcal{V}(\mathcal{G})$ and $\mathcal{E}(\mathcal{H}) \subseteq \mathcal{E}(\mathcal{G})$;</p>
+</li>
+<li>
+<p>a subgraph $\mathcal{H}$ is an induced subgraph of $\mathcal{G}$ if two vertices of $\mathcal{V}(\mathcal{H})$ are adjacent if and only if they are adjacent in $\mathcal{G}$.</p>
+</li>
+<li>
+<p>A clique is a complete subgraph of a graph.</p>
+</li>
+<li>
+<p>A path of $k$ vertices is a sequence of $k$ distinct vertices such that consecutive vertices are adjacent.</p>
+</li>
+<li>
+<p>A cycle is a connected subgraph where every vertex has exactly two neighbors.</p>
+</li>
+<li>
+<p>A graph containing no cycles is a forest. A connected forest is a tree.</p>
+</li>
+</ul>
+<h1 id="a-k-partite-graph">A k-partite graph</h1>
+<ul>
+<li>A graph is called k-partite if its set of vertices admits a partition into $k$ classes such that the vertices of the same class are not adjacent.</li>
+<li>An example of a bipartite graph.</li>
+</ul>
+<p><img loading="lazy" src="/posts/2022-04-02-laplacian/1.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="the-adjacency-matrix-of-a-graph">The adjacency matrix of a graph</h1>
+<ul>
+<li>For a graph with $n$ vertices, the entries of the $n \times n$ adjacency matrix are defined by:</li>
+</ul>
+<p>$$
+\mathbf{A}:= \begin{cases}A_{i j}=1 &amp; \text { if there is an edge } e_{i j} \\ A_{i j}=0 &amp; \text { if there is no edge } \\ A_{i i}=0 &amp; \end{cases}
+$$</p>
+<p>$$
+\begin{aligned}
+&amp; \mathbf{A}=\left[\begin{array}{llll}0 &amp; 1 &amp; 1 &amp; 0 \\1 &amp; 0 &amp; 1 &amp; 1 \\1 &amp; 1 &amp; 0 &amp; 0 \\0 &amp; 1 &amp; 0 &amp; 0\end{array}\right]
+\end{aligned}
+$$</p>
+<p><img loading="lazy" src="/posts/2022-04-02-laplacian/2.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="eigenvalues-and-eigenvectors">Eigenvalues and eigenvectors</h1>
+<ul>
+<li>
+<p>A is a real-symmetric matrix: it has $n$ real eigenvalues and its $n$ real eigenvectors form an orthonormal basis.</p>
+</li>
+<li>
+<p>Let $\left\{\lambda_{1}, \ldots, \lambda_{i}, \ldots, \lambda_{r}\right\}$ be the set of distinct eigenvalues.</p>
+</li>
+<li>
+<p>The eigenspace $S_{i}$ contains the eigenvectors associated with $\lambda_{i}$ :</p>
+</li>
+</ul>
+<p>$$
+S_{i}=\left\{\boldsymbol{x} \in \mathbb{R}^{n} \mid \mathbf{A} \boldsymbol{x}=\lambda_{i} \boldsymbol{x}\right\}
+$$</p>
+<ul>
+<li>
+<p>For real-symmetric matrices, the algebraic multiplicity is equal to the geometric multiplicity, for all the eigenvalues.</p>
+</li>
+<li>
+<p>The dimension of $S_{i}$ (geometric multiplicity) is equal to the multiplicity of $\lambda_{i}$.</p>
+</li>
+<li>
+<p>If $\lambda_{i} \neq \lambda_{j}$ then $S_{i}$ and $S_{j}$ are mutually orthogonal.</p>
+</li>
+</ul>
+<h1 id="real-valued-functions-on-graphs">Real-valued functions on graphs</h1>
+<ul>
+<li>
+<p>We consider real-valued functions on the set of the graph&rsquo;s vertices, $\boldsymbol{f}: \mathcal{V} \longrightarrow \mathbb{R}$. Such a function assigns a real number to each graph node.</p>
+</li>
+<li>
+<p>$\boldsymbol{f}$ is a vector indexed by the graph&rsquo;s vertices, hence $\boldsymbol{f} \in \mathbb{R}^{n}$.</p>
+</li>
+<li>
+<p>Notation: $\boldsymbol{f}=\left(f\left(v_{1}\right), \ldots, f\left(v_{n}\right)\right)=(f(1), \ldots, f(n))$.</p>
+</li>
+<li>
+<p>The eigenvectors of the adjacency matrix, $\mathbf{A} \boldsymbol{x}=\lambda \boldsymbol{x}$, can be viewed as eigenfunctions.</p>
+</li>
+</ul>
+<p><img loading="lazy" src="/posts/2022-04-02-laplacian/3.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="matrix-a-as-an-operator-and-quadratic-form">Matrix A as an operator and quadratic form</h1>
+<ul>
+<li>The adjacency matrix can be viewed as an operator</li>
+</ul>
+<p>$$
+\boldsymbol{g}=\mathbf{A} \boldsymbol{f} ; g(i)=\sum_{i \sim j} f(j)
+$$</p>
+<ul>
+<li>It can also be viewed as a quadratic form:</li>
+</ul>
+<p>$$
+\boldsymbol{f}^{\top} \mathbf{A} \boldsymbol{f}=\sum_{e_{i j}} f(i) f(j)
+$$</p>
+<h1 id="the-incidence-matrix-of-a-graph">The incidence matrix of a graph</h1>
+<ul>
+<li>
+<p>Let each edge in the graph have an arbitrary but fixed orientation;</p>
+</li>
+<li>
+<p>The incidence matrix of a graph is a $|\mathcal{E}| \times|\mathcal{V}|(m \times n)$ matrix defined as follows:</p>
+</li>
+</ul>
+<p>$$
+\nabla:= \begin{cases}\nabla_{e v}=-1 &amp; \text { if } v \text { is the initial vertex of edge } e \\ \nabla_{e v}=1 &amp; \text { if } v \text { is the terminal vertex of edge } e \\ \nabla_{e v}=0 &amp; \text { if } v \text { is not in } e\end{cases}
+$$</p>
+<p>$$
+\begin{aligned}
+&amp; \nabla=\left[\begin{array}{cccc}-1 &amp; 1 &amp; 0 &amp; 0 \\1 &amp; 0 &amp; -1 &amp; 0 \\0 &amp; -1 &amp; 1 &amp; 0 \\0 &amp; -1 &amp; 0 &amp; +1\end{array}\right]
+\end{aligned}
+$$</p>
+<p><img loading="lazy" src="/posts/2022-04-02-laplacian/2.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="the-incidence-matrix-a-discrete-differential-operator">The incidence matrix: A discrete differential operator</h1>
+<ul>
+<li>
+<p>The mapping $\boldsymbol{f} \longrightarrow \nabla \boldsymbol{f}$ is known as the co-boundary mapping of the graph.</p>
+</li>
+<li>
+<p>$(\nabla \boldsymbol{f})\left(e_{i j}\right)=f\left(v_{j}\right)-f\left(v_{i}\right)$</p>
+</li>
+</ul>
+<p>$$
+\left(\begin{array}{c}
+f(2)-f(1) \\
+f(1)-f(3) \\
+f(3)-f(2) \\
+f(4)-f(2)
+\end{array}\right)=\left[\begin{array}{cccc}
+-1 &amp; 1 &amp; 0 &amp; 0 \\
+1 &amp; 0 &amp; -1 &amp; 0 \\
+0 &amp; -1 &amp; 1 &amp; 0 \\
+0 &amp; -1 &amp; 0 &amp; +1
+\end{array}\right]\left(\begin{array}{c}
+f(1) \\
+f(2) \\
+f(3) \\
+f(4)
+\end{array}\right)
+$$</p>
+<h1 id="the-laplacian-matrix-of-a-graph">The Laplacian matrix of a graph</h1>
+<ul>
+<li>
+<p>$\mathbf{L}=\nabla^{\top} \nabla$</p>
+</li>
+<li>
+<p>$(\mathbf{L} \boldsymbol{f})\left(v_{i}\right)=\sum_{v_{j} \sim v_{i}}\left(f\left(v_{i}\right)-f\left(v_{j}\right)\right)$</p>
+</li>
+<li>
+<p>Connection between the Laplacian and the adjacency matrices:</p>
+</li>
+</ul>
+<p>$$
+\mathbf{L}=\mathbf{D}-\mathbf{A}
+$$</p>
+<ul>
+<li>The degree matrix: $\mathbf{D}:=D_{i i}=d\left(v_{i}\right)$.</li>
+</ul>
+<p>$$
+\mathbf{L}=\left[\begin{array}{cccc}
+2 &amp; -1 &amp; -1 &amp; 0 \\
+-1 &amp; 3 &amp; -1 &amp; -1 \\
+-1 &amp; -1 &amp; 2 &amp; 0 \\
+0 &amp; -1 &amp; 0 &amp; 1
+\end{array}\right]
+$$</p>
+<h1 id="the-laplacian-matrix-of-an-undirected-weighted-graph">The Laplacian matrix of an undirected weighted graph</h1>
+<ul>
+<li>
+<p>We consider undirected weighted graphs: Each edge $e_{i j}$ is weighted by $w_{i j}&gt;0$.</p>
+</li>
+<li>
+<p>The Laplacian as an operator:</p>
+</li>
+</ul>
+<p>$$
+(\mathbf{L} \boldsymbol{f})\left(v_{i}\right)=\sum_{v_{j} \sim v_{i}} w_{i j}\left(f\left(v_{i}\right)-f\left(v_{j}\right)\right)
+$$</p>
+<ul>
+<li>As a quadratic form:</li>
+</ul>
+<p>$$
+\boldsymbol{f}^{\top} \mathbf{L} \boldsymbol{f}=\frac{1}{2} \sum_{e_{i j}} w_{i j}\left(f\left(v_{i}\right)-f\left(v_{j}\right)\right)^{2}
+$$</p>
+<ul>
+<li>
+<p>L is symmetric and positive semi-definite.</p>
+</li>
+<li>
+<p>L has $n$ non-negative, real-valued eigenvalues: $0=\lambda_{1} \leq \lambda_{2} \leq \ldots \leq \lambda_{n} .$</p>
+</li>
+</ul>
+<h1 id="the-laplacian-of-a-3d-discrete-surface-mesh">The Laplacian of a 3D discrete surface (mesh)</h1>
+<ul>
+<li>
+<p>A graph vertex $v_{i}$ is associated with a 3D point $\boldsymbol{v}_{i}$.</p>
+</li>
+<li>
+<p>The weight of an edge $e_{i j}$ is defined by the Gaussian kernel:</p>
+</li>
+</ul>
+<p>$$
+w_{i j}=\exp \left(-\left|\boldsymbol{v}_{i}-\boldsymbol{v}_{j}\right|^{2} / \sigma^{2}\right)
+$$</p>
+<ul>
+<li>
+<p>$0 \leq w_{\min } \leq w_{i j} \leq w_{\max } \leq 1$</p>
+</li>
+<li>
+<p>Hence, the geometric structure of the mesh is encoded in the weights.</p>
+</li>
+<li>
+<p>Other weighting functions were proposed in the literature.</p>
+</li>
+</ul>
+<h1 id="the-laplacian-of-a-cloud-of-points">The Laplacian of a cloud of points</h1>
+<ul>
+<li>
+<p>3-nearest neighbor graph</p>
+</li>
+<li>
+<p>$\varepsilon$-radius graph</p>
+</li>
+<li>
+<p>KNN may guarantee that the graph is connected (depends on the implementation)</p>
+</li>
+<li>
+<p>$\varepsilon$-radius does not guarantee that the graph has one connected component</p>
+</li>
+</ul>
+<p><img loading="lazy" src="/posts/2022-04-02-laplacian/4.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="the-laplacian-of-a-graph-with-one-connected-component">The Laplacian of a graph with one connected component</h1>
+<ul>
+<li>
+<p>Lu $=\lambda \boldsymbol{u}$.</p>
+</li>
+<li>
+<p>$\mathbf{L} \mathbf{1}_{n}=\mathbf{0}, \lambda_{1}=0$ is the smallest eigenvalue.</p>
+</li>
+<li>
+<p>The one vector: $\mathbf{1}_{n}=(1 \ldots 1)^{\top}$.</p>
+</li>
+<li>
+<p>$0=\boldsymbol{u}^{\top} \mathbf{L} \boldsymbol{u}=\sum_{i, j=1}^{n} w_{i j}(u(i)-u(j))^{2}$.</p>
+</li>
+<li>
+<p>If any two vertices are connected by a path, then $\boldsymbol{u}=(u(1), \ldots, u(n))$ needs to be constant at all vertices such that the quadratic form vanishes. Therefore, a graph with one connected component has the constant vector $\boldsymbol{u}_{1}=\mathbf{1}_{n}$ as the only eigenvector with eigenvalue 0 .</p>
+</li>
+</ul>
+<h1 id="a-graph-with-k1-connected-components">A graph with $k&gt;1$ connected components</h1>
+<ul>
+<li>Each connected component has an associated Laplacian. Therefore, we can write matrix $\mathbf{L}$ as a block diagonal matrix:</li>
+</ul>
+<p>$$
+\mathbf{L}=\left[\begin{array}{lll}
+\mathbf{L}_{1} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \mathbf{L}_{k}
+\end{array}\right]
+$$</p>
+<ul>
+<li>
+<p>The spectrum of $\mathbf{L}$ is given by the union of the spectra of $\mathbf{L}_{i}$.</p>
+</li>
+<li>
+<p>Each block corresponds to a connected component, hence each matrix $\mathbf{L}_{i}$ has an eigenvalue 0 with multiplicity 1 .</p>
+</li>
+<li>
+<p>The spectrum of $\mathbf{L}$ is given by the union of the spectra of $\mathbf{L}_{i}$.</p>
+</li>
+<li>
+<p>The eigenvalue $\lambda_{1}=0$ has multiplicity $k$.</p>
+</li>
+</ul>
+<h1 id="the-eigenspace-of-lambda_10-with-multiplicity-k">The eigenspace of $\lambda_{1}=0$ with multiplicity $k$</h1>
+<ul>
+<li>The eigenspace corresponding to $\lambda_{1}=\ldots=\lambda_{k}=0$ is spanned by the $k$ mutually orthogonal vectors:</li>
+</ul>
+<p>$$
+\begin{aligned}
+\boldsymbol{u}_{1} &amp;=\mathbf{1}_{L_{1}} \\
+&amp; \cdots \\
+\boldsymbol{u}_{k} &amp;=\mathbf{1}_{L_{k}}
+\end{aligned}
+$$</p>
+<ul>
+<li>
+<p>with $\mathbf{1}_{L_{i}}=(0000111110000)^{\top} \in \mathbb{R}^{n}$</p>
+</li>
+<li>
+<p>These vectors are the indicator vectors of the graph&rsquo;s connected components.</p>
+</li>
+<li>
+<p>Notice that $\mathbf{1}_{L_{1}}+\ldots+\mathbf{1}_{L_{k}}=\mathbf{1}_{n}$</p>
+</li>
+</ul>
+<h1 id="the-fiedler-vector-of-the-graph-laplacian">The Fiedler vector of the graph Laplacian</h1>
+<ul>
+<li>
+<p>The first non-null eigenvalue $\lambda_{k+1}$ is called the Fiedler value.</p>
+</li>
+<li>
+<p>The corresponding eigenvector $\boldsymbol{u}_{k+1}$ is called the Fiedler vector.</p>
+</li>
+<li>
+<p>The multiplicity of the Fiedler eigenvalue is always equal to $1 .$</p>
+</li>
+<li>
+<p>The Fiedler value is the algebraic connectivity of a graph, the further from 0 , the more connected.</p>
+</li>
+<li>
+<p>The Fidler vector has been extensively used for spectral bi-partioning</p>
+</li>
+<li>
+<p>Theoretical results are summarized in Spielman &amp; Teng 2007: <a href="http://cs-www.cs.yale.edu/homes/spielman/">http://cs-www.cs.yale.edu/homes/spielman/</a></p>
+</li>
+</ul>
+<h1 id="eigenvectors-of-the-laplacian-of-connected-graphs">Eigenvectors of the Laplacian of connected graphs</h1>
+<ul>
+<li>
+<p>$\boldsymbol{u}_{1}=\mathbf{1}_{n}, \mathbf{L} \mathbf{1}_{n}=\mathbf{0}$.</p>
+</li>
+<li>
+<p>$\boldsymbol{u}_{2}$ is the the Fiedler vector with multiplicity 1 .</p>
+</li>
+<li>
+<p>The eigenvectors form an orthonormal basis: $\boldsymbol{u}_{i}^{\top} \boldsymbol{u}_{j}=\delta_{i j}$.</p>
+</li>
+<li>
+<p>For any eigenvector $\boldsymbol{u}_{i}=\left(\boldsymbol{u}_{i}\left(v_{1}\right) \ldots \boldsymbol{u}_{i}\left(v_{n}\right)\right)^{\top}, 2 \leq i \leq n$ :</p>
+</li>
+</ul>
+<p>$$
+\boldsymbol{u}_{i}^{\top} \mathbf{1}_{n}=0
+$$</p>
+<ul>
+<li>Hence the components of $\boldsymbol{u}_{i}, 2 \leq i \leq n$ satisfy:</li>
+</ul>
+<p>$$
+\sum_{j=1}^{n} \boldsymbol{u}_{i}\left(v_{j}\right)=0
+$$</p>
+<ul>
+<li>Each component is bounded by:</li>
+</ul>
+<p>$$
+-1&lt;\boldsymbol{u}_{i}\left(v_{j}\right)&lt;1
+$$</p>
+<h1 id="laplacian-embedding-mapping-a-graph-on-a-line">Laplacian embedding: Mapping a graph on a line</h1>
+<ul>
+<li>Map a weighted graph onto a line such that connected nodes stay as close as possible, i.e., minimize $\sum_{i, j=1}^{n} w_{i j}\left(f\left(v_{i}\right)-f\left(v_{j}\right)\right)^{2}$, or:</li>
+</ul>
+<p>$$
+\arg \min _{\boldsymbol{f}} \boldsymbol{f}^{\top} \mathbf{L} \boldsymbol{f} \text { with: } \boldsymbol{f}^{\top} \boldsymbol{f}=1 \text { and } \boldsymbol{f}^{\top} \mathbf{1}=0
+$$</p>
+<ul>
+<li>
+<p>The solution is the eigenvector associated with the smallest nonzero eigenvalue of the eigenvalue problem: $\mathbf{L} \boldsymbol{f}=\lambda \boldsymbol{f}$, namely the Fiedler vector $\boldsymbol{u}_{2}$.</p>
+</li>
+<li>
+<p>For more details on this minimization see Golub &amp; Van Loan Matrix Computations, chapter 8 (The symmetric eigenvalue problem).</p>
+</li>
+</ul>
+<p><em><strong>Example of mapping a graph on the Fiedler vector</strong></em>:</p>
+<p><img loading="lazy" src="/posts/2022-04-02-laplacian/5.png#center" alt="你想输入的替代文字"  />
+</p>
+<h1 id="laplacian-embedding">Laplacian embedding</h1>
+<ul>
+<li>
+<p>Embed the graph in a $k$-dimensional Euclidean space. The embedding is given by the $n \times k$ matrix $\mathbf{F}=\left[\boldsymbol{f}_{1} \boldsymbol{f}_{2} \ldots \boldsymbol{f}_{k}\right]$ where the $i$-th row of this matrix $-\boldsymbol{f}^{(i)}-$ corresponds to the Euclidean coordinates of the $i$-th graph node $v_{i}$.</p>
+</li>
+<li>
+<p>We need to minimize:</p>
+</li>
+</ul>
+<p>$$
+\arg \min_{\boldsymbol{f}_{1} \ldots} \sum_{k}^{n} \sum_{i, j=1}^{n} w_{i j}\left|\left|\boldsymbol{f}^{(i)}-\boldsymbol{f}^{(j)}\right|\right|^{2} \text { with: } \mathbf{F}^{\top} \mathbf{F}=\mathbf{I}
+$$</p>
+<ul>
+<li>The solution is provided by the matrix of eigenvectors corresponding to the $k$ lowest nonzero eigenvalues of the eigenvalue problem $\mathbf{L} \boldsymbol{f}=\lambda \boldsymbol{f}$.</li>
+</ul>
+<h1 id="spectral-embedding-using-the-unnormalized-laplacian">Spectral embedding using the unnormalized Laplacian</h1>
+<ul>
+<li>
+<p>Compute the eigendecomposition $\mathbf{L}=\mathbf{D}-\mathbf{A}$.</p>
+</li>
+<li>
+<p>Select the $k$ smallest non-null eigenvalues $\lambda_{2} \leq \ldots \leq \lambda_{k+1}$</p>
+</li>
+<li>
+<p>$\lambda_{k+2}-\lambda_{k+1}=$ eigengap.</p>
+</li>
+<li>
+<p>We obtain the $n \times k$ matrix $\mathbf{U}=\left[\boldsymbol{u}_{2} \ldots \boldsymbol{u}_{k+1}\right]$ :</p>
+</li>
+</ul>
+<p>$$
+\mathbf{U}=\left[\begin{array}{ccc}
+\boldsymbol{u}_{2}\left(v_{1}\right) &amp; \ldots &amp; \boldsymbol{u}_{k+1}\left(v_{1}\right) \\
+\vdots &amp; &amp; \vdots \\
+\boldsymbol{u}_{2}\left(v_{n}\right) &amp; \ldots &amp; \boldsymbol{u}_{k+1}\left(v_{n}\right)
+\end{array}\right]
+$$</p>
+<ul>
+<li>
+<p>$\boldsymbol{u}_{i}^{\top} \boldsymbol{u}_{j}=\delta_{i j}$ (orthonormal vectors), hence $\mathbf{U}^{\top} \mathbf{U}=\mathbf{I}_{k}$.</p>
+</li>
+<li>
+<p>Column $i(2 \leq i \leq k+1)$ of this matrix is a mapping on the eigenvector $\boldsymbol{u}_{i}$.</p>
+</li>
+</ul>
+<h1 id="euclidean-l-embedding-of-the-graphs-vertices">Euclidean L-embedding of the graph&rsquo;s vertices</h1>
+<ul>
+<li>(Euclidean) L-embedding of a graph:</li>
+</ul>
+<p>$$
+\mathbf{X}=\boldsymbol{\Lambda}_{k}^{-\frac{1}{2}} \mathbf{U}^{\top}=\left[\begin{array}{llll}
+\boldsymbol{x}_{1} &amp; \ldots &amp; \boldsymbol{x}_{j} \ldots &amp; \boldsymbol{x}_{n}
+\end{array}\right]
+$$</p>
+<p>The coordinates of a vertex $v_{j}$ are:</p>
+<p>$$
+\boldsymbol{x}_{j}=\left(\begin{array}{c}
+\frac{\boldsymbol{u}_{2}\left(v_{j}\right)}{\sqrt{\lambda_{2}}} \\
+\vdots \\
+\frac{\boldsymbol{u}_{k+1}\left(v_{j}\right)}{\sqrt{\lambda_{k+1}}}
+\end{array}\right)
+$$</p>
+<h1 id="justification-for-choosing-the-l-embedding">Justification for choosing the L-embedding</h1>
+<p>Both</p>
+<ul>
+<li>
+<p>the commute-time distance (CTD) and</p>
+</li>
+<li>
+<p>the principal-component analysis of a graph (graph PCA)</p>
+</li>
+</ul>
+<p>are two important concepts; They allow to reason &ldquo;statistically&rdquo; on a graph. They are both associated with the unnormalized Laplacian matrix.</p>
+<h1 id="the-commute-time-distance">The commute-time distance</h1>
+<ul>
+<li>
+<p>The CTD is a well known quantity in Markov chains;</p>
+</li>
+<li>
+<p>It is the average number of (weighted) edges that it takes, starting at vertex $v_{i}$, to randomly reach vertex $v_{j}$ for the first time and go back;</p>
+</li>
+<li>
+<p>The CTD decreases as the number of connections between the two nodes increases;</p>
+</li>
+<li>
+<p>It captures the connectivity structure of a small graph volume rather than a single path between the two vertices - such as the shortest-path geodesic distance.</p>
+</li>
+<li>
+<p>The CTD can be computed in closed form:</p>
+</li>
+</ul>
+<p>$$
+\operatorname{CTD}^{2}\left(v_{i}, v_{j}\right)=\operatorname{vol}(\mathcal{G})\left|\left|\boldsymbol{x}_{i}-\boldsymbol{x}_{j}\right|\right|^{2}
+$$</p>
+<h1 id="the-graph-pca">The graph PCA</h1>
+<ul>
+<li>The mean (remember that $\sum_{j=1}^{n} \boldsymbol{u}<em>{i}\left(v</em>{j}\right)=0$ ):</li>
+</ul>
+<p>$$
+\overline{\boldsymbol{x}}=\frac{1}{n} \sum_{i=1}^{n} \boldsymbol{x}_{j}=\boldsymbol{\Lambda}_{k}^{-\frac{1}{2}}\left(\begin{array}{c}
+\sum_{j=1}^{n} \boldsymbol{u}_{2}\left(v_{j}\right) \\
+\vdots \\
+\sum_{j=1}^{n} \boldsymbol{u}_{k+1}\left(v_{j}\right)
+\end{array}\right)=\left(\begin{array}{c}
+0 \\
+\vdots \\
+0
+\end{array}\right)
+$$</p>
+<ul>
+<li>The covariance matrix:</li>
+</ul>
+<p>$$
+\mathbf{S}=\frac{1}{n} \sum_{j=1}^{n} \boldsymbol{x}_{j} \boldsymbol{x}_{j}^{\top}=\frac{1}{n} \mathbf{X} \mathbf{X}^{\top}=\frac{1}{n} \boldsymbol{\Lambda}_{k}^{-\frac{1}{2}} \mathbf{U}^{\top} \mathbf{U} \boldsymbol{\Lambda}_{k}^{-\frac{1}{2}}=\frac{1}{n} \boldsymbol{\Lambda}_{k}^{-1}
+$$</p>
+<ul>
+<li>The vectors $\boldsymbol{u}_{2}, \ldots, \boldsymbol{u}_{k+1}$ are the directions of maximum variance of the graph embedding, with $\lambda_{2}^{-1} \geq \ldots \geq \lambda_{k+1}^{-1}$.</li>
+</ul>
+<h1 id="other-laplacian-matrices">Other Laplacian matrices</h1>
+<ul>
+<li>The normalized graph Laplacian (symmetric and semi-definite positive):</li>
+</ul>
+<p>$$
+\mathbf{L}_{n}=\mathbf{D}^{-\frac{1}{2}} \mathbf{L} \mathbf{D}^{-\frac{1}{2}}=\mathbf{I}-\mathbf{D}^{-\frac{1}{2}} \mathbf{A} \mathbf{D}^{-\frac{1}{2}}
+$$</p>
+<ul>
+<li>The transition matrix (allows an analogy with Markov chains):</li>
+</ul>
+<p>$$
+\mathbf{L}_{t}=\mathbf{D}^{-1} \mathbf{A}
+$$</p>
+<ul>
+<li>The random-walk graph Laplacian:</li>
+</ul>
+<p>$$
+\mathbf{L}_{r}=\mathbf{D}^{-1} \mathbf{L}=\mathbf{I}-\mathbf{L}_{t}
+$$</p>
+<ul>
+<li>These matrices are similar:</li>
+</ul>
+<p>$$
+\mathbf{L}_{r}=\mathbf{D}^{-\frac{1}{2}} \mathbf{D}^{-\frac{1}{2}} \mathbf{L} \mathbf{D}^{-\frac{1}{2}} \mathbf{D}^{\frac{1}{2}}=\mathbf{D}^{-\frac{1}{2}} \mathbf{L}_{n} \mathbf{D}^{\frac{1}{2}}
+$$</p>
+<h1 id="eigenvalues-and-eigenvectors-of-mathrml_n-and-mathrml_r">Eigenvalues and eigenvectors of $\mathrm{L}_{n}$ and $\mathrm{L}_{r}$</h1>
+<ul>
+<li>$\mathbf{L}_{r} \boldsymbol{w}=\lambda \boldsymbol{w} \Longleftrightarrow \mathbf{L} \boldsymbol{w}=\lambda \mathbf{D} \boldsymbol{w}$, hence:</li>
+</ul>
+<p>$$
+\mathbf{L}_{r}: \quad \lambda_{1}=0 ; \quad \boldsymbol{w}_{1}=\mathbf{1}
+$$</p>
+<ul>
+<li>$\mathbf{L}_{n} \boldsymbol{v}=\lambda \boldsymbol{v}$. By virtue of the similarity transformation between the two matrices:</li>
+</ul>
+<p>$$
+\mathbf{L}_{n}: \quad \lambda_{1}=0 \quad \boldsymbol{v}_{1}=\mathbf{D}^{\frac{1}{2}} \mathbf{1}
+$$</p>
+<ul>
+<li>More generally, the two matrices have the same eigenvalues:</li>
+</ul>
+<p>$$
+0=\lambda_{1} \leq \ldots \leq \lambda_{i} \ldots \leq \lambda_{n}
+$$</p>
+<ul>
+<li>Their eigenvectors are related by:</li>
+</ul>
+<p>$$
+\boldsymbol{v}_{i}=\mathbf{D}^{\frac{1}{2}} \boldsymbol{w}_{i}, \forall i=1 \ldots n
+$$</p>
+<h1 id="spectral-embedding-using-the-random-walk-laplacian-mathbfl_r">Spectral embedding using the random-walk Laplacian $\mathbf{L}_{r}$</h1>
+<ul>
+<li>The $n \times k$ matrix contains the first $k$ eigenvectors of $\mathbf{L}_{r}$ :</li>
+</ul>
+<p>$$
+\mathbf{W}=\left[\begin{array}{lll}
+\boldsymbol{w}_{2} &amp; \ldots &amp; \boldsymbol{w}_{k+1}
+\end{array}\right]
+$$</p>
+<ul>
+<li>It is straightforward to obtain the following expressions, where $\boldsymbol{d}$ and $\mathbf{D}$ are the degree-vector and the degree-matrix:</li>
+</ul>
+<p>$$
+\begin{gathered}
+\boldsymbol{w}_{i}^{\top} \boldsymbol{d}=0, \forall i, 2 \leq i \leq n \\
+\mathbf{W}^{\top} \mathbf{D W}=\mathbf{I}_{k}
+\end{gathered}
+$$</p>
+<ul>
+<li>The isometric embedding using the random-walk Laplacian:</li>
+</ul>
+<p>$$
+\mathbf{Y}=\mathbf{W}^{\top}=\left[\begin{array}{lll}
+\boldsymbol{y}_{1} &amp; \ldots &amp; \boldsymbol{y}_{n}
+\end{array}\right]
+$$</p>
+<h1 id="the-normalized-additive-laplacian">The normalized additive Laplacian</h1>
+<ul>
+<li>Some authors use the following matrix:</li>
+</ul>
+<p>$$
+\mathbf{L}_{a}=\frac{1}{d_{\max }}\left(\mathbf{A}+d_{\max } \mathbf{I}-\mathbf{D}\right)
+$$</p>
+<ul>
+<li>This matrix is closely related to L:</li>
+</ul>
+<p>$$
+\mathbf{L}_{a}=\frac{1}{d_{\max }}\left(d_{\max } \mathbf{I}-\mathbf{L}\right)
+$$</p>
+<ul>
+<li>and we have:</li>
+</ul>
+<p>$$
+\mathbf{L}_{a} \boldsymbol{u}=\mu \boldsymbol{u} \Longleftrightarrow \mathbf{L} \boldsymbol{u}=\lambda \boldsymbol{u}, \mu=1-\frac{\lambda}{d_{\max }}
+$$</p>
+<h1 id="the-graph-partitioning-problem">The graph partitioning problem</h1>
+<ul>
+<li>The graph-cut problem: Partition the graph such that:</li>
+</ul>
+<p>(1) Edges between groups have very low weight, and</p>
+<p>(2) Edges within a group have high weight.</p>
+<p>$\operatorname{cut}\left(A_{1}, \ldots, A_{k}\right):=\frac{1}{2} \sum_{i=1}^{k} W\left(A_{i}, \bar{A}_{i}\right)$ with $W(A, B)=\sum_{i \in A, j \in B} w_{i j}$</p>
+<ul>
+<li>Ratio cut:</li>
+</ul>
+<p>$$
+\operatorname{RatioCut}\left(A_{1}, \ldots, A_{k}\right):=\frac{1}{2} \sum_{i=1}^{k} \frac{W\left(A_{i}, \bar{A}_{i}\right)}{\left|A_{i}\right|}
+$$</p>
+<ul>
+<li>Normalized cut:</li>
+</ul>
+<p>$$
+\operatorname{NCut}\left(A_{1}, \ldots, A_{k}\right):=\frac{1}{2} \sum_{i=1}^{k} \frac{W\left(A_{i}, \bar{A}_{i}\right)}{\operatorname{vol}\left(A_{i}\right)}
+$$</p>
+<h1 id="what-is-spectral-clustering">What is spectral clustering?</h1>
+<ul>
+<li>
+<p>Both ratio-cut and normalized-cut minimizations are NP-hard problems</p>
+</li>
+<li>
+<p>Spectral clustering is a way to solve relaxed versions of these problems:</p>
+</li>
+</ul>
+<p>(1) The smallest non-null eigenvectors of the unnormalized Laplacian approximate the RatioCut minimization criterion, and</p>
+<p>(2) The smallest non-null eigenvectors of the random-walk Laplacian approximate the NCut criterion.</p>
+<h1 id="spectral-clustering-using-the-random-walk-laplacian">Spectral clustering using the random-walk Laplacian</h1>
+<ul>
+<li>
+<p>For details see (von Luxburg &lsquo;07)</p>
+</li>
+<li>
+<p>Input: Laplacian $\mathbf{L}_{r}$ and the number $k$ of clusters to compute.</p>
+</li>
+<li>
+<p>Output: Cluster $C_{1}, \ldots, C_{k}$.</p>
+</li>
+</ul>
+<p>(3) Compute W formed with the first $k$ eigenvectors of the random-walk Laplacian.</p>
+<p>(2) Determine the spectral embedding $\mathbf{Y}=\mathbf{W}^{\top}$</p>
+<p>(3) Cluster the columns $\boldsymbol{y}_{j}, j=1, \ldots, n$ into $k$ clusters using the K-means algorithm.</p>
+<h1 id="k-means-clustering">K-means clustering</h1>
+<p>See Bishop'2006 (pages 424-428) for more details.</p>
+<ul>
+<li>
+<p>What is a cluster: a group of points whose inter-point distance are small compared to distances to points outside the cluster.</p>
+</li>
+<li>
+<p>Cluster centers: $\boldsymbol{\mu}_{1}, \ldots, \boldsymbol{\mu}_{k}$.</p>
+</li>
+<li>
+<p>Goal: find an assignment of points to clusters as well as a set of vectors $\mu_{i}$.</p>
+</li>
+<li>
+<p>Notations: For each point $\boldsymbol{y}_{j}$ there is a binary indicator variable $r_{j i} \in{0,1}$.</p>
+</li>
+<li>
+<p>Objective: minimize the following distorsion measure:</p>
+</li>
+</ul>
+<p>$$
+J=\sum_{j=1}^{n} \sum_{i=1}^{k} r_{j i}\left|\left|\boldsymbol{y}_{j}-\boldsymbol{\mu}_{i}\right|\right|^{2}
+$$</p>
+<h1 id="the-k-means-algorithm">The K-means algorithm</h1>
+<p>(1) Initialization: Choose initial values for $\boldsymbol{\mu}_{1}, \ldots, \boldsymbol{\mu}_{k}$.</p>
+<p>(2) First step: Assign the $j$-th point to the closest cluster center:</p>
+<p>$$
+r_{j i}= \begin{cases}1 &amp; \text { if } i=\arg \min_{l}\left|\left|\boldsymbol{y}_{j}-\mu_{l}\right|\right|^{2} \\ 0 &amp; \text { otherwise }\end{cases}
+$$</p>
+<p>(3) Second Step: Minimize $J$ to estimate the cluster centers:</p>
+<p>$$
+\boldsymbol{\mu}_{i}=\frac{\sum_{j=1}^{n} r_{j i} \boldsymbol{y}_{j}}{\sum_{j=1}^{n} r_{j i}}
+$$</p>
+<p>(4) Convergence: Repeat until no more change in the assignments.</p>
+<h1 id="reference">Reference</h1>
+<p><a href="https://csustan.csustan.edu/~tom/Clustering/GraphLaplacian-tutorial.pdf">https://csustan.csustan.edu/~tom/Clustering/GraphLaplacian-tutorial.pdf</a></p>
+<p><a href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf">https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf</a></p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>NeurIPS2021 《Topology-Imbalance Learning for Semi-Supervised Node Classification》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/2022-04-02-tinl/</link>

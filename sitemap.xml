@@ -3,15 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://JhuoW.github.io/categories/</loc>
-    <lastmod>2022-04-02T10:34:01+08:00</lastmod>
+    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/laplacian/</loc>
+    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/</loc>
+    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/laplacian/</loc>
+    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
+    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/notebook/</loc>
+    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/</loc>
+    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/</loc>
+    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/gnn/</loc>
     <lastmod>2022-04-02T10:34:01+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/gnn/</loc>
-    <lastmod>2022-04-02T10:34:01+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/</loc>
     <lastmod>2022-04-02T10:34:01+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2022-04-02-tinl/</loc>
@@ -20,25 +38,13 @@
     <loc>https://JhuoW.github.io/categories/paper/</loc>
     <lastmod>2022-04-02T10:34:01+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/posts/</loc>
-    <lastmod>2022-04-02T10:34:01+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/</loc>
-    <lastmod>2022-04-02T10:34:01+08:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/posts/neuralsparse/</loc>
     <lastmod>2022-04-01T10:55:44+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
-    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/mcts/</loc>
     <lastmod>2022-03-30T18:09:58+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/monte-carlo-tree-search/</loc>
-    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/notebook/</loc>
     <lastmod>2022-03-30T18:09:58+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/neo-gnns/</loc>

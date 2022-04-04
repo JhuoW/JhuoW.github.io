@@ -10,7 +10,177 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 02 Apr 2022 15:00:20 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Apr 2022 16:41:42 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Proximal Gradient Descent</title>
+      <link>https://JhuoW.github.io/posts/pgd/</link>
+      <pubDate>Mon, 04 Apr 2022 16:41:42 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/pgd/</guid>
+      <description>当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）
+假设目标函数如下： $$ \definecolor{energy}{RGB}{114,0,172} \definecolor{freq}{RGB}{45,177,93} \definecolor{spin}{RGB}{251,0,29} \definecolor{signal}{RGB}{18,110,213} \definecolor{circle}{RGB}{217,86,16} \definecolor{average}{RGB}{203,23,206} \definecolor{red}{RGB}{255,0,0} f(w) = g(w) + h(w) $$ 其中$g(w)$是可微凸函数，$h(w)$是不可微（或局部不可微）凸函数。 以线性回归为例，
+给定$X \in \mathbb{R}^{m \times n}$, $y \in \mathbb{R}^m$， Ridge Regression的目标函数为
+$$ f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{2}}_{h(\boldsymbol{w})} $$ 因为$\ell_2$ norm处处可导，所以Ridge可以用SGD或GD来直接优化。但是若目标函数为Lasso，即正则化项定义为$\ell_1$ norm: $$ f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{1}}_{h(\boldsymbol{w})} $$ 这里$h(w)=\lambda||\boldsymbol{w}||_{1}$在$w=0$处不可导，那么可用PGD来优化。
+Proximity Operator 近端算子： 对于不可微函数$h(w)$, $h(w)$的proximity operator定义为：
+$$ u^* = \operatorname{prox}_{\color{signal}h}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2}||u-w||_{2}^{2}\right) $$ 近端算子$\operatorname{prox}_{\color{signal}h}(w)$只和不可微凸函数$h(\cdot)$有关。 上式含义，给定一个不可微凸函数$h(\cdot)$, 给定向量$w \in \mathbb{R}^n$, 找到向量$u = u^*$, 使得公式$h(u)+\frac{1}{2}||u-w||_{2}^{2}$最小。 这个$u^* = \operatorname{prox}_{\color{signal}h}(w)$就是$h(\cdot)$在给定$w$条件下的近端算子（Proximity Operator）。$u^* = \operatorname{prox}_{\color{signal}h}(w)$要求最佳的$u^* $可以使得函数值$h(u^*)$尽可能小，同时$u^*$要尽可能接近给定的$w$。</description>
+      <content:encoded><![CDATA[<p>当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）</p>
+<p>假设目标函数如下：
+$$
+\definecolor{energy}{RGB}{114,0,172}
+\definecolor{freq}{RGB}{45,177,93}
+\definecolor{spin}{RGB}{251,0,29}
+\definecolor{signal}{RGB}{18,110,213}
+\definecolor{circle}{RGB}{217,86,16}
+\definecolor{average}{RGB}{203,23,206}
+\definecolor{red}{RGB}{255,0,0}
+f(w) = g(w) + h(w)
+$$
+其中$g(w)$是可微凸函数，$h(w)$是不可微（或局部不可微）凸函数。 以线性回归为例，</p>
+<p>给定$X \in \mathbb{R}^{m \times n}$, $y \in \mathbb{R}^m$， Ridge Regression的目标函数为</p>
+<p>$$
+f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{2}}_{h(\boldsymbol{w})}
+$$
+因为$\ell_2$ norm处处可导，所以Ridge可以用SGD或GD来直接优化。但是若目标函数为Lasso，即正则化项定义为$\ell_1$ norm:
+$$
+f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{1}}_{h(\boldsymbol{w})}
+$$
+这里$h(w)=\lambda||\boldsymbol{w}||_{1}$在$w=0$处不可导，那么可用PGD来优化。</p>
+<h1 id="proximity-operator">Proximity Operator</h1>
+<p>近端算子： 对于不可微函数$h(w)$, $h(w)$的proximity operator定义为：</p>
+<p>$$
+u^* = \operatorname{prox}_{\color{signal}h}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2}||u-w||_{2}^{2}\right)
+$$
+近端算子$\operatorname{prox}_{\color{signal}h}(w)$只和不可微凸函数$h(\cdot)$有关。 上式含义，给定一个不可微凸函数$h(\cdot)$, 给定向量$w \in \mathbb{R}^n$, 找到向量$u = u^*$, 使得公式$h(u)+\frac{1}{2}||u-w||_{2}^{2}$最小。 这个$u^* = \operatorname{prox}_{\color{signal}h}(w)$就是$h(\cdot)$在给定$w$条件下的近端算子（Proximity Operator）。$u^* = \operatorname{prox}_{\color{signal}h}(w)$要求最佳的$u^* $可以使得函数值$h(u^*)$尽可能小，同时$u^*$要尽可能接近给定的$w$。</p>
+<p>基于后面的公式推导，我们给$\operatorname{prox}_{\color{signal}h}(w)$添加一个参数$\color{energy}\gamma$:
+$$
+u^* = \operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2\color{energy}\gamma}||u-w||_{2}^{2}\right)
+$$
+上式表示，给定一个不可微凸函数$h(\cdot)$， 一个给定的点$w$, 一个参数$\gamma$, 要找到一个$u = u^*$, 使得$u^*$带入公式$h(u)+\frac{1}{2\color{energy}\gamma}||u-w||_{2}^{2}$的到的结果最小。 $\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)$是使得$h(u)+\frac{1}{2\color{energy}\gamma}||u-w||_{2}^{2}$最小的输入$u$。</p>
+<p>因为$h(u)$和$||u-w||_{2}^{2}$都为凸函数，所以一定存在$u^*$使得函数值最小， 这个$u^* = \operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)$要求使得$h(u^*)$尽可能小（第一项），同时$u^*$要尽可能接近给定的$w$（第二项）。</p>
+<p>例子：</p>
+<ul>
+<li>
+<p>若$h(w)=0$, $\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w) = u^* = w$。</p>
+</li>
+<li>
+<p>当$h(w) = ||w||_{1}$时，$\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w) = \operatorname{prox}_{\color{signal}||\cdot||_{1}\color{energy}\gamma}(w)$是软阈值操作</p>
+</li>
+</ul>
+<p>$$
+u^* = \left(\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)\right)_{i}= \begin{cases}w_{i}-\gamma &amp; w_{i} \geq \gamma \\ 0 &amp; \left|\mathrm{w}_{i}\right| \leq \gamma \\ w_{i}+ \gamma &amp; w_{i} \leq-\gamma\end{cases}
+$$</p>
+<p>如果在$\ell_1$ norm前加上参数$\lambda$， 即$h(w) = \lambda||w||_{1}$， 那么近端算子为：
+$$
+u^* = \left(\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)\right)_{i}= \begin{cases}w_{i}-\lambda\gamma &amp; w_{i} \geq \lambda\gamma \\ 0 &amp; \left|\mathrm{w}_{i}\right| \leq \lambda\gamma \\ w_{i}+ \lambda\gamma &amp; w_{i} \leq-\lambda\gamma\end{cases}
+$$</p>
+<h1 id="近端梯度算法">近端梯度算法</h1>
+<p>回到Lasso 回归，要求解：
+$$
+\min_{w}(g(w)+h(w))
+$$
+$w$可以通过递推式求出：
+$$
+\boldsymbol{w}^{k}=\operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{w}^{k-1}-\gamma \nabla g\left(\boldsymbol{w}^{k-1}\right)\right)
+$$
+为什么可以通过不断迭代迭代上式来求解最佳的$w^{K}$, 使得$g(w)+h(w)$收敛到最小？下面先给出证明
+$$
+\begin{equation}
+\begin{aligned}
+\boldsymbol{w}^{k} &amp; =\operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{w}^{k-1}-\gamma \nabla g\left(\boldsymbol{w}^{k-1}\right)\right)\\
+&amp;=\underset{u}{\operatorname{argmin}}\left(\underbrace{h(u)}_{\color{red}h(u)尽可能小}+\frac{1}{2 \gamma}\left|\left|\underbrace{u-\left(w^{k-1}-\gamma \nabla g\left(w^{k-1}\right)\right)}_{\color{red}u尽可能接近w^{k-1}-\gamma \nabla g\left(w^{k-1}\right)}\right|\right|_{2}^{2}\right)\\
+&amp;= \underset{u}{\operatorname{argmin}}\left(h(u)+\frac{1}{2 \gamma}\left|\left|(u-w^{k-1} )+\gamma \nabla g\left(w^{k-1}\right)\right|\right|_{2}^{2}\right)\\
+&amp; = \underset{u}{\operatorname{argmin}}\left(h(u)+\underbrace{\frac{\gamma}{2}\left|\left|\nabla g\left(w^{k-1}\right)\right|\right|_{2}^{2}}_{\color{red}\gamma和w^{k-1}给定， 所以该项与u无关，视为常数，可省略}+\left(u-w^{k-1}\right)^{T}\nabla g\left(w^{k-1}\right)+\frac{1}{2 \gamma}\left|\left|u-w^{k-1}\right|\right|_{2}^{2}\right) \\
+&amp;= \underset{u}{\operatorname{argmin}}\left(h(u)+\underbrace{g\left(w^{k-1}\right)}_{\color{red}添加与u无关的项，不影响结果}+\left(u-w^{k-1}\right)^T\nabla g\left(w^{k-1}\right)+\frac{1}{2 \gamma}\left|\left|u-w^{k-1}\right|\right|_{2}^{2}\right) \quad \quad (5)\\ &amp;
+\approx \underset{u}{\arg \min }(g(u)+h(u))
+\end{aligned}
+\end{equation}
+$$
+<strong>整个过程不涉及对$h(u)$求梯度</strong></p>
+<p>最后两步怎么来的？</p>
+<blockquote>
+<p>泰勒展开式：</p>
+<p>$$f(x)=\frac{f\left(a\right)}{0 !}+\frac{f^{\prime}\left(a\right)}{1 !}\left(x-a\right)+\frac{f^{\prime \prime}\left(a\right)}{2 !}\left(x-a\right)^{2}+\ldots+\frac{f^{(n)}\left(a\right)}{n !}\left(x-a\right)^{n}$$</p>
+</blockquote>
+<p>对$g(u)$做泰勒展开， 令$a=w^{k-1}$:
+$$
+\begin{equation}
+\begin{aligned}
+g(u) &amp;= g(w^{k-1}) + (u-w^{k-1})^{T}\nabla g\left(w^{k-1}\right) + \langle u-w^{k-1}, u-w^{k-1}\rangle \nabla^2 g\left(w^{k-1}\right) \\
+&amp; \approx (5)式最后三项
+\end{aligned}
+\end{equation}
+$$
+综上：
+$$
+\begin{equation}
+\begin{aligned}
+\boldsymbol{w}^{k} &amp; =\operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{w}^{k-1}-\gamma \nabla g\left(\boldsymbol{w}^{k-1}\right)\right) \\
+&amp; \approx \underset{u}{\arg \min }(g(u)+h(u))
+\end{aligned}
+\end{equation}
+$$
+<strong>所以通过迭代的方式求$w^k = \operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{w}^{k-1}-\gamma \nabla g\left(\boldsymbol{w}^{k-1}\right)\right)$ 就是$\min_{w}(g(w)+h(w))$的迭代递推求解过程。</strong></p>
+<h2 id="求解ell_1-范数">求解$\ell_1$ 范数</h2>
+<p><strong>将求解问题转为递推式</strong>。</p>
+<p>现在我们有问题，形式为：
+$$
+\min_{w}(\underbrace{g(w)}_{\color{red}凸可微}+\underbrace{\lambda \left|\left| w \right|\right|_1}_{\color{red}h(w)凸不可微})
+$$
+找到最佳$w$使得上式最小的过程可以迭代递推为：
+$$
+\begin{equation}
+\begin{aligned}
+w^{k+1}&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left(w^{k}-\gamma \nabla g\left(w^{k}\right)\right)\\
+&amp;= \underset{u}{\arg \min }\left(\lambda \left|\left| u \right|\right|_1+\frac{1}{2\color{energy}\gamma}||u-\left(w^{k}-\gamma \nabla g\left(w^{k}\right)\right)||_{2}^{2}\right)
+\end{aligned}
+\end{equation}
+$$</p>
+<h2 id="求解lasso回归">求解Lasso回归</h2>
+<p>待求解问题形如：
+$$
+\min_{w}\left(\frac{1}{2}||X w-y||_{2}^{2}+r||w||_1\right)
+$$
+可见第一项可微，第二项为$\ell_1$ norm 在$w=0$处不可微。</p>
+<p>根据递推式：
+$$
+w^{k+1}=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left(\underbrace{w^{k}-\gamma \nabla g\left(w^{k}\right)}_{\color{red}z^k}\right)
+$$
+令$z^k = w^{k}-\gamma \nabla g\left(w^{k}\right)$, 上式可改写为</p>
+<p>因为learning step size $\gamma$ 与$w$无关，所以上式可以改写为：
+$$
+\begin{equation}
+\begin{aligned}
+w^{k+1}&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left(z^k\right)\\
+&amp;= \underset{w}{\arg \min } \left(  \lambda \left|\left| w \right|\right|_1 + \frac{1}{2\color{energy}\gamma}||w-z^k||_{2}^{2}\right) \\
+&amp;= \underset{w}{\arg \min } \left(  \lambda \gamma\left|\left| w \right|\right|_1 + \frac{1}{2}||w-z^k||_{2}^{2}\right)
+\end{aligned}
+\end{equation}
+$$</p>
+<p>$\because g(w^k) = \frac{1}{2}||X w-y||_{2}^{2}$</p>
+<p>$\therefore \nabla g(w^k) = X^{T}(Xw^k-y) = X^TXw^k-X^Ty$</p>
+<p>$\therefore z^k = w^k-\gamma (X^TXw^k-X^Ty)$</p>
+<p>把$z^k$带入$w^{k+1}$中：
+$$
+\begin{equation}
+\begin{aligned}
+w^{k+1}&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left(z^k\right)\\
+&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left( w^k-\gamma X^TXw^k+ \gamma X^Ty\right)
+\end{aligned}
+\end{equation}
+$$
+因为$\left(\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}(w)\right)_{i}= \begin{cases}w_{i}-\lambda\gamma &amp; w_{i} \geq \lambda\gamma \\ 0 &amp; \left|w_{i}\right| \leq \lambda\gamma \\ w_{i}+ \lambda\gamma &amp; w_{i} \leq-\lambda\gamma\end{cases}$,</p>
+<p>所以$w^k$到$w^{k+1}$的迭代优化方式如下：
+$$
+w_i^{k+1} = \left(\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left( z^k\right)\right)_i = \begin{cases} z^k_{i}-\lambda\gamma &amp; z^k_{i} \geq \lambda\gamma \\ 0 &amp; \left|z^k_{i}\right| \leq \lambda\gamma \\ z^k_{i}+ \lambda\gamma &amp; z^k_{i} \leq-\lambda\gamma \end{cases}
+$$
+其中 $z^k_{i}$是$z^k$的第$i$行。</p>
+<h1 id="reference">Reference</h1>
+<p><a href="https://blog.csdn.net/Chaolei3/article/details/81320940">https://blog.csdn.net/Chaolei3/article/details/81320940</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/82622940">https://zhuanlan.zhihu.com/p/82622940</a></p>
+<p><a href="http://roachsinai.github.io/2016/08/03/1Proximal_Method/">http://roachsinai.github.io/2016/08/03/1Proximal_Method/</a></p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Everything about Graph Laplacian</title>
       <link>https://JhuoW.github.io/posts/laplacian/</link>
@@ -1505,6 +1675,10 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <tr>
 <td><a href="https://github.com/giannifranchi/awesome-uncertainty-deeplearning">https://github.com/giannifranchi/awesome-uncertainty-deeplearning</a></td>
 <td>This repository contains a collection of surveys, datasets, papers, and codes, for predictive uncertainty estimation in deep learning models.</td>
+</tr>
+<tr>
+<td><a href="https://sites.google.com/site/graphmatchingmethods/">https://sites.google.com/site/graphmatchingmethods/</a></td>
+<td>Efficient Methods for Graph Matching and MAP Inference</td>
 </tr>
 </tbody>
 </table>

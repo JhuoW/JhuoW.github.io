@@ -134,6 +134,10 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <td>Meng Liu</td>
 </tr>
 <tr>
+<td><strong><a href="https://www.chaitjo.com/post/">https://www.chaitjo.com/post/</a></strong></td>
+<td>Chaitanya K. Joshi</td>
+</tr>
+<tr>
 <td><a href="https://github.com/tianyicui/pack">https://github.com/tianyicui/pack</a></td>
 <td>背包9講</td>
 </tr>
@@ -350,6 +354,10 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <tr>
 <td><a href="https://github.com/snap-stanford/GraphGym">https://github.com/snap-stanford/GraphGym</a></td>
 <td>Platform for designing and evaluating Graph Neural Networks (GNN)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pygod-team/pygod">https://github.com/pygod-team/pygod</a></td>
+<td>A Python Library for Graph Outlier Detection (Anomaly Detection)</td>
 </tr>
 </tbody>
 </table>

@@ -10,7 +10,27 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Apr 2022 16:41:42 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GNN</title>
+      <link>https://JhuoW.github.io/categories/gnn/</link>
+      <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/gnn/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>paper</title>
+      <link>https://JhuoW.github.io/categories/paper/</link>
+      <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/paper/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
     <item>
       <title>Notebook</title>
       <link>https://JhuoW.github.io/categories/notebook/</link>
@@ -27,26 +47,6 @@
       <pubDate>Sat, 02 Apr 2022 15:00:20 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/categories/machine-learning/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>GNN</title>
-      <link>https://JhuoW.github.io/categories/gnn/</link>
-      <pubDate>Sat, 02 Apr 2022 10:34:01 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/categories/gnn/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>paper</title>
-      <link>https://JhuoW.github.io/categories/paper/</link>
-      <pubDate>Sat, 02 Apr 2022 10:34:01 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/categories/paper/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

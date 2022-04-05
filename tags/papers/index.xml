@@ -276,6 +276,10 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <td><a href="https://sites.google.com/site/graphmatchingmethods/">https://sites.google.com/site/graphmatchingmethods/</a></td>
 <td>Efficient Methods for Graph Matching and MAP Inference</td>
 </tr>
+<tr>
+<td><a href="https://github.com/yueliu1999/Awesome-Deep-Graph-Clustering">https://github.com/yueliu1999/Awesome-Deep-Graph-Clustering</a></td>
+<td>Awesome Deep Graph Clustering is a collection of SOTA, novel deep graph clustering methods (papers, codes, and datasets).</td>
+</tr>
 </tbody>
 </table>
 <h1 id="useful-repotools">Useful Repo/Tools</h1>

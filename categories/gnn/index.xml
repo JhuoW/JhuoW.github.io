@@ -10,7 +10,192 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 02 Apr 2022 10:34:01 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/gnn/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/gnn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NeurIPS2021 《Graph Neural Networks with Adaptive Residual》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/airgnn/</link>
+      <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/airgnn/</guid>
+      <description>paper
+Introduction 在Deeper GNN中，residual connections通常可以缓解oversmoothing问题，但是，若图中的存在abnormal node features, 那么residual connections会放大abnormal features的影响。本文旨在设计AirGNN， 在自适应调整残差连接的权重，是的可以弹性适应存在abnormal node features的图。太多聚合（deep layers）会导致oversmoothing，但residual 对深层GNN有益，但是对于abnormal features是脆弱的。
+Preliminary Frobenius norm: $||\mathbf{X}||_{F}=\sqrt{\sum_{i j} \mathbf{X}_{i j}^{2}}$
+$\ell_{21}$ norm: $||\mathbf{X}||_{21}= \sum_{i}\left|\left|\mathbf{X}_{i}\right|\right|_{2}=\sum_{i} \sqrt{\sum_{j} \mathbf{X}_{i j}^{2}}$ 表示对每行算$\ell_2$ norm 再对所有行算$\ell_1$ norm。
+Study 如图Figure 1所示， 对于具有abnormal node feature 的图，添加residual（蓝线）会导致性能巨大下降，因为abnormal node feature是与任务无关的，residual相对于无residual 保留了更多original abnormal features。
+对于node feature 都是normal的图， 没有residual的话，随着层次加深，GNN的性能会下降。
+综上，residual可以是GNN层次加深（容忍更多聚合），但是对abnormal features的鲁棒性较差。
+Understandings I: Feature aggregation as Laplacian smoothing 对于Laplacian Smoothing problem: $$ \underset{\mathbf{X} \in \mathbb{R}^{n \times d}}{\arg \min } \mathcal{L}_{1}(\mathbf{X}):=\frac{1}{2} \operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right)=\frac{1}{2} \sum_{\left(v_{i}, v_{j}\right) \in \mathcal{E}}\left|\left|\frac{\mathbf{X}_{i}}{\sqrt{d_{i}+1}}-\frac{\mathbf{X}_{j}}{\sqrt{d_{j}+1}}\right|\right|_{2}^{2} \tag{1} $$ 其目标是找到最佳的$X$,使得$X$在图上最平滑。而对于GCN, GCNII (w/o residual)和APPNP (w/o residual), 他们的每一层都可以看做是如下的特征聚合方式： $$ \mathbf{X}^{(k+1)}=\tilde{\mathbf{A}} \mathbf{X}^{(k)} = \tilde{\mathbf{A}}=(\hat{\mathbf{D}}^{-\frac{1}{2}} \hat{\mathbf{A}} \hat{\mathbf{D}}^{-\frac{1}{2}})\mathbf{X}^{(k)} \tag{2} $$ 实际上，迭代多层GNN可以看做是以 step size =1的条件下，以梯度下降的方式求解Laplacian Smoothing问题，即以梯度下降的方式找到在图上最平滑的信号： $$ \begin{equation} \begin{aligned} \mathbf{X}^{(k+1)} &amp;amp;= \mathbf{X}^{(k)}-\left.</description>
+      <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=hfkER_KJiNw">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>在Deeper GNN中，residual connections通常可以缓解oversmoothing问题，但是，若图中的存在abnormal node features, 那么residual connections会放大abnormal features的影响。本文旨在设计AirGNN， 在自适应调整残差连接的权重，是的可以弹性适应存在abnormal node features的图。太多聚合（deep layers）会导致oversmoothing，但residual 对深层GNN有益，但是对于abnormal features是脆弱的。</p>
+<h1 id="preliminary">Preliminary</h1>
+<p>Frobenius norm: $||\mathbf{X}||_{F}=\sqrt{\sum_{i j} \mathbf{X}_{i j}^{2}}$</p>
+<p>$\ell_{21}$ norm: $||\mathbf{X}||_{21}= \sum_{i}\left|\left|\mathbf{X}_{i}\right|\right|_{2}=\sum_{i} \sqrt{\sum_{j} \mathbf{X}_{i j}^{2}}$  表示对每行算$\ell_2$ norm 再对所有行算$\ell_1$ norm。</p>
+<h2 id="study">Study</h2>
+<p><img loading="lazy" src="/posts/2022-04-05-AirGNN/1.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>如图Figure 1所示， 对于具有abnormal node feature 的图，添加residual（蓝线）会导致性能巨大下降，因为abnormal node feature是与任务无关的，residual相对于无residual 保留了更多original abnormal features。</p>
+<p><img loading="lazy" src="/posts/2022-04-05-AirGNN/2.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>对于node feature 都是normal的图， 没有residual的话，随着层次加深，GNN的性能会下降。</p>
+<p>综上，residual可以是GNN层次加深（容忍更多聚合），但是对abnormal features的鲁棒性较差。</p>
+<h2 id="understandings-i-feature-aggregation-as-laplacian-smoothing">Understandings I: Feature aggregation as Laplacian smoothing</h2>
+<p>对于Laplacian Smoothing problem:
+$$
+\underset{\mathbf{X} \in \mathbb{R}^{n \times d}}{\arg \min } \mathcal{L}_{1}(\mathbf{X}):=\frac{1}{2} \operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right)=\frac{1}{2} \sum_{\left(v_{i}, v_{j}\right) \in \mathcal{E}}\left|\left|\frac{\mathbf{X}_{i}}{\sqrt{d_{i}+1}}-\frac{\mathbf{X}_{j}}{\sqrt{d_{j}+1}}\right|\right|_{2}^{2}  \tag{1}
+$$
+其目标是找到最佳的$X$,使得$X$在图上最平滑。而对于GCN, GCNII (w/o residual)和APPNP (w/o residual), 他们的每一层都可以看做是如下的特征聚合方式：
+$$
+\mathbf{X}^{(k+1)}=\tilde{\mathbf{A}} \mathbf{X}^{(k)} = \tilde{\mathbf{A}}=(\hat{\mathbf{D}}^{-\frac{1}{2}} \hat{\mathbf{A}} \hat{\mathbf{D}}^{-\frac{1}{2}})\mathbf{X}^{(k)} \tag{2}
+$$
+实际上，迭代多层GNN可以看做是以 step size =1的条件下，以梯度下降的方式求解Laplacian Smoothing问题，即以梯度下降的方式找到在图上最平滑的信号：
+$$
+\begin{equation}
+\begin{aligned}
+\mathbf{X}^{(k+1)} &amp;= \mathbf{X}^{(k)}-\left.\gamma \frac{\partial \mathcal{L}_{1}}{\partial \mathbf{X}} \right|_{\mathbf{X}=\mathbf{X}^{(k)}}\\
+&amp;= \mathbf{X}^{(k)}-\left.\gamma \frac{\partial \frac{1}{2} \operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right)}{\partial \mathbf{X}} \right|_{\mathbf{X}=\mathbf{X}^{(k)}} \\
+&amp;= \mathbf{X}^{(k)} - (\mathbf{I}-\tilde{\mathbf{A}})\mathbf{X}^{(k)} \\
+&amp;= \tilde{\mathbf{A}} \mathbf{X}^{(k)}<br>
+\end{aligned}\tag{3}
+\end{equation}
+$$
+其中令$\gamma = 1$, 所以，迭代多层GCN相当于以step size=1的方式迭代求解Laplacian Smoothing 问题。GCNII (w/o residual)和APPNP (w/o residual) 同理。</p>
+<p>堆叠GCN层来求解Laplacian smoothing问题可以被解释为图上信号的低通filter，即对于相邻节点，保留邻居节点间相似的特征(低频信号)，remove相邻节点间不同的特征（高频信号）。abnormal feature会导致图上的信号不平滑， 也就是若$v_i$的feature是abnormal，$v_j$的feature是normal, 且$v_i$与$v_j$相邻， 那么可能导致信号$k$的两个分量$X_{ik}$和$X_{jk}$ 差异较大， 所以abnormal feature可以看做图上的高频信号。 作为高频信号，它会被GCN等低筒滤波器过滤，即随着层数的加深，网络上的信号会越来越平滑，$X_{ik}^{out}$和$X_{jk}^{out}$的差距会变小，所以加深GCN可以缓解abnormal带来的问题。</p>
+<h2 id="understandings-ii-residual-connection-maintains-feature-proximity">Understandings II: Residual connection maintains feature proximity</h2>
+<p>含有residual的APPNP形式如下：
+$$
+\mathbf{X}^{k+1}=(1-\alpha) \tilde{\mathbf{A}} \mathbf{X}^{k}+\alpha \mathbf{X}_{\text {in }}  \tag{4}
+$$
+它也可以看做是对Laplaican Smoothing问题的求解，只不过加上的正则化项。 APPNP可以看做迭代求解如下regularized Laplacian smoothing problem:
+$$
+\underset{\mathbf{X} \in \mathbb{R}^{n \times d}}{\arg \min} \mathcal{L}_{2}(\mathbf{X}):=\frac{1}{2} \operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right) + \frac{\alpha}{2(1-\alpha)}\left|\left|\mathbf{X}-\mathbf{X}_{\text {in }}\right|\right|_{F}^{2} \tag{5}
+$$
+其中 step size $\gamma = 1-\alpha$:
+$$
+\mathbf{X}^{k+1}=\mathbf{X}^{k}-(1-\alpha)\left(\frac{\alpha}{1-\alpha}\left(\mathbf{X}^{k}-\mathbf{X}_{\text {in }}\right)+(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}^{k}\right)=(1-\alpha) \tilde{\mathbf{A}} \mathbf{X}^{k}+\alpha \mathbf{X}_{\text {in }} \tag{6}
+$$
+上式的求解过程和公式(3)差不多。 其中$\frac{\alpha}{2(1-\alpha)}\left|\left|\mathbf{X}-\mathbf{X}_{\text {in }}\right|\right|_{F}^{2}$为正则化项， 上式要求 求得的$X$在图上尽可能平滑的同时， 要与输入尽可能接近。这样对平滑加以限制后，可以缓解深层GNN产生的oversmoothing 问题，因为保留了一些必要的高频信号。但是这些残差连接也携带了有害的异常特征，导致在含有abnormal feature的图上性能较差。</p>
+<h1 id="the-proposed-model">The Proposed Model</h1>
+<h2 id="design-motivation">Design Motivation</h2>
+<p>更多的feature aggregation 可以缓解abnormal feature但是oversmoothing。residual 可以缓解深层GNN，但是受abnormal feature影响。 <strong>如何设计MPNN使得node 可以自适应的特征聚合和residual?</strong></p>
+<p>公式（5）中的正则化项$\left|\left|\mathbf{X}-\mathbf{X}_{\text {in }}\right|\right|_{F}^{2} $决定了GNN的更新中含有residual，这样可以保持深层GNN的稳定性。虽然保持输入与每层输出之间的proximity对于加深层次很重要，但是，用Frobenius norm来惩罚偏差可能过于激进，即会使得输入和输出过于接近，从而削弱了Laplacian Smoothing项$\operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right)$去除abnormal feature的能力。因此本文提出用$\ell_{21}$ norm 来替换Frobenius norm作为输入输出之间proximity的保留项。 相比于Frobenius norm，不那么激进，即最小化$\ell_{21}$ norm 不会让输出过于接近输入。It also allows large deviations because the penalty on large values is less aggressive, leading to the potential removal of abnormal features：意思是$\mathbf{X}-\mathbf{X}_{\text {in}}$ 如果很大的话，它的$\ell_{21}$ norm在目标函数中不会占据过于大的分量，即 $\left|\left|\mathbf{X}-\mathbf{X}_{\text {in }}\right|\right|_{F}^{2} &gt; \left|\left|\mathbf{X}-\mathbf{X}_{\text {in }}\right|\right|_{21} $。这样，最小化regularized Laplacian smoothing problem的目标函数时，不会过度倾向于最小化邻近度项。 所以regularized Laplacian smoothing 问题定义如下：
+$$
+\underset{\mathbf{X} \in \mathbb{R}^{n \times d}}{\arg \min } \mathcal{L}(\mathbf{X}):=\underbrace{(1-\lambda) \operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right)}_{可微 g(X)} + \underbrace{\lambda\left|\left|\mathbf{X}-\mathbf{X}_{\text {in }}\right|\right|_{21}}_{不可微 h(X)}   \tag{7}
+$$
+其中$\lambda \in [0,1]$。</p>
+<h2 id="adaptive-massage-passing">Adaptive Massage Passing</h2>
+<p>公式（7）中，$ \mathcal{L}(\mathbf{X})$由可微和不可微凸函数组成，可以使用Proximal Gradient Descent（PGD）来优化 （PGD可以见<a href="https://jhuow.fun/posts/pgd/">这篇文章</a>）。公式（7）中可微部分 记为$g(X) = (1-\lambda) \operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right)$ ， 不可微部分记为 $h(X) = \lambda\left|\left|\mathbf{X}-\mathbf{X}_{\text {in }}\right|\right|_{21}$。 根据PGD, 是的(7)最小的$\mathbf{X}$可以通过迭代方式求解：
+$$
+\definecolor{energy}{RGB}{114,0,172}
+\definecolor{freq}{RGB}{45,177,93}
+\definecolor{spin}{RGB}{251,0,29}
+\definecolor{signal}{RGB}{18,110,213}
+\definecolor{circle}{RGB}{217,86,16}
+\definecolor{average}{RGB}{203,23,206}
+\definecolor{red}{RGB}{255,0,0}
+\boldsymbol{X}^{k+1}=\operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{X}^{k}-\gamma \nabla g\left(\boldsymbol{X}^{k}\right)\right) \tag{8}
+$$
+其中，
+$$
+\begin{equation}
+\begin{aligned}
+\nabla g\left(\boldsymbol{X}^{k}\right) &amp;= \nabla \left[ (1-\lambda) \operatorname{tr}\left((\boldsymbol{X}^{k})^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \boldsymbol{X}^{k}\right)\right] \\
+&amp;=(1-\lambda)(2(I-\tilde{\mathbf{A}})\boldsymbol{X}^{k}) \\
+&amp;= 2\boldsymbol{X}^{k} - 2 \tilde{\mathbf{A}}\boldsymbol{X}^{k} - 2\lambda \boldsymbol{X}^{k}+ 2\lambda \tilde{\mathbf{A}}\boldsymbol{X}^{k} \\
+&amp;=2(1-\lambda) (\mathbf{I}-\tilde{\mathbf{A}}) \boldsymbol{X}^{k}
+\end{aligned} \tag{9}
+\end{equation}
+$$
+令
+$$
+\begin{aligned}
+\boldsymbol{Y}^{k} = \boldsymbol{X}^{k}-\gamma \nabla g\left(\boldsymbol{X}^{k}\right) &amp;= \boldsymbol{X}^{k} - 2\gamma(1-\lambda) (\mathbf{I}-\tilde{\mathbf{A}}) \boldsymbol{X}^{k} \\ &amp;= (1-2 \gamma(1-\lambda)) \mathbf{X}^{k}+2 \gamma(1-\lambda) \tilde{\mathbf{A}} \mathbf{X}^{k}<br>
+\end{aligned}\tag{10}
+$$
+那么：
+$$
+\begin{equation}
+\begin{aligned}
+\boldsymbol{X}^{k+1}&amp;=\operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{Y}^{k}\right) \\
+&amp;= \underset{\mathbf{X}}{\arg \min }\left\{\lambda\left|\left|\mathbf{X}-\mathbf{X}_{\text {in }}\right|\right|_{21}+\frac{1}{2 \gamma}\left|\left|\mathbf{X}-\mathbf{Y}^{k}\right|\right|_{F}^{2}\right\}
+\end{aligned} \tag{11}
+\end{equation}
+$$
+这样，<strong>迭代公式（11）只和不可微函数$||\cdot||_{21}$有关</strong>， 上式的第二项$\left|\left|\mathbf{X}-\mathbf{Y}^{k}\right|\right|_{F}^{2}$是proximity operator的固定计算，优化目标中的$g(\cdot)$无关。</p>
+<p>接下来，对公式（11）做一个换元， 令$\mathbf{Z}=\mathbf{X}-\mathbf{X}_{\mathrm{in}}$， 那么公式（11）可以重写为：
+$$
+\begin{aligned}
+\mathbf{Z}^{k+1} &amp;=\underset{\mathbf{Z}}{\arg \min }\left\{\lambda||\mathbf{Z}||_{21}+\frac{1}{2 \gamma}\left|\left|\mathbf{Z}-\left(\mathbf{Y}^{k}-\mathbf{X}_{\text {in }}\right)\right|\right|_{F}^{2}\right\} \\
+&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{21}\color{energy}\gamma }\left(\mathbf{Y}^{k}-\mathbf{X}_{\text {in }}\right) \\
+\mathbf{X}^{k+1} &amp;=\mathbf{X}_{\text {in }}+\mathbf{Z}^{k+1}
+\end{aligned}
+$$
+下面就是求解$\operatorname{prox}_{\color{signal}\lambda||\cdot||_{21}\color{energy}\gamma }\left(\mathbf{Y}^{k}-\mathbf{X}_{\text {in }}\right)$。</p>
+<p>先看看$\operatorname{prox}_{\color{signal}\lambda||\cdot||_{21}\color{energy}\gamma }\left(\mathbf{X}\right)$怎么算的, 参考[1,2]:
+$$
+\left[\operatorname{prox}_{\color{signal}||\cdot||_{2}}\left(\mathbf{X}\right)\right]_i =
+\begin{cases}\mathbf{X}_i-\frac{\mathbf{X}_i}{\left|\left|\mathbf{X}_i\right|\right|_{2}} &amp; \text { if }\left|\left|\mathbf{X}_i\right|\right|_{2}&gt;1 \\ 0 &amp; \text { if }\left|\left|\mathbf{X}_i\right|\right|_{2} \leq 1\end{cases}
+$$</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+\left[\operatorname{prox}_{\color{signal}\lambda||\cdot||_{21}\color{energy}\gamma }\left(\mathbf{X}\right)\right]_i &amp; = \operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma }\left(\operatorname{prox}_{\color{signal}\lambda||\cdot||_{2}\color{energy}\gamma }\left(\mathbf{X}\right)_i\right) \\
+&amp;= \begin{cases}
+\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma }\left(\mathbf{X}_i-\frac{\mathbf{X}_i}{\left|\left|\mathbf{X}_i\right|\right|_{2}}\right) &amp; \text { if }\left|\left|\mathbf{X}_i\right|\right|_{2}&gt;1 \\
+\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma }\left(0\right)=\color{red}0 &amp; \text { if }\left|\left|\mathbf{X}_i\right|\right|_{2} \leq 1\end{cases}
+\end{aligned}
+\end{equation}
+$$
+其中：
+$$
+\begin{equation}
+\begin{aligned}
+\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma }\left(\mathbf{X}_i-\frac{\mathbf{X}_i}{\left|\left|\mathbf{X}_i\right|\right|_{2}}\right) &amp;= \frac{\mathbf{X}_i}{\left|\left|\mathbf{X}_i\right|\right|_{2}} \operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma }\left( \left|\left|\mathbf{X}_i\right|\right|_{2}-\underbrace{1}_{constant, 不影响结果}\right) \\
+&amp;= \frac{\mathbf{X}_i}{\left|\left|\mathbf{X}_i\right|\right|_{2}} \operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma }\left( \left|\left|\mathbf{X}_i\right|\right|_{2}\right) \\
+&amp;= \frac{\mathbf{X}_i}{\left|\left|\mathbf{X}_i\right|\right|_{2}} \cdot \underbrace{\boxed{\begin{cases}
+\left|\left|\mathbf{X}_i\right|\right|_{2} - \lambda\gamma &amp;
+\text { if }\left|\left|\mathbf{X}_i\right|\right|_{2} &gt; \lambda\gamma \\
+0 &amp; \text { if }\left|\left|\mathbf{X}_i\right|\right|_{2} = \lambda\gamma \\
+\left|\left|\mathbf{X}_i\right|\right|_{2} + \lambda\gamma &amp;
+\text { if }\left|\left|\mathbf{X}_i\right|\right|_{2} \leq -\lambda\gamma
+\end{cases}}}_{\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma }\left( \left|\left|\mathbf{X}_i\right|\right|_{2}\right)}
+\end{aligned} \tag{12}
+\end{equation}
+$$
+公式（12）中，第三种情况不存在，所以
+$$
+\begin{equation}
+\begin{aligned}
+\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma }\left( \left|\left|\mathbf{X}_i\right|\right|_{2}\right) = \max \left(\left|\left|\mathbf{X}_{i}\right|\right|_{2}-\gamma \lambda, 0\right)
+\end{aligned}
+\end{equation}
+$$
+所以：
+$$
+\left(\operatorname{prox}_{\gamma \lambda||\cdot||_{21}}(\mathbf{X})\right)_{i}=\frac{\mathbf{X}_{i}}{\left|\left|\mathbf{X}_{i}\right|\right|_{2}} \max \left(\left|\left|\mathbf{X}_{i}\right|\right|_{2}-\gamma \lambda, 0\right)=\max \left(1-\frac{\gamma \lambda}{\left|\left|\mathbf{X}_{i}\right|\right|_{2}}, 0\right) \cdot \mathbf{X}_{i} \tag{13}
+$$
+将公式（13）中的$\mathbf{X}$替换为$\mathbf{Y}^{k}-\mathbf{X}_{\text {in }}$, 计算$\mathbf{Z}^{k+1}=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{21}\color{energy}\gamma }\left(\mathbf{Y}^{k}-\mathbf{X}_{\text {in }}\right)$ , 然后计算$\mathbf{X}^{k+1} =\mathbf{X}_{\text {in }}+\mathbf{Z}^{k+1}$ 可得：
+$$
+\mathbf{X}_{i}^{k+1}=\left(\mathbf{X}_{\text {in }}\right)_{i}+\beta_{i}\left(\mathbf{Y}_{i}^{k}-\left(\mathbf{X}_{\text{in }}\right)_{i}\right)=\left(1-\beta_{i}\right)\left(\mathbf{X}_{\text {in }}\right)_{i}+\beta_{i} \mathbf{Y}_{i}^{k}, \quad \forall i \in [n]
+$$
+其中 $\beta_{i}:=\max \left(1-\frac{\gamma \lambda}{\left|\left|\mathbf{Y}_{i}^{k}-\left(\mathbf{X}_{\text{in }}\right)_{i}\right|\right|_{2}}, 0\right)$。</p>
+<p>综上，最终Adaptive Message Passing（AMP）总结如下：
+$$
+\left\{\begin{aligned}
+\mathbf{Y}^{k} &amp;=(1-2 \gamma(1-\lambda)) \mathbf{X}^{k}+2 \gamma(1-\lambda) \tilde{\mathbf{A}} \mathbf{X}^{k} \\
+\beta_{i} &amp;=\max \left(1-\frac{\gamma \lambda}{\left|\left|\mathbf{Y}_{i}^{k}-\left(\mathbf{X}_{\text {in }}\right)_{i}\right|\right|_{2}}, 0\right) \quad \forall i \in[n] \\
+\mathbf{X}_{i}^{k+1} &amp;=\left(1-\beta_{i}\right)\left(\mathbf{X}_{\text {in }}\right)_{i}+\beta_{i} \mathbf{Y}_{i}^{k} \quad \forall i \in[n]
+\end{aligned}\right.
+$$</p>
+<p><img loading="lazy" src="/posts/2022-04-05-AirGNN/3.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>文章证明了$\gamma=\frac{1}{4(1-\lambda)}$或$\gamma=\frac{1}{2(1-\lambda)}$可以保证收敛 （具体过程没看了）。这样AMP简化为$\mathbf{Y}^{k}=\frac{1}{2} \mathbf{X}^{k}+\frac{1}{2} \tilde{\mathbf{A}} \mathbf{X}^{k}$和$\mathbf{Y}^{k}=\tilde{\mathbf{A}} \mathbf{X}^{k}$。</p>
+<h1 id="reference">Reference</h1>
+<p>[1] <a href="https://math.stackexchange.com/questions/2665254/proximal-operator-of-summation-of-l-1-norm-and-l-2-1-norm">https://math.stackexchange.com/questions/2665254/proximal-operator-of-summation-of-l-1-norm-and-l-2-1-norm</a></p>
+<p>[2] <a href="https://math.stackexchange.com/questions/2190885/proximal-operator-of-the-euclidean-norm-l-2-norm">https://math.stackexchange.com/questions/2190885/proximal-operator-of-the-euclidean-norm-l-2-norm</a></p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>NeurIPS2021 《Topology-Imbalance Learning for Semi-Supervised Node Classification》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/2022-04-02-tinl/</link>

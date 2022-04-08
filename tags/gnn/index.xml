@@ -469,6 +469,65 @@ $$</p>
     </item>
     
     <item>
+      <title>NeurIPS2021 《Not All Low-Pass Filters are Robust in Graph Convolutional Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/gcn-lfr/</link>
+      <pubDate>Tue, 29 Mar 2022 21:20:31 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/gcn-lfr/</guid>
+      <description>NeurIPS2021 &amp;#34;Not All Low-Pass Filters are Robust in Graph Convolutional Networks&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://openreview.net/forum?id=bDdfxLQITtu">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>很多GNN易受图结构攻击的影响，本文首先证明了symmetric normalized laplacian的低频分量作为GCN的filter，在某个特征值区间内对于结构扰动更加robust。基于该理论提出GCN-LFR，通过一个辅助神经网络迁移低频分量的robustness。</p>
+<p>Q: 对抗扰动边是否会对graph spectrum产生同等的影响？过去的研究显示来自结构攻击的扰动在图谱上表达了一种隐含的趋势。如下图所示，结构扰动后，小的特征值（低频）变化较小， 高频变化较大，即高频对扰动更加敏感。</p>
+<p><img loading="lazy" src="/posts/2022-04-08-GraphLFR/1.png#center" alt=""  />
+</p>
+<p>本文证明了当normalized symmetric laplacian的特征值落于某个特定区间时，低频分量会更加robust。</p>
+<h1 id="methodology">Methodology</h1>
+<p>Poisoning Attack是指训练前扰动：</p>
+<p><strong>Problem 1 （Poisoning Attack）:</strong> 给定一个扰动图 $\mathcal{G}^\prime$, 要对目标集合$\mathcal{T}$做对抗防御的目的是设计一个更加鲁棒的模型，使得模型在扰动图上训练后对$\mathcal{T}$中节点的预测结果和在原图上训练得到的预测结果相似：
+$$
+\min_{\boldsymbol{\Theta}^{r *}} \sum_{u \in \mathcal{T}}\left|\left|\mathcal{M}_{u}^{r}\left(\boldsymbol{A}^{\prime}, \boldsymbol{X} ; \boldsymbol{\Theta}^{r *}\right)-\mathcal{M}_{u}\left(\boldsymbol{A}, \boldsymbol{X} ; \boldsymbol{\Theta}^{*}\right)\right|\right|
+$$
+即模型可以尽可能避免扰动对预测带来的影响。 其中$\mathcal{M}_{u}^{r}\left(\boldsymbol{A}^{\prime}, \boldsymbol{X} ; \boldsymbol{\Theta}^{r *}\right)=\hat{\boldsymbol{y}}_{u}^{r}$模型在扰动图上训练过后对节点$u$的预测，$\mathcal{M}_{u}^{r}$是在扰动图上训练过后的模型，最佳参数为$\boldsymbol{\Theta}^{r *}$, $\mathcal{M}$是在原图上训练过后的模型。</p>
+<p>观察$\hat{\boldsymbol{A}}$的特征值， 因为$\hat{\boldsymbol{A}} = I - L$, 所以$\hat{\boldsymbol{A}}$的大特征值对应于低频分量，小特征值对应于高频分量。 从图1可以看出$\hat{\boldsymbol{A}}$的大特征值对于结构扰动更加鲁棒, 因为扰动之后大特征值的变化较小。所以GCN-SVD只是用最低频的分量来做defense.</p>
+<p>接下来本文证明了只有一条边被扰动的情况下，一定存在低频$\lambda_b$，比所有高频都robust, 鲁棒区间为：
+$$
+\max \left(0, \frac{d_{b}-d_{a}+c_{a} \lambda_{a}}{c_{b}}\right)&lt;\lambda_{b}&lt;\min \left(\frac{d_{b}+d_{a}-c_{a} \lambda_{a}}{c_{b}}, 1\right)
+$$
+即，当特征值落于这个区间中时，它一定比高频更加鲁棒。</p>
+<p>对于Non-targeted Perturbation,  图中有多条边被扰动，那么特征值的鲁棒区间为：
+$$
+\max_{v \in \mathcal{P}_{u}, u \in \mathcal{T}}\left(0, \frac{d_{b u v}-d_{a u v}+c_{a u v} \lambda_{a}}{c_{b u v}}\right)&lt;\lambda_{b}&lt;\min_{v \in \mathcal{P}_{u}, u \in \mathcal{T}}\left(\frac{d_{b u v}+d_{a u v}-c_{a u v} \lambda_{a}}{c_{b u v}}, 1\right)
+$$
+在得到不同扰动情况下的鲁棒区间后，我们可以基于鲁棒区间来增强GCN的鲁棒性。</p>
+<h2 id="gcn-lfr">GCN-LFR</h2>
+<p>基于鲁棒区间，利用区间内频率分量可以设计更加鲁棒的GCN。</p>
+<p><img loading="lazy" src="/posts/2022-04-08-GraphLFR/2.png#center" alt=""  />
+</p>
+<p>给定一个结构扰动图$\mathcal{G}^\prime$,邻接矩阵为$A^\prime$, GCN-LFR使用一个辅助正则化网络$\mathcal{M}_{\mathrm{LFR}}\left(\boldsymbol{A}^{\prime}, \boldsymbol{X} ; \boldsymbol{\Theta}\right)$来计算robust 区间， 但是鲁棒区间时基于原图的，在只给定扰动图的情况下无法计算。 为了解决该问题， 本文用可学习的参数$\mathbf{F}$作为filters来学习鲁棒区间。其中，$\mathbf{F} = \left(\begin{array}{cccc}
+f_{1} &amp; &amp; &amp; \\
+&amp; f_{2} &amp; &amp; \\
+&amp; &amp; \ddots &amp; \\
+&amp; &amp; &amp; f_{k}
+\end{array}\right)$。</p>
+<p>解释：假设$U$是$\hat{\boldsymbol{A}}$的特征向量，则 $\hat{\boldsymbol{A}}$可以分解为:</p>
+<p>$$\hat{\boldsymbol{A}} = [u_1, \cdots, u_n] F \left[\begin{array}{l}
+u_1^\top \\
+\cdots \\
+u_n^\top
+\end{array}\right] = f_1 u_1 u_1^\top + \cdots + f_n u_n u_n^\top$$</p>
+<p>其中$u_1$对应拉普拉斯矩阵的最小特征值的特征向量（$\hat{\boldsymbol{A}}$最大特征值的特征向量），所以$[u_1, \cdots, u_k]$表示最低频的$k$个特征向量。$f_i$是第$i$个频率滤波器的权重。 我们选择$k$个低频滤波器，并自适应的学习他们的权重，即 $U^\prime_{low} = [u_1, \cdots, u_k]$, $\mathbf{F}$是$k$个低频filter的参数， 所以图卷积层$\mathcal{M}_{\text {LFR }}\left(\boldsymbol{A}^{\prime}, \boldsymbol{X} ; \boldsymbol{\Theta}, \boldsymbol{F}\right)$可以写作:
+$$
+\boldsymbol{H}^{(l+1)}=\sigma\left(\boldsymbol{U}_{\text {low }}^{\prime} \boldsymbol{F} \boldsymbol{U}_{\text {low }}^{\prime \top} \boldsymbol{H}^{\prime(l)}\Theta\right)
+$$
+另外，本文提出交替训练策略，对于在原本扰动图上的模型$\mathcal{M}_{\mathrm{GCN}}\left(\boldsymbol{A}^{\prime}, \boldsymbol{X} ; \boldsymbol{\Theta}\right)$以及低频自适应学习的模型$\mathcal{M}_{\mathrm{LFR}}\left(\boldsymbol{A}^{\prime}, \boldsymbol{X} ; \boldsymbol{\Theta}, \boldsymbol{F}\right)$, 这两个模型交替训练，损失函数分别用$\alpha$和$1-\alpha$加权：
+$$
+\mathcal{L}_{\text {total }}=(1-\alpha) \mathcal{L}_{\mathrm{GCN}}+\alpha \mathcal{L}_{\mathrm{LFR}}
+$$</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
       <title>ICLR2020 《Inductive and Unsupervised Representation Learning on Graph Structured Objects》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/seed/</link>
       <pubDate>Mon, 28 Mar 2022 23:44:01 +0800</pubDate>

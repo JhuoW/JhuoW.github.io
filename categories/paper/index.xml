@@ -17,14 +17,7 @@
       <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/airgnn/</guid>
-      <description>paper
-Introduction 在Deeper GNN中，residual connections通常可以缓解oversmoothing问题，但是，若图中的存在abnormal node features, 那么residual connections会放大abnormal features的影响。本文旨在设计AirGNN， 在自适应调整残差连接的权重，是的可以弹性适应存在abnormal node features的图。太多聚合（deep layers）会导致oversmoothing，但residual 对深层GNN有益，但是对于abnormal features是脆弱的。
-Preliminary Frobenius norm: $||\mathbf{X}||_{F}=\sqrt{\sum_{i j} \mathbf{X}_{i j}^{2}}$
-$\ell_{21}$ norm: $||\mathbf{X}||_{21}= \sum_{i}\left|\left|\mathbf{X}_{i}\right|\right|_{2}=\sum_{i} \sqrt{\sum_{j} \mathbf{X}_{i j}^{2}}$ 表示对每行算$\ell_2$ norm 再对所有行算$\ell_1$ norm。
-Study 如图Figure 1所示， 对于具有abnormal node feature 的图，添加residual（蓝线）会导致性能巨大下降，因为abnormal node feature是与任务无关的，residual相对于无residual 保留了更多original abnormal features。
-对于node feature 都是normal的图， 没有residual的话，随着层次加深，GNN的性能会下降。
-综上，residual可以是GNN层次加深（容忍更多聚合），但是对abnormal features的鲁棒性较差。
-Understandings I: Feature aggregation as Laplacian smoothing 对于Laplacian Smoothing problem: $$ \underset{\mathbf{X} \in \mathbb{R}^{n \times d}}{\arg \min } \mathcal{L}_{1}(\mathbf{X}):=\frac{1}{2} \operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right)=\frac{1}{2} \sum_{\left(v_{i}, v_{j}\right) \in \mathcal{E}}\left|\left|\frac{\mathbf{X}_{i}}{\sqrt{d_{i}+1}}-\frac{\mathbf{X}_{j}}{\sqrt{d_{j}+1}}\right|\right|_{2}^{2} \tag{1} $$ 其目标是找到最佳的$X$,使得$X$在图上最平滑。而对于GCN, GCNII (w/o residual)和APPNP (w/o residual), 他们的每一层都可以看做是如下的特征聚合方式： $$ \mathbf{X}^{(k+1)}=\tilde{\mathbf{A}} \mathbf{X}^{(k)} = \tilde{\mathbf{A}}=(\hat{\mathbf{D}}^{-\frac{1}{2}} \hat{\mathbf{A}} \hat{\mathbf{D}}^{-\frac{1}{2}})\mathbf{X}^{(k)} \tag{2} $$ 实际上，迭代多层GNN可以看做是以 step size =1的条件下，以梯度下降的方式求解Laplacian Smoothing问题，即以梯度下降的方式找到在图上最平滑的信号： $$ \begin{equation} \begin{aligned} \mathbf{X}^{(k+1)} &amp;amp;= \mathbf{X}^{(k)}-\left.</description>
+      <description>NeurIPS2021 &amp;#34;Graph Neural Networks with Adaptive Residual&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=hfkER_KJiNw">paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>在Deeper GNN中，residual connections通常可以缓解oversmoothing问题，但是，若图中的存在abnormal node features, 那么residual connections会放大abnormal features的影响。本文旨在设计AirGNN， 在自适应调整残差连接的权重，是的可以弹性适应存在abnormal node features的图。太多聚合（deep layers）会导致oversmoothing，但residual 对深层GNN有益，但是对于abnormal features是脆弱的。</p>
@@ -202,13 +195,7 @@ $$</p>
       <pubDate>Sat, 02 Apr 2022 10:34:01 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2022-04-02-tinl/</guid>
-      <description>Paper
-Introduction 类别不均衡（Class Imbalance）是真实场景中非常常见的问题。一般在我们提及类别不均衡时，默认指的是数量不均衡：即不同类中训练样本数量的不一致带来的模型于不同类别学习能力的差异，由此引起的一个严重问题是模型的决策边界会主要由数量多的类来决定 。
-但是在图结构中，不同类别的训练样本不仅有在数量上的差异，也有在位置结构上的差异.这就使得图上的类别不均衡问题有了一个独特的来源：拓扑不均衡。这个工作最主要的动机就是研究拓扑不均衡的特点，危害以及解决方法，希望能够引起社区对拓扑不均衡问题的重视。
-本文提出Topology-Imbalance Node Representation Learning （TINL）, 主要关注拓扑不平衡导致的决策边界漂移。所谓拓扑不平衡值得是， labeled nodes的位置如果位于拓扑中的决策边界，那么会传播错误的影响。 如上图所示，颜色和色调分别表示节点从labeled node接收到的influence类型和强度，节点R1位于两类节点的拓扑边界，第一张图可以看出，两个$\mathbf{x}$节点面临influence conflict问题，两个$\mathbf{Y}$节点由于远离R2，面临影响力不足的问题。也就是，如果决策便捷有labeled node（如R1）, 那么他的影响力很容易传播给另一个类的边界unlabeled节点，导致影响力冲突，从而分类错误。 而冲突较小的labeled node更可能位于类的拓扑中心（如R2）,顾增加其权重，是的它在训练过程中发挥更大作用。
-Understanding Topology Imbalance via Label Propagation Label Propagation中，labels从labeled node延边传播， 看做label从labeled node开始的随机游走过程。LP最终收敛状态可以认为每个节点的soft-labels: $$ \boldsymbol{Y}=\alpha\left(\boldsymbol{I}-(1-\alpha) \boldsymbol{A}^{\prime}\right)^{-1} \boldsymbol{Y}^{0} $$ 其中$\boldsymbol{A}^{\prime}=\boldsymbol{D}^{-\frac{1}{2}} A D^{-\frac{1}{2}}$，其实就是PageRank的极限分布， $\boldsymbol{Y}^{0}$为每个节点的初始one-hot label。 第$i$个节点的预测结果为$\boldsymbol{q}_{i}=\arg \max _{j} \boldsymbol{Y}_{i j}$，每个节点的预测向量反映了每个节点主要受哪个类的影响。图(a)反映了GCN与LP的预测一致性，所以LP的节点影响力边界可以作为GNN的决策边界。理想状态下，labeled node的影响力边界应与真实类边界一致，例如红色的labeled node 在LP下所传播的影响力范围，应与所有红色node的范围一致。但是如图(b)所示，蓝色的labeled node如果较多位于真实类边界，这些位于边界的节点也会传播影响力，从而导致位于边界的真是红色节点被预测为蓝色，预测边界向红色类偏移。
-Measuring Topology Imbalance by Influence Conflict 可以看出，位于决策边界的labeled node 会不可避免的将影响力传播到其他类节点，因此需要衡量labeled node与其所属类的相对拓扑位置（位于类边缘还是中心）。由于Homophily， 位于类边缘的节点也具有和其邻居相似的性质，因此利用邻域特征差别来判断labeled node是否位于边缘是不可靠的。因此本文利用整个图中的节点影响力冲突，提出基于冲突检测的拓扑相对位置Conflict Detection-based Topology Relative Location metric (Totoro).
-Personalized PageRank矩阵定义为： $$ \boldsymbol{P} = \alpha\left(\boldsymbol{I}-(1-\alpha) \boldsymbol{A}^{\prime}\right)^{-1} $$ $\boldsymbol{P}_{ij} = \boldsymbol{P}(j \to^\infty i)$， 可以用来反映拓扑中节点$i$对节点$j$的影响力（随机游走越有可能到达的两个节点，在拓扑中的越能相互影响）。</description>
+      <description>NeurIPS2021 &amp;#34;Topology-Imbalance Learning for Semi-Supervised Node Classification&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2110.04099v1">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>类别不均衡（Class Imbalance）是真实场景中非常常见的问题。一般在我们提及类别不均衡时，默认指的是<strong>数量不均衡</strong>：即不同类中训练样本数量的不一致带来的模型于不同类别学习能力的差异，由此引起的一个严重问题是模型的决策边界会主要由数量多的类来决定 。</p>
@@ -277,12 +264,7 @@ $$
       <pubDate>Fri, 01 Apr 2022 10:55:44 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/neuralsparse/</guid>
-      <description>Paper
-Introduction GNN的neighborhood aggregation中会引入邻域中任务无关的邻居，所以要移除图中有大量任务无关的边，顾本文提出NeuralSparse来解决该问题。
-在构造数据集时，两个节点连接的动机可能与拿到这张图后要进行的下游任务无关，例如下游任务是节点分类，那么和这个任务相关的连接应是同类节点间产生边。但是构造图数据集是的两个节点连接的动机可能是特征相似的节点（不一定同类）。
-下图给出一个例子，Blue 和 Red节点分别采样自两个独立的二维Gaussian distribution, 图1(a)显示两类节点的原始features有大量重合。对于每个节点，随机抽取10个其他节点作为他的邻居，这样生成的图（图1(b) )中的边和node label没有任何关系，即所有边都与节点分类任务无关。在这个图上做GCN得到(图1(b)下方)的node embedding，可以看到GCN学到的node embedding在任务无关的边上，无法区分两类节点。 图1(c)是DropEdge学到的node embedding，图1(d)为本文的NeuralSparse学到的node embedding。
-Present work：根据监督信号来选择任务相关的边。 由sparsification network 和GNN两个模块组成. sparsification network旨在参数化稀疏过程，即在给定预算下， 为每个节点选择任务相关的一节邻居。在训练阶段，优化稀疏策略，即训练一个可以将图稀疏化的网络。在测试阶段，将测试图输入网络，得到一个稀疏化的图。
-NeuralSparse Theoretical justification 首先从统计学习角度建模问题。将预测任务定义为$P(Y|G)$, 其中$Y$是预测目标，$G$是输入图。本文利用稀疏化子图来移除任务无关的边, 问题形式化为: $$ P(Y \mid G) \approx \sum_{g \in \mathbb{S}_{G}} P(Y \mid g) P(g \mid G) $$ $g$是一个稀疏化子图，$\mathbb{S}_{G}$为$G$的稀疏化子图集合。 $P(Y \mid g)$ 为给定一个稀疏化子图$g$，用$g$过GNN后预测为$Y$的概率。 $$ \sum_{g \in \mathbb{S}_{G}} P(Y \mid g) P(g \mid G) \approx \sum_{g \in \mathbb{S}_{G}} Q_{\theta}(Y \mid g) Q_{\phi}(g \mid G) $$ 用函数来近似(计算) 分布， 即给定$g$ 预测为$Y$的概率$ P(Y \mid g)$定义为一个参数为$\theta$的函数$Q_{\theta}(Y \mid g)$, 从$G$中获得子图$g$的概率$P(g \mid G)$定义为一个参数为$\phi$的函数$Q_{\phi}(g \mid G)$。</description>
+      <description>ICML2020 &amp;#34;Robust Graph Representation Learning via Neural Sparsification&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://proceedings.mlr.press/v119/zheng20d.html">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>GNN的neighborhood aggregation中会引入邻域中任务无关的邻居，所以要移除图中有大量任务无关的边，顾本文提出NeuralSparse来解决该问题。</p>
@@ -365,10 +347,7 @@ $$</p>
       <pubDate>Wed, 30 Mar 2022 13:51:57 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/neo-gnns/</guid>
-      <description>Paper
-Introduction 由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure。
- Link prediction heuristics: 基于预定义的假设的链路预测。举几个例子[1]：
-  Common Neighbors (CN)： 公共邻居较多的节点存在边（heuristic），则需要计算节点对间的公共邻居。 Preferential Attachment (PA): 一个节点当前的连接越多，那么它越有可能接受到新的连接（heuristic）,这需要统计每个节点的度, i.e., $P A(x, y)=|N(x)| *|N(y)|$ Katz Index heuristic: $\sum^{\infty}_{\ell=1} \beta^{\ell}|walks(x,y)=\ell|$ 表示从$x$到$y$的所有路径数， $0&amp;lt;\beta&amp;lt;1$， 表示越长的路径权重越低。 katz Index作为Link prediction heuristic假设来作为边是否存在的预测。  本文提出了Neighborhood Overlap-aware Graph Neural Networks (Neo-GNNs)来从邻接矩阵中学习结构信息，并且估计重叠多跳邻域用于link prediction。</description>
+      <description>NeurIPS2021 &amp;#34;Neo-GNNs:Neighborhood Overlap-aware Graph Neural Networks for Link Prediction&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=Ic9vRN3VpZ">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 <strong>Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure</strong>。</p>
@@ -445,15 +424,7 @@ $$
       <pubDate>Wed, 30 Mar 2022 10:37:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/graphtrans/</guid>
-      <description>Paper
-Introduction 加深GNN层数来增加感受野会导致优化不稳定性，比如梯度消失和oversmoothing。 因此本文采用Transformer-based self-attention来学习成对节点间的长距离关系，并且提出一种新型的readout池化机制来学习global graph embedding。即在一个GNN模块后接一个置换不变（permutation-invariant）Transformer, GNN模块捕获local信息，Transformer捕获global信息。
-GNN作为一种专门的架构医学系节点直接邻域结构的局部表示， 而Transformer作为全局推理模块以位置无关的方式计算所有成对节点的交互。作者认为，一个没有positional encoding的Transformer是置换不变的，因此很适合图。
-Motivation 强关系Inductive bias(我的理解是Homophily假设) 鼓励学习局部短距离的关联性。 而对于长距离相关性，结构化较低的模块（不需要过于考虑图的结构信息）更受欢迎。
-GraphTrans leaves learning long-range dependencies to Transformer, 通过Transformer来学习图中所有节点对的依赖关系而不是只关注局部邻居。
-下图中展示了一个子图的attention map。一共有17个节点，横坐标表示目标节点，纵坐标表示源节点，第$i$行第$j$列表示节点$i$在Transformer中聚合$j$的attention权重。第18行为一个特殊的$&amp;lt;CLS&amp;gt;$token 作为图的readout embedding。结合本文的SOTA效果，表面在学习长距离依赖时不考虑图结构先验（spatial priors）对Graph summarization（graph-level representation）是有必要的
-Model GNN Module 一个通用的GNN模块： $$ \boldsymbol{h}_{v}^{\ell}=f_{\ell}\left(\boldsymbol{h}_{v}^{\ell-1},\left\{\boldsymbol{h}_{u}^{\ell-1} \mid u \in \mathcal{N}(v)\right\}\right), \quad \ell=1, \ldots, L_{\mathrm{GNN}} $$
-Transformer Module 通过上面的GNN模块，我们可以得到每个节点的embedding $h_{v}^{L_{\mathrm{GNN}}}$, 将所有节点作为Transformer的Input。传统Transformer中输入先计算Self-attention（当前输入的$Q$向量和所有节点的$K$向量做内积得到输入节点和其他节点的att值，再用这个att值来为当前输入节点加权聚合所有节点的$V$向量），聚合后再和自身相加做residual,然后在做Layer Norm, 即对节点$i$的表示做Layer Norm 为$x_i^\prime = \frac{x_i-m}{\sigma}$, 其中$m$为$x_i$的均值， $\sigma$为$x_i$的标准差。
-这里的Transformer不同的是， 先对所有节点做一次MLP，然后直接计算Layer Norm: $$ \overline{\boldsymbol{h}}_{v}^{0}=\operatorname{LayerNorm}\left(\boldsymbol{W}^{\text {Proj }} \boldsymbol{h}_{v}^{L_{\mathrm{GNN}}}\right) $$ 其中$\boldsymbol{W}^{\text {Proj }} \in \mathbb{R}^{d_{\mathrm{TF}} \times d_{L_{\mathrm{GNN}}}}$， 把GNN的输出维度转为TF的输入维度$d_{\mathrm{TF}}$。将所有节点的GNN node embeddings作为Transformer的输入（无positional encoding）。 每个节点的$Q$, $K$和$V$向量分别用$\boldsymbol{W}_{\ell}^{Q}, \boldsymbol{W}_{\ell}^{K}, \boldsymbol{W}_{\ell}^{V} \in \mathbb{R}^{d_{\mathrm{TF}} / n_{\text {head }} \times d_{\mathrm{TF}} / n_{\text {head }}}$计算， 对于第$\ell$层 Transformer, 节点$v$ 的$Q$向量$Q_v = \boldsymbol{W}_{\ell}^{Q} \overline{\boldsymbol{h}}_{v}^{\ell-1}$和节点$u$的$K$向量$K_u = \boldsymbol{W}_{\ell}^{K} \overline{\boldsymbol{h}}_{u}^{\ell-1}$做内积，得到两个节点之间的attention。然后用$\alpha_{v, u}^{\ell}$来为节点$v$聚合其他所有节点的$V$向量$V_u = \boldsymbol{W}_{\ell}^{V} \overline{\boldsymbol{h}}_{u}^{\ell-1}$, 如下所示: $$ a_{v, u}^{\ell}=\left(\boldsymbol{W}_{\ell}^{Q} \overline{\boldsymbol{h}}_{v}^{\ell-1}\right)^{\top}\left(\boldsymbol{W}_{\ell}^{K} \overline{\boldsymbol{h}}_{u}^{\ell-1}\right) / \sqrt{d_{\mathrm{TF}}} \tag{1} $$</description>
+      <description>NeurIPS2021 &amp;#34;Representing Long-Range Context for Graph Neural Networks with Global Attention&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://arxiv.org/pdf/2201.08821.pdf">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>加深GNN层数来增加感受野会导致优化不稳定性，比如梯度消失和oversmoothing。 因此本文采用Transformer-based self-attention来学习成对节点间的长距离关系，并且提出一种新型的readout池化机制来学习global graph embedding。即在一个GNN模块后接一个置换不变（permutation-invariant）Transformer, GNN模块捕获local信息，Transformer捕获global信息。</p>
@@ -503,10 +474,7 @@ $$</p>
       <pubDate>Mon, 28 Mar 2022 23:44:01 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/seed/</guid>
-      <description>Paper
-Code
-Introduction 无监督图学习算法基于重构损失，不可避免的需要图相似度计算（重构embedding和输入embedding的loss), 计算复杂度较高。本文提出一种通用的归纳式无监督图学习算法SEED（Sampling, Encoding, and Embedding Distributions）。通过计算采样子图的重构损失来代替整个图的重构损失。 即 先采样子图，在用GNN编码子图，最后计算子图分布的embedding来作为整个图的representation. 过程如下图所示：
-SEED: Sampling, Encoding, and Embedding Distributions Anonymous Random Walk Definition 1 (Random Anonymous Walks[1]): Given a random walk $\mathbf{w}=(w_1, \cdots, w_l)$ where $\langle w_i, w_{i+1} \rangle \in E$, the anonymous walk for $\mathbf{w}$ is defined as： $$ \mathrm{aw}(\mathbf{w}) = (\mathrm{DIS}(\mathbf{w}, w_1),\mathrm{DIS}(\mathbf{w}, w_2),\cdots, \mathrm{DIS}(\mathbf{w}, w_l) ) $$ where $\mathrm{DIS}(\mathbf{w}, w_i)$ denotes the number of distinct nodes in $\mathbf{w}$ when $w_i$ first appears in $\mathbf{w}$, i.</description>
+      <description>ICLR2020 &amp;#34;Inductive and Unsupervised Representation Learning on Graph Structured Objects&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=rkem91rtDB">Paper</a></p>
 <p><a href="https://github.com/wenwen0319/SEED-Reimplementation">Code</a></p>
 <h1 id="introduction">Introduction</h1>
@@ -576,18 +544,12 @@ $$
     </item>
     
     <item>
-      <title>NIPS2018 《DiffPool： Hierarchical Graph Representation Learning with Differentiable Pooling》 Reading Notes</title>
+      <title>NIPS2018 《DiffPool:Hierarchical Graph Representation Learning with Differentiable Pooling》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/diffpool/</link>
       <pubDate>Thu, 19 Dec 2019 19:32:36 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/diffpool/</guid>
-      <description>论文地址： DiffPool
-Introduction 传统的GNN算法在Node-level的任务如节点分类、链路预测上有着较好的效果。但是，现有的GNN方法由于其存在平面化的局限性，因此无法学习图的层级表示（意味着无法预测整个图的标签），顾无法实现图分类任务。举个栗子，一个Graph，可以分成600个subgraph，每个节点都存在于其中的某个subgraph（一个节点只存在于一个subgraph中），每个subgraph拥有一个标签，如何预测subgraph的标签是这篇文章主要想解决的问题。传统的GNN的图分类方法都是为Graph中的所有节点生成Embedding，然后将对这些Embedding做全局聚合（池化），如简单的把属于同一个subgraph的节点求和或者输入到MLP中生成一个标签向量来表示整个subgraph，但是这样可能忽略的图的层级结构信息。
-本文提出了一种端到端的可微可微图池化模块DiffPool，原理如下图所示：
-在深度GNN中的每层中为节点学习可微的软簇分配，将节点映射到簇中，这些簇作为新的节点作为下一层GNN的输入。上图的Original Network部分是一个Subgraph，传统的方法是直接求出这个Subgraph中每个节点的Embedding，然后相加或输入到一个神经网络中，得到一个预测向量，这种方法可以称为“全局池化”。DiffPool中，假设第$l$层的输入是$1000$个簇（如果是第一层输入就是1000个节点），我们先设置第$l+1$层需要输入的簇的个数（假设为$100$），也就是第$l$层输出的簇个数，然后在$l$层中通过一个分配矩阵将$1000$个簇做合并，合并成100个“节点”，然后将这100个节点输入到$l+1$层中，最后图中的节点数逐渐减少，最后，图中的节点只有一个，这个节点的embedding就是整个图的表示，然后将图输入到一个多层感知机MLP中，得到预测向量，在于真值的one-hot向量做cross-entropy，得到Loss。
-Model：DiffPool 一个Graph表示为$\mathcal{G} = (A,F)$，其中$A \in {0,1}^{n \times n}$是Graph的邻接矩阵，$F \in \mathbb{R}^{n \times d}$表示节点特征矩阵，每个节点有$d$维的特征。给定一个带标签的子图集$\mathcal{D}=\left\{\left(G_{1}, y_{1}\right),\left(G_{2}, y_{2}\right), \ldots\right\}$， 其中 $y_{i} \in \mathcal{Y}$表示每个子图$G_i \in \mathcal{G}$的标签，任务目标是寻找映射$f: \mathcal{G} \rightarrow \mathcal{Y}$，将图映射到标签集。我们需要一个过程来将每个子图转化为一个有限维度的向量$\mathbb{R}^D$。
-Graph Neural Networks 一般，GNN可以表示成&amp;quot;Message Passing&amp;quot;框架： $$ H^{(k)}=M\left(A, H^{(k-1)} ; \theta^{(k)}\right) $$ 其中$H^{(k)} \in \mathbb{R}^{n \times d}$表示GNN迭代$k$次后的node embedding，$M$是一个Message扩散函数，由邻接矩阵$A$和一个可训练的参数$\theta^{(k)}$决定。$H^{(k-1)}$是由前一个message passing过程生成的node embedding。当$k = 1$时，第一个GNN的输入为$H^{(0)}$是原始的节点特征$H^{(0)} = F$。
-GNN的一个主要目标是设计一个Message Passage函数$M$，GCN（kipf.2016）是一种流行的GNN，$M$的实现方式是将线性变换和ReLU非线性激活结合起来: $$ H^{(k)}=M\left(A, H^{(k-1)} ; W^{(k)}\right)=\operatorname{ReLU}\left(\tilde{D}^{-\frac{1}{2}} \tilde{A} \tilde{D}^{-\frac{1}{2}} H^{(k-1)} W^{(k-1)}\right) $$ 其中，$\tilde{A} = A+I$是一个加上自环的邻接矩阵，$\tilde{D}=\sum_{j} \tilde{A}_{i j}$是$\tilde{A}$的度矩阵，$W^{(k)} \in \mathbb{R}^{d \times d}$是一个可训练的权重矩阵，$W$与节点个数以及每个节点的度无关，可以看做一个特征增强矩阵，用来规定GCN的输出维度。</description>
+      <description>NIPS2018 &amp;#34;Hierarchical Graph Representation Learning with Differentiable Pooling&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址： <a href="https://dl.acm.org/doi/pdf/10.5555/3327345.3327389">DiffPool</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>传统的GNN算法在Node-level的任务如节点分类、链路预测上有着较好的效果。但是，现有的GNN方法由于其存在平面化的局限性，因此无法学习图的层级表示（意味着无法预测整个图的标签），顾无法实现图分类任务。举个栗子，一个Graph，可以分成600个subgraph，每个节点都存在于其中的某个subgraph（一个节点只存在于一个subgraph中），每个subgraph拥有一个标签，如何预测subgraph的标签是这篇文章主要想解决的问题。传统的GNN的图分类方法都是为Graph中的所有节点生成Embedding，然后将对这些Embedding做全局聚合（池化），如简单的把属于同一个subgraph的节点求和或者输入到MLP中生成一个标签向量来表示整个subgraph，但是这样可能忽略的图的层级结构信息。</p>
@@ -644,13 +606,7 @@ $S^{(l)}$是一个$n_l \times n_{l+1}$的全链接矩阵，$S^{(l)}_{ij}$表示�
       <pubDate>Wed, 29 May 2019 10:46:44 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/m-nmf/</guid>
-      <description>论文地址：M-NMF
-Introduction Network Embedding的基本需求是保存网络机构和固有属性。而先前的方法主要保存了网络的围观结构（microscopic structure）如一阶相似度和二阶相似度（LINE，SDNE等）， 忽略了网络结构的介观社区结构（mesoscopic community structure）。针对这个问题，本文提出了一种模块化非负矩阵分解模型M-NMF，该模型将网络的社区结构融入network embedding中。利用节点表示和社区结构之间的一致关系（consensus relationship）， 联合优化基于非负矩阵分解的表示学习模型和基于模块化的社区发现模型， 这样就可以在节点表示中同时保存了微观网络结构和介观社区结构。
-具体来说，对于微观结构（节点对相似性），本文使用矩阵分解来融合节点的一节相似性和二阶相似性；对于介观社区结构，通过模块度约束项来检测社区。因此，上面的两项可以通过节点的表示和基于辅助社区表示矩阵社区结构之间的一致关系来联合优化。同时，本文给出了乘法更新策略，保证了再推导参数的时候的正确性和收敛性。
-M-NMF Model 对于一个无向图$G=(V,E)$, 图中有$n$个节点和$e$条边，用一个0,1二值邻接矩阵表示为$\mathbf{A}=[A_{i,j}] \in \mathbb{R}^{n \times n}$。 $\mathbf{U} \in \mathbb{R}^{n \times m}$ 为节点的表示矩阵，其中$m \leq n$，$m$是节点的嵌入维度。
-建模社区结构 本文采用基于模块最大化的社区发现方法 Modularity， 给定一个邻接矩阵表示的网络$\mathbf{A}$，$\mathbf{A}$包含两个社区，根据Newman 2006b，模块度可以定义如下： $$ Q=\frac{1}{4 e} \sum_{i j}\left(A_{i j}-\frac{k_{i} k_{j}}{2 e}\right) h_{i} h_{j} $$ 其中，$k_i$表示节点$i$的度，如果$i$在第一个社区中，那么$h_i=1$,否则$h_i = -1$。
-$k_ik_j$表示将所有边一分为二 参考模块度Q，那么节点$i$,$j$之间可能产生的边数。$\frac{k_{i} k_{j}}{2 e}$如果所有边随机放置，节点$i$,$j$之间的期望边数。定义一个模块度矩阵$\mathbf{B} \in \mathbb{R}^{n \times n}$，其中$B_{i,j}=A_{i,j}-\frac{k_{i} k_{j}}{2 e}$，那么$Q=\frac{1}{4 e} \mathbf{h}^{T} \mathbf{B h}$，其中$\mathbf{h}=[h_i] \in \mathbb{R}^n$，表示社区成员指标器。
-如果将$Q$拓展到$k &amp;gt; 2$个社区，那么： $$ Q=\operatorname{tr}\left(\mathbf{H}^{T} \mathbf{B H}\right), \quad \text { s.</description>
+      <description>AAAI2017 &amp;#34;Community Preserving Network Embedding&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址：<a href="https://www.aaai.org/ocs/index.php/AAAI/AAAI17/paper/viewPaper/14589">M-NMF</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>Network Embedding的基本需求是保存网络机构和固有属性。而先前的方法主要保存了网络的围观结构（microscopic structure）如一阶相似度和二阶相似度（LINE，SDNE等）， 忽略了网络结构的介观社区结构（mesoscopic community structure）。针对这个问题，本文提出了一种模块化非负矩阵分解模型M-NMF，该模型将网络的社区结构融入network embedding中。利用节点表示和社区结构之间的一致关系（consensus relationship）， 联合优化基于非负矩阵分解的表示学习模型和基于模块化的社区发现模型， 这样就可以在节点表示中同时保存了<strong>微观网络结构</strong>和<strong>介观社区结构</strong>。</p>
@@ -710,15 +666,7 @@ $$
       <pubDate>Sun, 12 May 2019 22:09:38 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2019-05-12-embedding-ic/</guid>
-      <description>文章链接：Embedding_IC
-Introduction 本文基于Network Embedding优化了传统的独立级联模型（IC），用以学习一个更具鲁棒性的扩散概率。
-对于网络和社交数据，分析用户交互来为扩散现象建模具有以下困难：
- 用户通常是异质的，伴随着不同的行为或兴趣。并且他们通过各种通道同时交互。 用户之间的关系很难检测和表征。 例如，在信息传播过程中，不经常交互的用户之间的“弱关系”很重要，而它们很难被捕获。 不同应用中的级联长度变化很大，难以学习和预测。  本文的目的是通过从观察中学习来开发扩散模型。为此，本文专注于独立级联模型（IC），该模型定义了网络中的扩散迭代过程。在这种情况下，建模扩散的问题归结为__学习表征用户间隐含的相互影响关系的概率分布__，以便发现网络的主要通信通道。我们在此考虑的模型执行以下假设：
- 影响传播是二元的（被感染或不被感染）， 扩散网络未知， 影响关系不依赖于传播的内容， 用户之间的感染概率不会随时间变化（一旦分配了两个节点间的感染概率，那么该概率固定）。  本文基于NE，将扩散空间建模为一个连续的潜在空间，用户间的相对位置用于定义内容传输的可能性。用户靠的越近，传播概率越高。如下图所示：
-Model Notations 传播事件集$\mathcal{D}={D_1,D_2,&amp;hellip;,D_n}$ 可以视为一个graph中的$n$个级联（cascade）。其中，一个传播事件$D$是一个带有时间戳的用户集。值得注意的是，级联中的用户并不知道是谁传染它，仅知道它何时被传染。
-给定一个社交网络，有$N$个用户：$\mathcal{U}={u_1,u_2,&amp;hellip;,u_N}$，一个传播级联$D$可以定义为user和它的timestamp的集合：$D = {(u,t^D(u)) | u \in \mathcal{U} \wedge t^D(u)&amp;lt; \infty}$， 其中，$t^D: \mathcal{U} \to \mathbb{R}^+$ 表示用户被传染的时间戳， $\infty$表示未被传染的用户。每个用户的时间戳$t^D$表示该用户相对于源用户（source user）被传染的时间，$t^D(source \quad user) = 0$。接下来，用$D(t)$表示在时间戳$t$之前被传染的用户：$D(t) = {u \in \mathcal{U} | t^D(u)&amp;lt;t}$。对称地，用$\bar{D}(t)$表示在时间戳$t$之前没有被感染的用户。 $D(\infty)$表示最终所有被感染的用户，$\bar{D}(infty)$表示最终所有没被感染的用户。
-Diffusion Model 本文将级联embed到连续空间中，用以捕获扩散关系的规律性。本文只考虑传播的顺序，而不是确切的感染时间戳。
-在Embedding_IC中，在一个传播事件(级联)$D$中，一个用户是否被感染的概率取决于先前所有已经被感染的节点。给定一个已经被影响的用户集$I \in \mathcal{U}$, $P(v|I)$表示给定活跃用户集$I$时，节点$v$被传染的概率，其中$v \in \mathcal{U} \backslash I$: $$ P(v|I) = 1-\prod_{u \in I}(1-P_{u,v}) $$ 上式中，$\prod_{u \in I}(1-P_{u,v})$表示$I$中所有节点都不影响$v$的概率。那么$P(v|I)$就可以表示$v$被感染的概率。</description>
+      <description>WSDM2016 &amp;#34;Representation Learning for Information Diffusion through Social Networks:an Embedded Cascade Model&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>文章链接：<a href="https://dl.acm.org/citation.cfm?id=2835817">Embedding_IC</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>本文基于Network Embedding优化了传统的独立级联模型（IC），用以学习一个更具鲁棒性的扩散概率。</p>
@@ -778,25 +726,7 @@ $$
       <pubDate>Wed, 13 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/bine/</guid>
-      <description>论文地址：BiNE
-Introduction Bipartite Network(二分网络):如下图所示：
-二分网络将节点分为两种类型，其中 边存在于两种类型之间，例如users-items组成的推荐网络，相同类型节点间不会产生边。传统的Network Embedding将bipartite network视为同质网络（homogeneous network)， 也就是仅考虑直接联系的边。这样就存在一个问题，即在同一个类型中的节点，虽然没有直接的连接，但是也可能有间接的关系。比如两个用户同时连接到同一个商品，则这两个用户可能有有相同的购买偏好。
-另一个问题，
-如上两图所示， 图一可以看出，节点被访问的词数和考虑到的节点数呈现斜率为-1.582的幂律分布，但是基于随机游走的生成器相对于真实分布有所偏差， 文中分析原因在于基于随机游走的模型DeepWalk为每个节点生成相同长度的节点序列（walk_length）并且每个节点所需要的随机游走次数（walk per vertex)也是完全相同的，这样无法反应网络的特征以及异构性。
-另外，对于Heterogeneous Network Embedding方法metapath2vec++, 此方法是次优的因为它将直接连接的节点与间接有关系的节点视为等价。
-针对以上问题，BiNE为直接连接和间接关系分别设计了专用的目标函数，并且联合优化。 并且，所及游走的长度由该节点的重要程度决定，节点的重要程度通过HITS来衡量。
-Model 如figure中的二分网络， 可以这样定义：$G=(U,V,E)$,和一个$|U| \times |V|$的$W=[w_{ij}]$为权重矩阵。输出d维embedding向量$U=[\overrightarrow{u_i}]$, $V=[\overrightarrow{v_i}]$，结构如下图所示：
-（取自作者的讲解ppt)
-Explicit Relations 同LINE一样， 基于直接连接的目标函数表示为：
-$$\mathrm{minimize} \quad O_1=-\sum_{e_{ij} \in E}w_{ij}\log \hat{P}(i,j)$$
-Implicit Relations 构造随机游走序列 这是本文的创新点，分别为$U$和$U$构建语料库，即随机游走序列$D^U$和$D^V$。 首先给出两个同type节点相似度的定义：
-$$w^U_{ij}=\sum_{k \in V}w_{ik}w_{jk}$$
-$$w^V_{ij}=\sum_{k \in U}w_{ki}w_{kj}$$
-其中$i$和$j$是为$U$或$V$中的同类节点，也就是说两个同类节点如果有共同目标顶点，那么他们的2介相似度不为0。 则$U$中的二阶权重矩阵$|U|\times|U|$维矩阵$W^U=[w^U_{ij}]$。$V$中同理。 其中$l=\max(H(v_i)\times \max T,\min T)$, $H(v_i)$为节点$v_i$的中心性，中心性由HITS衡量。$l$为节点$v$的random walk次数（the number of random walks）,有这个节点的重要程度（centrality/importance）决定。
-$$D_{v_i}=\mathrm{BiasedRandomWalk}(W^R,v_i,p)$$
-表示其中一次随机游走的节点集合$p$表示停止概率。
-通过上面的推导，可以对分别对$U$,$V$中的节点构早随机游走序列，以$U$为例，若$S\in D^U$表示 那么$S$就是$U$中的一个随机游走序列。
-对间接关系建模 如下图所示（图片取自作者的ppt），$S$为$D^U$中的一个随机游走序列， 其中$u_i$是这个序列的中心点，$C_s(u_i)$是$u_i$的上下文节点。 对于$U$中的随机游走序列结合$D^U$，我们要做的就是最大化给定$u_i$,生成$u_c \in C_s(u_i)$的条件概率。所以目标函数如下： $$\mathrm{maximize} \quad O_2 = \prod_{u_i \in S \land S \in D^U} \prod_{u_c \in C_s(u_i)}P(u_c|u_i)$$</description>
+      <description>SIGIR2018 &amp;#34;BiNE:Bipartite Network Embedding&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址：<a href="https://www.comp.nus.edu.sg/~xiangnan/papers/sigir18-bipartiteNE.pdf">BiNE</a></p>
 <h1 id="introduction">Introduction</h1>
 <p><strong>Bipartite Network(二分网络)</strong>:如下图所示：<br>
@@ -862,28 +792,7 @@ $$\mathrm{maximize} \quad L = \alpha \log O_2+\beta \log O_3 - \gamma O_1$$
       <pubDate>Tue, 22 Jan 2019 16:57:05 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/graphgan/</guid>
-      <description>论文地址:GraphGAN
-Introduction GAN是CV上非常火的方法，作者将其引入Network Embedding领域。为了达到这个目的，首先，作者将当前的NE model分成了两类，分别是生成模型(generative model)和判别模型(discriminative model)。简单来说，生成模型。
-所谓生成模型，就是对于每个节点$v_c$，都存在一个潜在的真实连接分布$p_{true}(v|v_c)$, 这个分布反映了由条件生成样本的概率，因此，生成式模型的目的就是求网络中边的极大似然。比较经典的方法有DeepWalk，是通过随机游走来获得center node的上下文，然后最大化上下文节点的似然。Node2vec拓展了DeepWalk,提出了biased随机游走，使得模型在为给定节点生成上下文节点时具有更多的灵活性。
-所谓判别模型，目的是学习一个分类器来直接预测边是否存在。将两个节点视为输入特征，然后输出预测的两个节点之间有边的概率，即$p(edge|(v_i,v_j))$,常见的方法有SDNE，PPNE。
-于是，本文结合生成对抗网络(GAN),提出了GraphGAN来同一生成和判别器。其中生成器$G(v|v_c)$试图拟合真实的连接概率分布$p_{true}(v|v_c)$,生成最可能和$v_c$有链接的点。判别器$D(v,v_c)$尝试区分强连接节点对和若连接节点对，然后计算$v$和$v_c$存在边的可能性。简单来说，就是把生成器生成的可能与$v_c$有边的节点放入判别器计算两者有边的概率。
-除此之外GAN框架下，然而生成器的连接分布是通过softmax实现的，但是传统的softmax无法适配生成器，原因如下:
-(1).传统的softmax对网络中的所有节点一视同仁，缺乏对网络结构相似度信息的考虑。
-(2).计算成本太高。
-因此，论文中提出了新的生成器实现方法 Graph Softmax。并且证明GS具有归一化（normalization）、网络结构感知（graph structure awareness）和高计算效率（computational efficiency）的性质。相应的，文中也提出了基于随机游走(random walk)的生成器策略。
-Model 这里挑特别的来说。$\mathcal{N}(v_c)$表示和$v_c$直接相连的节点集。我们把给定节点$v_c$与任意节点$v \in \mathcal{V}$的真实连接分布表示为$p_{true}(v|v_c)$。这么看$\mathcal{N}(v_c)$可以看做从$p_{true}(v|v_c)$中采样的集合。文章的目的是学习两个模型:
-Generator $G(v|v_c;\theta_G)$ 生成器，尝试拟合真实连接分布$p_{true}(v|v_c)$，并且从节点集$\mathcal{V}$中生成最有可能和$v_c$相连的节点。
-Discriminator $D(v,v_c;\theta_G)$ 判别器，目的是判断已对接点$(v,v_c)$的连接性。$D(v,v_c;\theta_G)$输出$v$和$v_c$有边的概率。
-生成器$G$尝试完美拟合$p_{true}(v|v_c)$，并且生成和$v_c$真实邻居高度相似的节点来欺骗判别器。相反，判别器尝试发现输入的顶点是真实的节点对或者有生成器生成出的样本。这是一个极大极小游戏，目标函数$V(G,D)$:
-$$\min_{\theta_G} \max_{\theta_D} V(G,D)=\sum_{c=1}^V (\mathbb{E}_{v \sim p_{true}(\cdot|v_c)}[\log D(v,v_c;\theta_D)]+\mathbb{E}_{v \sim G(\cdot|v_c;\theta_G)}[\log(1-D(v,v_c;\theta_D))])$$
-上面这个公式是本文最关键的公式，以我的分析就是：在给定$\theta_D$的情况下，对其最小化。先来分析$\max_{\theta_D}V(G,D)$,即给定$\theta_G$,使原式最大。当给定$\theta_G$时，通过改变$\theta_D$,使$\mathbb{E}_{v \sim p_{true}(\cdot|v_c)}[\log D(v,v_c;\theta_D)]$达到最大（是判别器D拟合真实分布），同时使$\mathbb{E}_{v \sim G(\cdot|v_c;\theta_G)}[\log(1-D(v,v_c;\theta_D))]$最大，即尽可能减小选定节点$v_c$与判别器中生成的$v_c$邻居节点与$v_c$连接的可能性。然后在给定$\theta_D$的情况下，通过改变生成器$\theta_G$继续生成节点，使得$\mathbb{E}_{v \sim G(\cdot|v_c;\theta_G)}[\log(1-D(v,v_c;\theta_D))]$尽可能小，即上一步的判别器尽可能把当前生成器生成的节点认为是邻居。 之后再更新判别器,以此类推。这样$G$和$D$各自提高性能，最终$G$生成的分布和真实连接分布无法区分，这样达到最好的效果。整体过程如下图所示:
-Discriminator Optimization 对于判别器来说是个简单的sigmoid函数，来计算两个输入节点的表示向量:
-$$D(v,v_c;\theta_D)=\frac{1}{1+\exp(-d^\top_v d_{v_c})}$$
-其中，$d_v$,$d_{v_c}$是两个输入节点关于判别器$D$的表示向量，$\theta_D$是所有节点表示向量的结合。注意到上面的公式只涉及$v$和$v_c$, 我们只需要更新$d_v$,$d_{v_c}$，通过梯度下降的方法可以实现：
-Generator Optimization 对于生成器来说，目标是最小化判别器将生成的样本判断为负样本的对数似然（概率）。换句话说，生成器会调整自己的连接分布（通过调整生成的所有节点的向量表示$\theta_G$）来提升对生成样本的判别分数。由于$v$的采样时离散的，所以使用policy gradient来计算$V(G,D)$关于$\theta_G$的梯度：
-为了理解上述公式，注意到$\nabla_{\theta_G}V(G,D)$是一个由$\log(1-D(v,v_c;\theta_D))$加权的梯度$\nabla_{\theta_G}\log G(v|v_c;\theta_G)$的求和，直观上说，这意味着有高概率是负样本的节点会将生成器G“拉着”远离自己（因为我们在$\theta_G$上执行梯度下降)。
-Graph Softmax graph softmax的核心思想是定义一种新的计算连接性概率的方式，满足以下性质:
- 归一化：$\sum_{v \neq v_c;\theta_G}=1$。 图结构感知：生成器充分利用网络中的结构信息，来估计真实连接分布，如果两个节点在图上越远，那么他们间有边的概率越小。 高效的计算：和传统的softmax不同，$G(v|v_c;\theta_G)$的计算应只涉及图中的一小部分点。  因此，本文以图中节点$v_c$为例，以$v_c$为根构建一棵BFS树$T_c$。$\mathcal{N}_c(v)$为节点$v$在$T_c$上的邻居集合（包括他的父节点和所有子节点）。对于一个given vertex $v$和它的一个邻居$v_i \in \mathcal{N}_c(v)$,定义概率为:</description>
+      <description>AAAI2018 &amp;#34;GraphGAN:Graph Representation Learning with Generative Adversarial Nets&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址:<a href="https://arxiv.org/abs/1711.08267">GraphGAN</a></p>
 <h2 id="introduction">Introduction</h2>
 <p>GAN是CV上非常火的方法，作者将其引入Network Embedding领域。为了达到这个目的，首先，作者将当前的NE model分成了两类，分别是生成模型(generative model)和判别模型(discriminative model)。简单来说，生成模型。<br>
@@ -935,23 +844,7 @@ $$G(v|v_c;\theta_G)\triangleq (\prod^m_{j=1} p_c(v_{r_j}|v_{r_{j-1}})) \cdot p_c
       <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2019-01-22-ne-edge-labels/</guid>
-      <description>论文地址: Enhanced Network Embeddings via Exploiting Edge Labels
-Introduction 这是DeepWalk团队的一篇论文，目的是捕获网络中的边信息。传统的NE方法通常把节点简单关系当做（0,1）二值，然而边中所包含的丰富的语义信息。本文尝试做Network Embedding的同时保留网络结构和节点关系信息。举个例子来说，真实社交网络中，一个用户可能和他的同事，家人有关系，但是已有的NE方法不能同事捕获好友关系（有边连接），以及边的类型。
-具体来说，本分的方法分为无监督部分和监督部分。其中无监督部分预测节点邻域， 监督部分预测边标签。所以本文模型是个半监督NE模型。
-Problem Definition 假定Network Graph $G=(V,E)$是无向图。$L=(l_1,l_2,&amp;hellip;,l_{|V|})$是边的类型集。一个含有边类型的Graph可以被重新定义为$G=(V,E_L,E_U,Y_L)$,其中$E_L$是由label的边集，$E_U$是没有label的边集，$E_L \cup E_U =E$。$Y_L$表示$E_L$中边的关系类型集合。论文中假定一条边可以有多重关系，所以对于边$E_i$的label集$Y_L(i) \in Y_L$, $Y_L(i)$可能包含很多类型 所以$Y_L(i) \subseteq L$。目的还是一样，学习一个映射函数$\Phi \to \mathbb{R}^{|V| \times d}$, 其中$d \ll |V|$。
-Method 首先定义损失函数:
-$$\mathcal{L}=(1-\lambda)\mathcal{L}_s+\lambda\mathcal{L}_r$$
-其中$\mathcal{L}_s$表示预测节点邻域的损失。$\mathcal{L}_r$表示预测边label的损失。$\lambda$是两种损失的权重。
-Structural Loss 第一部分是最小化无监督网络结构损失，对于一个给定的节点$v$, 要最大化这个节点和它邻域可能性。其中，节点的邻域不一定要一定和该节点有边相连。文章先给出了结构损失的目标函数：
-$$\mathcal{L}_s=-\sum_{u \in C(v)} \log Pr(u|v)$$
-这个函数其实就是给定$v$,最大化$v$的邻域的极大似然。其中$Pr(u|v)$是一个softmax函数：
-$$Pr(u|v)=\frac{\exp(\Phi(u) \cdot \Phi&amp;rsquo;(v))}{\sum_{u&amp;rsquo; \in V} \exp(\Phi(u&amp;rsquo;) \cdot \Phi&amp;rsquo;(v))}$$
-这其实和DeepWalk一样，一个节点$v$有两个表示向量，$\Phi(v)$和$\Phi&amp;rsquo;(v)$分别表示该节点作为中心节点和上下文节点的表示。由于计算复杂度较高，所以采用负采样的策略。
-剩下的问题就是如何构建节点$v$的邻域$C(v)$。一种直接的方式就是从邻接矩阵中选取他的邻居。然后由于现实网络的稀疏性，一个节点只有很少的邻居。为了缓解网络稀疏性的问题， 本文采取了类似于DeepWalk的randomwalk策略。 最终可以得到节点$v$的邻域：
-$$C(v)={v_{i-w},&amp;hellip;,v_{i-1}} \cup {v_{i+1},&amp;hellip;,v_{i+w}}$$
-Relational Loss 由于label是为了预测边的，所以需要把每条边表示出来，所以对于边$e=(u,v) \in E$,可以用一下方法来表示这条边:
-$$\Phi(e)=g(\Phi(u),\Phi(v))$$
-其中，$g$是一个映射函数用来把两个节点的表示向量转化为他们之间边的表示向量，本文使用了简单的连接操作，即把两个向量直接拼接：</description>
+      <description>CIKM2018 &amp;#34;Enhanced Network Embeddings via Exploiting Edge Labels&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址: <a href="https://arxiv.org/abs/1809.05124?context=physics.soc-ph">Enhanced Network Embeddings via Exploiting Edge Labels</a></p>
 <h2 id="introduction">Introduction</h2>
 <p>这是DeepWalk团队的一篇论文，目的是捕获网络中的边信息。传统的NE方法通常把节点简单关系当做（0,1）二值，然而边中所包含的丰富的语义信息。本文尝试做Network Embedding的同时保留网络结构和节点关系信息。举个例子来说，真实社交网络中，一个用户可能和他的同事，家人有关系，但是已有的NE方法不能同事捕获好友关系（有边连接），以及边的类型。</p>
@@ -988,35 +881,7 @@ $$h^{(k)}=f(W^{(k)}h^{(k-1)}+b^{(k)})$$<br>
       <pubDate>Mon, 21 Jan 2019 15:34:36 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/sdne/</guid>
-      <description>论文地址：SDNE
-Introduction 这是一篇比较早的Network Embedding论文， 较早将深度模型应用到NE任务。 首先，本文提出了当前网络表示学习中遇到的三个问题：
-（1）. 高度非线性
-（2）. 尽可能保持网络结构
-（3）. 现实网络的高度稀疏性
-SDNE的主要目标就是保持网络结构的一阶相似性和二阶相似性。
-一阶相似性就是网络中边相连的节点对之间具有的相似性。
-二阶相似性就是在一个Graph中，拥有共同邻居但是不直接向相连的两个节点具有的相似性。
-其中，一阶相似性主要反映了网络的局部特征。 二阶相似性反映了网络的全局特征。
-Model 本文的模型主要如下图所示：
-这张图看上去有点复杂，实则原理非常简单。
-模型分为无监督部分和有监督部分，无监督部分是一个深度自编码器 用来捕获二阶相似度（保留全局结构），监督部分是一个拉普拉斯特征映射捕获一阶相似度（局部结构）。呃呃呃，Emmmmm ,不知道是我理解有问题还是其他原因，文章里说的和我理解的不太一样 /(ㄒoㄒ)/~~。 然后介绍一下具体的模型结构：
-深度自编码器的编码部分：
-$$y_i^{(k)}=\sigma{(W^{(k)}y_i^{(k-1)}+b^{(k)})}, k=2,&amp;hellip;,K$$
-假设第$k$层是 节点$v$的表示向量（仅考虑全局信息），那么从第$k$层开始解码，最终得到$\hat{x_i}$, 所以自编码器的误差就是输入节点$v$的邻接向量的重构误差。所以，二阶相似度损失函数定义为:
-$$\mathcal{L}=\sum_{i=1}^n{||\hat{x_i}-x_i||^2_2}$$
-值得注意的是，由于网络的稀疏性，邻接矩阵中的0元素远多于非0元素，使用邻接矩阵作为输入的话要处理很多0，这样就做了太多无用功了。为了解决这个问题，对损失函数做了改进如下：
-$$\mathcal{L_{2nd}}=\sum_{i=1}^n||(\hat{x_i}-x_i)\odot{b_i}||^2_2=||\hat{X}-X\odot{B}||^2_F$$
-其中$\odot$是哈马达乘积，表示对应元素相乘。$b_i={b_{i,j}}^n_{j=1}$， 邻接矩阵中的0对应$b=1$, 非0元素的$b&amp;gt;1$,这样的目的是对于有边连接的节点增加惩罚。可以理解为对有边连接的节点赋予更高权重。
-以上我们获得了二阶相似度的损失函数。在介绍一阶相似度之前，我们先来看看拉普拉斯映射（Laplacian Eigenmap） 其实LE也是一种经典的NRL方法，主要目的也是降维。其目标函数如下所示:
-$$\sum_{i,j} W_{ij}||y_i-y_j||^2$$
-LE是通过构建相似关系图来重构局部特征结构,如果放在网络结构中来说,如果节点$v_i$和$v_j$很接近（有边），那么他们在embedding space中的距离也应该相应接近。$y_i$和$y_j$就表示他们在特征空间中的表示。因此，本文定义了保持一阶相似度的目标函数：
-$$\mathcal{L_{1st}}=\sum_{i,j=1}^n{s_{i,j}||y_i^{(K)}-y_j^{(K)}||^2_2}=\sum_{i.j=1}^n{s_{i,j}||y_i-y_j||^2_2}$$
-具体来说，$K$就是自编码器第$K$层的输出，即编码结果，需要保持一条边的两个节点在嵌入空间中的表示相对接近。
-最终 结合一阶相似度和二阶相似度，本文给出了SDNE的目标函数：
-$$\mathcal{L_{mix}}=\mathcal{L_{2nd}+\alpha{\mathcal{L_{1st}}}}+\nu{\mathcal{L_{reg}}} =||(\hat{X}-X)\odot{B}||^2_F+\alpha{\sum_{i.j=1}^n{s_{i,j}||y_i-y_j||^2_2}}+\nu{\mathcal{L_{reg}}}$$
-其中，为了防止过拟合，添加了$\mathcal L2$-norm单元$\mathcal{L_{reg}}$来防止过拟合:
-$$\mathcal{L_{reg}}=\frac{1}{2}\sum_{k=1}^k({||W^{(k)}||^2_F+||\hat{W}^{k}||_F^2})$$
-Optimization 使用SGD来优化$\mathcal{L_{mix}}$。具体算法如下：</description>
+      <description>KDD2016 &amp;#34;Structral Deep Network Embedding&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址：<a href="https://www.kdd.org/kdd2016/papers/files/rfp0191-wangAemb.pdf">SDNE</a></p>
 <h3 id="introduction">Introduction</h3>
 <p>这是一篇比较早的Network Embedding论文， 较早将深度模型应用到NE任务。 首先，本文提出了当前网络表示学习中遇到的三个问题：<br>
@@ -1063,15 +928,7 @@ $$\mathcal{L_{reg}}=\frac{1}{2}\sum_{k=1}^k({||W^{(k)}||^2_F+||\hat{W}^{k}||_F^2
       <pubDate>Fri, 14 Sep 2018 23:01:31 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/gat/</guid>
-      <description>论文地址：GAT
-Introduction 本文介绍了一种新型的神经网络架构用来处理图结构。即__Graph Attention Networks__(GATs)。该方法利用masked self-attentional layer，即通过网络层的堆叠，可以获取网络中每个节点的领域特征，同时为领域中的不同节点指定不同的权重。这样做的好处是可以不需要各种高成本的矩阵运算也不依赖于的图结构信息。通过这种方式，GAT可以解决基于谱的图神经网络存在的问题，同时，GAT可以使用用归纳（inductive）和直推（transductive）问题。
-归纳学习:先从训练样本中学习到一定的模式，然后利用其对测试样本进行预测（即首先从特殊到一般，然后再从一般到特殊），这类模型如常见的贝叶斯模型。
-直推学习:先观察特定的训练样本，然后对特定的测试样本做出预测（从特殊到特殊），这类模型如k近邻、SVM等。
-Architecture 图$G$中有$N$个节点，他们的特征向量为：$\textbf{h}={\vec{h_1},\vec{h_2},&amp;hellip;,\vec{h_N}}$，其中，$\vec{h_i} \in \mathbb{R}^F$，$F$是每个节点特征数。我们的目的是输出一个新的节点特征向量集$\textbf{h&amp;rsquo;}={\vec{h_1&amp;rsquo;},\vec{h_2&amp;rsquo;},&amp;hellip;,\vec{h_N&amp;rsquo;}}$，其中$\vec{h_i&amp;rsquo;} \in \mathbb{R}^{F&amp;rsquo;}$。 本质就是修改特征向量的维度（Network embedding）
-为了获得足够的表达能力以将输入特征变换为更高级别的特征，需要至少一个可学习的线性变换。因此，以任意节点$i$和$j$为例，分别对节点$i$和节点$j$的特征向量做线性变换$W \in \mathbb{R}^{F \times F&amp;rsquo;}$，这样 就将$\vec{h_i}$和$\vec{h_j}$从$F$维的向量转化为$F&amp;rsquo;$维的向量： $$ e_{ij} = a(W\vec{h_i},W\vec{h_j}) $$ 上式中，分别对$\vec{h_i}$和$\vec{h_j}$做线性变换，然后使用self-attention为图中的每一个节点分配注意力（权重）。上式中，注意力机制$a$是一个$\mathbb{R}^{F&amp;rsquo;} \times \mathbb{R}^{F&amp;rsquo;} \to \mathbb{R}$的映射。最终得到的$e_{ij}$是节点$j$对节点$i$的影响力系数（一个实数）。
-但是，上面的方法考虑其他节点对$i$的影响时，将图中的所有节点都纳入了考虑范围，这样就丢失了图的结构信息。因此，本文引入masked attention机制，即计算影响力系数$e_{ij}$时， 仅考虑节点$i$的一部分邻居节点 $j \in \mathcal{N}_i$（$i$也属于$\mathcal{N}_i$）。使用softmax将节点$i$部分邻居的注意力系数分配到(0,1)上： $$ \alpha_{ij} = \mathrm{softmax}_j(e_{ij}) = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}_i}\exp(e_{ik})} $$ 在本文中，$a$是一个单层前馈神经网络，参数是一个权重向量$\vec{\text{a}} \in \mathbb{R}^{2F&amp;rsquo;}$，然后使用负半轴斜率为0.2的LeakyReLU作为非线性激活函数： $$ \alpha_{ij} = \frac{\exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_j}]))}{\sum_{k\in \mathcal{N}_i} \exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_k}]))} $$ 其中$||$表示向量的连接操作。上述过程可以用下图表示：
-这样，我们就可以获得节点$j$对节点$i$的注意力系数$\alpha_{ij}$，那么，节点$i$最终的输出特征$\vec{h_i&amp;rsquo;}$就是对$\mathcal{N}_i$中所有节点的加权（加注意力）求和： $$ \vec{h_i&amp;rsquo;} = \sigma (\sum_{j \in \mathcal{N}_i}\alpha_{ij} W\vec{h_j}) $$
-另外，本文使用multi-head attention来稳定self-attention的学习过程，如下图所示：</description>
+      <description>ICLR2018 &amp;#34;Graph Attention Networks&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址：<a href="https://arxiv.org/abs/1710.10903">GAT</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>本文介绍了一种新型的神经网络架构用来处理图结构。即__Graph Attention Networks__(<strong>GATs</strong>)。该方法利用masked self-attentional layer，即通过网络层的堆叠，可以获取网络中每个节点的领域特征，同时为领域中的不同节点指定不同的权重。这样做的好处是可以不需要各种高成本的矩阵运算也不依赖于的图结构信息。通过这种方式，GAT可以解决基于谱的图神经网络存在的问题，同时，GAT可以使用用归纳（inductive）和直推（transductive）问题。</p>
@@ -1144,12 +1001,7 @@ $$</p>
       <pubDate>Fri, 29 Jun 2018 16:29:18 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/metapath2vec/</guid>
-      <description>论文地址： metapath2vec
-Introduction 真实网络中通常包含多种类型的节点和关系，这些节点和关系共同组成了异质信息网络（Heterogeneous Information Network），传统的NE方法如DeepWalk, Line , node2vec更多关注与同质网络从而忽略了网络的异质性。针对这个问题，这篇文章提出了metapath2vec基于meta-path的随机游走来构建节点的异质邻域，采用异质Skip-gram模型来学习节点的representation。 另外，在负采样时也考虑异质性，从而进一步提出了metapath2vec++。如下：
-Definition Definition 1: 异质网络： $G = (V,E,T)$，其中每个节点和边分别对应一个映射 $\phi(v) : V \rightarrow T_{V}$ 和$\varphi(e) : E \rightarrow T_{E}$。 其中$T_V$和$T_E$分别表示节点的类型集合以及关系的类型集合。且$\left|T_{V}\right|+\left|T_{E}\right|&amp;gt;2$。
-Definition 2: 异质网络表示学习 为网络中的节点学习一个$d$维的表示 $\mathrm{X} \in \mathbb{R}^{|V| \times d}$，$d \ll|V|$。节点的向量表示可以捕获节点间结构和语义关系。
-Model metapath2vec Skip-Gram模型是给定一个节点，预测向下文节点的概率。metapath2vec的目的是考虑多种类型节点和多种类型关系的情况下，最大化网络概率。为了将异质信息融入skip-gram模型中，首先提出异质skip-gram。
-Heterogeneous Skip-Gram 对于节点类型$|T_V| &amp;gt; 1$的网络$G$， 给定一个节点$v$，需要最大化属于类型$t \in T_V$的异质上下文节点的概率： $$ \arg \max_{\theta} \sum_{v \in V} \sum_{t \in T_{V}} \sum_{c_{t} \in N_{t}(v)} \log p\left(c_{t} | v ; \theta\right) $$ 其中，$N_t(v)$表示$v$属于第$t$个类型的邻居节点。 $p\left(c_{t} | v ; \theta\right)$ 表示给定节点$v$，它的$t$类型邻域概率： $p\left(c_{t} | v ; \theta\right)=\frac{e^{X_{c_{t}} \cdot X_{v}}}{\sum_{u \in V} e^{X_{u} \cdot X_{v}}}$，是一个softmax函数，$X_v$是节点$v$的表示。由于softmax函数的分母每一次都要遍历所有节点，所以采用负采样改进$\log p(\cdot)$ 如下： $$ \log \sigma\left(X_{c_{t}} \cdot X_{v}\right)+\sum_{m=1}^{M} \mathbb{E}_{u^{m} \sim P(u)}\left[\log \sigma\left(-X_{u^{m}} \cdot X_{v}\right)\right] $$ 其中 $\sigma(x)=\frac{1}{1+e^{-x}}$。</description>
+      <description>KDD2017 &amp;#34;metapath2vec:Scalable Representation Learning for Heterogeneous Networks&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址： <a href="https://ericdongyx.github.io/papers/KDD17-dong-chawla-swami-metapath2vec.pdf">metapath2vec</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>真实网络中通常包含多种类型的节点和关系，这些节点和关系共同组成了异质信息网络（Heterogeneous Information Network），传统的NE方法如DeepWalk, Line , node2vec更多关注与同质网络从而忽略了网络的异质性。针对这个问题，这篇文章提出了metapath2vec基于meta-path的随机游走来构建节点的异质邻域，采用异质Skip-gram模型来学习节点的representation。 另外，在负采样时也考虑异质性，从而进一步提出了metapath2vec++。如下：</p>

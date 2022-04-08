@@ -17,15 +17,7 @@
       <pubDate>Sun, 12 May 2019 22:09:38 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2019-05-12-embedding-ic/</guid>
-      <description>文章链接：Embedding_IC
-Introduction 本文基于Network Embedding优化了传统的独立级联模型（IC），用以学习一个更具鲁棒性的扩散概率。
-对于网络和社交数据，分析用户交互来为扩散现象建模具有以下困难：
- 用户通常是异质的，伴随着不同的行为或兴趣。并且他们通过各种通道同时交互。 用户之间的关系很难检测和表征。 例如，在信息传播过程中，不经常交互的用户之间的“弱关系”很重要，而它们很难被捕获。 不同应用中的级联长度变化很大，难以学习和预测。  本文的目的是通过从观察中学习来开发扩散模型。为此，本文专注于独立级联模型（IC），该模型定义了网络中的扩散迭代过程。在这种情况下，建模扩散的问题归结为__学习表征用户间隐含的相互影响关系的概率分布__，以便发现网络的主要通信通道。我们在此考虑的模型执行以下假设：
- 影响传播是二元的（被感染或不被感染）， 扩散网络未知， 影响关系不依赖于传播的内容， 用户之间的感染概率不会随时间变化（一旦分配了两个节点间的感染概率，那么该概率固定）。  本文基于NE，将扩散空间建模为一个连续的潜在空间，用户间的相对位置用于定义内容传输的可能性。用户靠的越近，传播概率越高。如下图所示：
-Model Notations 传播事件集$\mathcal{D}={D_1,D_2,&amp;hellip;,D_n}$ 可以视为一个graph中的$n$个级联（cascade）。其中，一个传播事件$D$是一个带有时间戳的用户集。值得注意的是，级联中的用户并不知道是谁传染它，仅知道它何时被传染。
-给定一个社交网络，有$N$个用户：$\mathcal{U}={u_1,u_2,&amp;hellip;,u_N}$，一个传播级联$D$可以定义为user和它的timestamp的集合：$D = {(u,t^D(u)) | u \in \mathcal{U} \wedge t^D(u)&amp;lt; \infty}$， 其中，$t^D: \mathcal{U} \to \mathbb{R}^+$ 表示用户被传染的时间戳， $\infty$表示未被传染的用户。每个用户的时间戳$t^D$表示该用户相对于源用户（source user）被传染的时间，$t^D(source \quad user) = 0$。接下来，用$D(t)$表示在时间戳$t$之前被传染的用户：$D(t) = {u \in \mathcal{U} | t^D(u)&amp;lt;t}$。对称地，用$\bar{D}(t)$表示在时间戳$t$之前没有被感染的用户。 $D(\infty)$表示最终所有被感染的用户，$\bar{D}(infty)$表示最终所有没被感染的用户。
-Diffusion Model 本文将级联embed到连续空间中，用以捕获扩散关系的规律性。本文只考虑传播的顺序，而不是确切的感染时间戳。
-在Embedding_IC中，在一个传播事件(级联)$D$中，一个用户是否被感染的概率取决于先前所有已经被感染的节点。给定一个已经被影响的用户集$I \in \mathcal{U}$, $P(v|I)$表示给定活跃用户集$I$时，节点$v$被传染的概率，其中$v \in \mathcal{U} \backslash I$: $$ P(v|I) = 1-\prod_{u \in I}(1-P_{u,v}) $$ 上式中，$\prod_{u \in I}(1-P_{u,v})$表示$I$中所有节点都不影响$v$的概率。那么$P(v|I)$就可以表示$v$被感染的概率。</description>
+      <description>WSDM2016 &amp;#34;Representation Learning for Information Diffusion through Social Networks:an Embedded Cascade Model&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>文章链接：<a href="https://dl.acm.org/citation.cfm?id=2835817">Embedding_IC</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>本文基于Network Embedding优化了传统的独立级联模型（IC），用以学习一个更具鲁棒性的扩散概率。</p>
@@ -85,35 +77,7 @@ $$
       <pubDate>Mon, 21 Jan 2019 15:34:36 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/sdne/</guid>
-      <description>论文地址：SDNE
-Introduction 这是一篇比较早的Network Embedding论文， 较早将深度模型应用到NE任务。 首先，本文提出了当前网络表示学习中遇到的三个问题：
-（1）. 高度非线性
-（2）. 尽可能保持网络结构
-（3）. 现实网络的高度稀疏性
-SDNE的主要目标就是保持网络结构的一阶相似性和二阶相似性。
-一阶相似性就是网络中边相连的节点对之间具有的相似性。
-二阶相似性就是在一个Graph中，拥有共同邻居但是不直接向相连的两个节点具有的相似性。
-其中，一阶相似性主要反映了网络的局部特征。 二阶相似性反映了网络的全局特征。
-Model 本文的模型主要如下图所示：
-这张图看上去有点复杂，实则原理非常简单。
-模型分为无监督部分和有监督部分，无监督部分是一个深度自编码器 用来捕获二阶相似度（保留全局结构），监督部分是一个拉普拉斯特征映射捕获一阶相似度（局部结构）。呃呃呃，Emmmmm ,不知道是我理解有问题还是其他原因，文章里说的和我理解的不太一样 /(ㄒoㄒ)/~~。 然后介绍一下具体的模型结构：
-深度自编码器的编码部分：
-$$y_i^{(k)}=\sigma{(W^{(k)}y_i^{(k-1)}+b^{(k)})}, k=2,&amp;hellip;,K$$
-假设第$k$层是 节点$v$的表示向量（仅考虑全局信息），那么从第$k$层开始解码，最终得到$\hat{x_i}$, 所以自编码器的误差就是输入节点$v$的邻接向量的重构误差。所以，二阶相似度损失函数定义为:
-$$\mathcal{L}=\sum_{i=1}^n{||\hat{x_i}-x_i||^2_2}$$
-值得注意的是，由于网络的稀疏性，邻接矩阵中的0元素远多于非0元素，使用邻接矩阵作为输入的话要处理很多0，这样就做了太多无用功了。为了解决这个问题，对损失函数做了改进如下：
-$$\mathcal{L_{2nd}}=\sum_{i=1}^n||(\hat{x_i}-x_i)\odot{b_i}||^2_2=||\hat{X}-X\odot{B}||^2_F$$
-其中$\odot$是哈马达乘积，表示对应元素相乘。$b_i={b_{i,j}}^n_{j=1}$， 邻接矩阵中的0对应$b=1$, 非0元素的$b&amp;gt;1$,这样的目的是对于有边连接的节点增加惩罚。可以理解为对有边连接的节点赋予更高权重。
-以上我们获得了二阶相似度的损失函数。在介绍一阶相似度之前，我们先来看看拉普拉斯映射（Laplacian Eigenmap） 其实LE也是一种经典的NRL方法，主要目的也是降维。其目标函数如下所示:
-$$\sum_{i,j} W_{ij}||y_i-y_j||^2$$
-LE是通过构建相似关系图来重构局部特征结构,如果放在网络结构中来说,如果节点$v_i$和$v_j$很接近（有边），那么他们在embedding space中的距离也应该相应接近。$y_i$和$y_j$就表示他们在特征空间中的表示。因此，本文定义了保持一阶相似度的目标函数：
-$$\mathcal{L_{1st}}=\sum_{i,j=1}^n{s_{i,j}||y_i^{(K)}-y_j^{(K)}||^2_2}=\sum_{i.j=1}^n{s_{i,j}||y_i-y_j||^2_2}$$
-具体来说，$K$就是自编码器第$K$层的输出，即编码结果，需要保持一条边的两个节点在嵌入空间中的表示相对接近。
-最终 结合一阶相似度和二阶相似度，本文给出了SDNE的目标函数：
-$$\mathcal{L_{mix}}=\mathcal{L_{2nd}+\alpha{\mathcal{L_{1st}}}}+\nu{\mathcal{L_{reg}}} =||(\hat{X}-X)\odot{B}||^2_F+\alpha{\sum_{i.j=1}^n{s_{i,j}||y_i-y_j||^2_2}}+\nu{\mathcal{L_{reg}}}$$
-其中，为了防止过拟合，添加了$\mathcal L2$-norm单元$\mathcal{L_{reg}}$来防止过拟合:
-$$\mathcal{L_{reg}}=\frac{1}{2}\sum_{k=1}^k({||W^{(k)}||^2_F+||\hat{W}^{k}||_F^2})$$
-Optimization 使用SGD来优化$\mathcal{L_{mix}}$。具体算法如下：</description>
+      <description>KDD2016 &amp;#34;Structral Deep Network Embedding&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址：<a href="https://www.kdd.org/kdd2016/papers/files/rfp0191-wangAemb.pdf">SDNE</a></p>
 <h3 id="introduction">Introduction</h3>
 <p>这是一篇比较早的Network Embedding论文， 较早将深度模型应用到NE任务。 首先，本文提出了当前网络表示学习中遇到的三个问题：<br>

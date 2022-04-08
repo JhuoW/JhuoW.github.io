@@ -17,23 +17,7 @@
       <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2019-01-22-ne-edge-labels/</guid>
-      <description>论文地址: Enhanced Network Embeddings via Exploiting Edge Labels
-Introduction 这是DeepWalk团队的一篇论文，目的是捕获网络中的边信息。传统的NE方法通常把节点简单关系当做（0,1）二值，然而边中所包含的丰富的语义信息。本文尝试做Network Embedding的同时保留网络结构和节点关系信息。举个例子来说，真实社交网络中，一个用户可能和他的同事，家人有关系，但是已有的NE方法不能同事捕获好友关系（有边连接），以及边的类型。
-具体来说，本分的方法分为无监督部分和监督部分。其中无监督部分预测节点邻域， 监督部分预测边标签。所以本文模型是个半监督NE模型。
-Problem Definition 假定Network Graph $G=(V,E)$是无向图。$L=(l_1,l_2,&amp;hellip;,l_{|V|})$是边的类型集。一个含有边类型的Graph可以被重新定义为$G=(V,E_L,E_U,Y_L)$,其中$E_L$是由label的边集，$E_U$是没有label的边集，$E_L \cup E_U =E$。$Y_L$表示$E_L$中边的关系类型集合。论文中假定一条边可以有多重关系，所以对于边$E_i$的label集$Y_L(i) \in Y_L$, $Y_L(i)$可能包含很多类型 所以$Y_L(i) \subseteq L$。目的还是一样，学习一个映射函数$\Phi \to \mathbb{R}^{|V| \times d}$, 其中$d \ll |V|$。
-Method 首先定义损失函数:
-$$\mathcal{L}=(1-\lambda)\mathcal{L}_s+\lambda\mathcal{L}_r$$
-其中$\mathcal{L}_s$表示预测节点邻域的损失。$\mathcal{L}_r$表示预测边label的损失。$\lambda$是两种损失的权重。
-Structural Loss 第一部分是最小化无监督网络结构损失，对于一个给定的节点$v$, 要最大化这个节点和它邻域可能性。其中，节点的邻域不一定要一定和该节点有边相连。文章先给出了结构损失的目标函数：
-$$\mathcal{L}_s=-\sum_{u \in C(v)} \log Pr(u|v)$$
-这个函数其实就是给定$v$,最大化$v$的邻域的极大似然。其中$Pr(u|v)$是一个softmax函数：
-$$Pr(u|v)=\frac{\exp(\Phi(u) \cdot \Phi&amp;rsquo;(v))}{\sum_{u&amp;rsquo; \in V} \exp(\Phi(u&amp;rsquo;) \cdot \Phi&amp;rsquo;(v))}$$
-这其实和DeepWalk一样，一个节点$v$有两个表示向量，$\Phi(v)$和$\Phi&amp;rsquo;(v)$分别表示该节点作为中心节点和上下文节点的表示。由于计算复杂度较高，所以采用负采样的策略。
-剩下的问题就是如何构建节点$v$的邻域$C(v)$。一种直接的方式就是从邻接矩阵中选取他的邻居。然后由于现实网络的稀疏性，一个节点只有很少的邻居。为了缓解网络稀疏性的问题， 本文采取了类似于DeepWalk的randomwalk策略。 最终可以得到节点$v$的邻域：
-$$C(v)={v_{i-w},&amp;hellip;,v_{i-1}} \cup {v_{i+1},&amp;hellip;,v_{i+w}}$$
-Relational Loss 由于label是为了预测边的，所以需要把每条边表示出来，所以对于边$e=(u,v) \in E$,可以用一下方法来表示这条边:
-$$\Phi(e)=g(\Phi(u),\Phi(v))$$
-其中，$g$是一个映射函数用来把两个节点的表示向量转化为他们之间边的表示向量，本文使用了简单的连接操作，即把两个向量直接拼接：</description>
+      <description>CIKM2018 &amp;#34;Enhanced Network Embeddings via Exploiting Edge Labels&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址: <a href="https://arxiv.org/abs/1809.05124?context=physics.soc-ph">Enhanced Network Embeddings via Exploiting Edge Labels</a></p>
 <h2 id="introduction">Introduction</h2>
 <p>这是DeepWalk团队的一篇论文，目的是捕获网络中的边信息。传统的NE方法通常把节点简单关系当做（0,1）二值，然而边中所包含的丰富的语义信息。本文尝试做Network Embedding的同时保留网络结构和节点关系信息。举个例子来说，真实社交网络中，一个用户可能和他的同事，家人有关系，但是已有的NE方法不能同事捕获好友关系（有边连接），以及边的类型。</p>
@@ -70,15 +54,7 @@ $$h^{(k)}=f(W^{(k)}h^{(k-1)}+b^{(k)})$$<br>
       <pubDate>Fri, 14 Sep 2018 23:01:31 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/gat/</guid>
-      <description>论文地址：GAT
-Introduction 本文介绍了一种新型的神经网络架构用来处理图结构。即__Graph Attention Networks__(GATs)。该方法利用masked self-attentional layer，即通过网络层的堆叠，可以获取网络中每个节点的领域特征，同时为领域中的不同节点指定不同的权重。这样做的好处是可以不需要各种高成本的矩阵运算也不依赖于的图结构信息。通过这种方式，GAT可以解决基于谱的图神经网络存在的问题，同时，GAT可以使用用归纳（inductive）和直推（transductive）问题。
-归纳学习:先从训练样本中学习到一定的模式，然后利用其对测试样本进行预测（即首先从特殊到一般，然后再从一般到特殊），这类模型如常见的贝叶斯模型。
-直推学习:先观察特定的训练样本，然后对特定的测试样本做出预测（从特殊到特殊），这类模型如k近邻、SVM等。
-Architecture 图$G$中有$N$个节点，他们的特征向量为：$\textbf{h}={\vec{h_1},\vec{h_2},&amp;hellip;,\vec{h_N}}$，其中，$\vec{h_i} \in \mathbb{R}^F$，$F$是每个节点特征数。我们的目的是输出一个新的节点特征向量集$\textbf{h&amp;rsquo;}={\vec{h_1&amp;rsquo;},\vec{h_2&amp;rsquo;},&amp;hellip;,\vec{h_N&amp;rsquo;}}$，其中$\vec{h_i&amp;rsquo;} \in \mathbb{R}^{F&amp;rsquo;}$。 本质就是修改特征向量的维度（Network embedding）
-为了获得足够的表达能力以将输入特征变换为更高级别的特征，需要至少一个可学习的线性变换。因此，以任意节点$i$和$j$为例，分别对节点$i$和节点$j$的特征向量做线性变换$W \in \mathbb{R}^{F \times F&amp;rsquo;}$，这样 就将$\vec{h_i}$和$\vec{h_j}$从$F$维的向量转化为$F&amp;rsquo;$维的向量： $$ e_{ij} = a(W\vec{h_i},W\vec{h_j}) $$ 上式中，分别对$\vec{h_i}$和$\vec{h_j}$做线性变换，然后使用self-attention为图中的每一个节点分配注意力（权重）。上式中，注意力机制$a$是一个$\mathbb{R}^{F&amp;rsquo;} \times \mathbb{R}^{F&amp;rsquo;} \to \mathbb{R}$的映射。最终得到的$e_{ij}$是节点$j$对节点$i$的影响力系数（一个实数）。
-但是，上面的方法考虑其他节点对$i$的影响时，将图中的所有节点都纳入了考虑范围，这样就丢失了图的结构信息。因此，本文引入masked attention机制，即计算影响力系数$e_{ij}$时， 仅考虑节点$i$的一部分邻居节点 $j \in \mathcal{N}_i$（$i$也属于$\mathcal{N}_i$）。使用softmax将节点$i$部分邻居的注意力系数分配到(0,1)上： $$ \alpha_{ij} = \mathrm{softmax}_j(e_{ij}) = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}_i}\exp(e_{ik})} $$ 在本文中，$a$是一个单层前馈神经网络，参数是一个权重向量$\vec{\text{a}} \in \mathbb{R}^{2F&amp;rsquo;}$，然后使用负半轴斜率为0.2的LeakyReLU作为非线性激活函数： $$ \alpha_{ij} = \frac{\exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_j}]))}{\sum_{k\in \mathcal{N}_i} \exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_k}]))} $$ 其中$||$表示向量的连接操作。上述过程可以用下图表示：
-这样，我们就可以获得节点$j$对节点$i$的注意力系数$\alpha_{ij}$，那么，节点$i$最终的输出特征$\vec{h_i&amp;rsquo;}$就是对$\mathcal{N}_i$中所有节点的加权（加注意力）求和： $$ \vec{h_i&amp;rsquo;} = \sigma (\sum_{j \in \mathcal{N}_i}\alpha_{ij} W\vec{h_j}) $$
-另外，本文使用multi-head attention来稳定self-attention的学习过程，如下图所示：</description>
+      <description>ICLR2018 &amp;#34;Graph Attention Networks&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址：<a href="https://arxiv.org/abs/1710.10903">GAT</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>本文介绍了一种新型的神经网络架构用来处理图结构。即__Graph Attention Networks__(<strong>GATs</strong>)。该方法利用masked self-attentional layer，即通过网络层的堆叠，可以获取网络中每个节点的领域特征，同时为领域中的不同节点指定不同的权重。这样做的好处是可以不需要各种高成本的矩阵运算也不依赖于的图结构信息。通过这种方式，GAT可以解决基于谱的图神经网络存在的问题，同时，GAT可以使用用归纳（inductive）和直推（transductive）问题。</p>

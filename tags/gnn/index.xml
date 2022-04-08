@@ -17,14 +17,7 @@
       <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/airgnn/</guid>
-      <description>paper
-Introduction 在Deeper GNN中，residual connections通常可以缓解oversmoothing问题，但是，若图中的存在abnormal node features, 那么residual connections会放大abnormal features的影响。本文旨在设计AirGNN， 在自适应调整残差连接的权重，是的可以弹性适应存在abnormal node features的图。太多聚合（deep layers）会导致oversmoothing，但residual 对深层GNN有益，但是对于abnormal features是脆弱的。
-Preliminary Frobenius norm: $||\mathbf{X}||_{F}=\sqrt{\sum_{i j} \mathbf{X}_{i j}^{2}}$
-$\ell_{21}$ norm: $||\mathbf{X}||_{21}= \sum_{i}\left|\left|\mathbf{X}_{i}\right|\right|_{2}=\sum_{i} \sqrt{\sum_{j} \mathbf{X}_{i j}^{2}}$ 表示对每行算$\ell_2$ norm 再对所有行算$\ell_1$ norm。
-Study 如图Figure 1所示， 对于具有abnormal node feature 的图，添加residual（蓝线）会导致性能巨大下降，因为abnormal node feature是与任务无关的，residual相对于无residual 保留了更多original abnormal features。
-对于node feature 都是normal的图， 没有residual的话，随着层次加深，GNN的性能会下降。
-综上，residual可以是GNN层次加深（容忍更多聚合），但是对abnormal features的鲁棒性较差。
-Understandings I: Feature aggregation as Laplacian smoothing 对于Laplacian Smoothing problem: $$ \underset{\mathbf{X} \in \mathbb{R}^{n \times d}}{\arg \min } \mathcal{L}_{1}(\mathbf{X}):=\frac{1}{2} \operatorname{tr}\left(\mathbf{X}^{\top}(\mathbf{I}-\tilde{\mathbf{A}}) \mathbf{X}\right)=\frac{1}{2} \sum_{\left(v_{i}, v_{j}\right) \in \mathcal{E}}\left|\left|\frac{\mathbf{X}_{i}}{\sqrt{d_{i}+1}}-\frac{\mathbf{X}_{j}}{\sqrt{d_{j}+1}}\right|\right|_{2}^{2} \tag{1} $$ 其目标是找到最佳的$X$,使得$X$在图上最平滑。而对于GCN, GCNII (w/o residual)和APPNP (w/o residual), 他们的每一层都可以看做是如下的特征聚合方式： $$ \mathbf{X}^{(k+1)}=\tilde{\mathbf{A}} \mathbf{X}^{(k)} = \tilde{\mathbf{A}}=(\hat{\mathbf{D}}^{-\frac{1}{2}} \hat{\mathbf{A}} \hat{\mathbf{D}}^{-\frac{1}{2}})\mathbf{X}^{(k)} \tag{2} $$ 实际上，迭代多层GNN可以看做是以 step size =1的条件下，以梯度下降的方式求解Laplacian Smoothing问题，即以梯度下降的方式找到在图上最平滑的信号： $$ \begin{equation} \begin{aligned} \mathbf{X}^{(k+1)} &amp;amp;= \mathbf{X}^{(k)}-\left.</description>
+      <description>NeurIPS2021 &amp;#34;Graph Neural Networks with Adaptive Residual&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=hfkER_KJiNw">paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>在Deeper GNN中，residual connections通常可以缓解oversmoothing问题，但是，若图中的存在abnormal node features, 那么residual connections会放大abnormal features的影响。本文旨在设计AirGNN， 在自适应调整残差连接的权重，是的可以弹性适应存在abnormal node features的图。太多聚合（deep layers）会导致oversmoothing，但residual 对深层GNN有益，但是对于abnormal features是脆弱的。</p>
@@ -202,13 +195,7 @@ $$</p>
       <pubDate>Sat, 02 Apr 2022 10:34:01 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2022-04-02-tinl/</guid>
-      <description>Paper
-Introduction 类别不均衡（Class Imbalance）是真实场景中非常常见的问题。一般在我们提及类别不均衡时，默认指的是数量不均衡：即不同类中训练样本数量的不一致带来的模型于不同类别学习能力的差异，由此引起的一个严重问题是模型的决策边界会主要由数量多的类来决定 。
-但是在图结构中，不同类别的训练样本不仅有在数量上的差异，也有在位置结构上的差异.这就使得图上的类别不均衡问题有了一个独特的来源：拓扑不均衡。这个工作最主要的动机就是研究拓扑不均衡的特点，危害以及解决方法，希望能够引起社区对拓扑不均衡问题的重视。
-本文提出Topology-Imbalance Node Representation Learning （TINL）, 主要关注拓扑不平衡导致的决策边界漂移。所谓拓扑不平衡值得是， labeled nodes的位置如果位于拓扑中的决策边界，那么会传播错误的影响。 如上图所示，颜色和色调分别表示节点从labeled node接收到的influence类型和强度，节点R1位于两类节点的拓扑边界，第一张图可以看出，两个$\mathbf{x}$节点面临influence conflict问题，两个$\mathbf{Y}$节点由于远离R2，面临影响力不足的问题。也就是，如果决策便捷有labeled node（如R1）, 那么他的影响力很容易传播给另一个类的边界unlabeled节点，导致影响力冲突，从而分类错误。 而冲突较小的labeled node更可能位于类的拓扑中心（如R2）,顾增加其权重，是的它在训练过程中发挥更大作用。
-Understanding Topology Imbalance via Label Propagation Label Propagation中，labels从labeled node延边传播， 看做label从labeled node开始的随机游走过程。LP最终收敛状态可以认为每个节点的soft-labels: $$ \boldsymbol{Y}=\alpha\left(\boldsymbol{I}-(1-\alpha) \boldsymbol{A}^{\prime}\right)^{-1} \boldsymbol{Y}^{0} $$ 其中$\boldsymbol{A}^{\prime}=\boldsymbol{D}^{-\frac{1}{2}} A D^{-\frac{1}{2}}$，其实就是PageRank的极限分布， $\boldsymbol{Y}^{0}$为每个节点的初始one-hot label。 第$i$个节点的预测结果为$\boldsymbol{q}_{i}=\arg \max _{j} \boldsymbol{Y}_{i j}$，每个节点的预测向量反映了每个节点主要受哪个类的影响。图(a)反映了GCN与LP的预测一致性，所以LP的节点影响力边界可以作为GNN的决策边界。理想状态下，labeled node的影响力边界应与真实类边界一致，例如红色的labeled node 在LP下所传播的影响力范围，应与所有红色node的范围一致。但是如图(b)所示，蓝色的labeled node如果较多位于真实类边界，这些位于边界的节点也会传播影响力，从而导致位于边界的真是红色节点被预测为蓝色，预测边界向红色类偏移。
-Measuring Topology Imbalance by Influence Conflict 可以看出，位于决策边界的labeled node 会不可避免的将影响力传播到其他类节点，因此需要衡量labeled node与其所属类的相对拓扑位置（位于类边缘还是中心）。由于Homophily， 位于类边缘的节点也具有和其邻居相似的性质，因此利用邻域特征差别来判断labeled node是否位于边缘是不可靠的。因此本文利用整个图中的节点影响力冲突，提出基于冲突检测的拓扑相对位置Conflict Detection-based Topology Relative Location metric (Totoro).
-Personalized PageRank矩阵定义为： $$ \boldsymbol{P} = \alpha\left(\boldsymbol{I}-(1-\alpha) \boldsymbol{A}^{\prime}\right)^{-1} $$ $\boldsymbol{P}_{ij} = \boldsymbol{P}(j \to^\infty i)$， 可以用来反映拓扑中节点$i$对节点$j$的影响力（随机游走越有可能到达的两个节点，在拓扑中的越能相互影响）。</description>
+      <description>NeurIPS2021 &amp;#34;Topology-Imbalance Learning for Semi-Supervised Node Classification&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2110.04099v1">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>类别不均衡（Class Imbalance）是真实场景中非常常见的问题。一般在我们提及类别不均衡时，默认指的是<strong>数量不均衡</strong>：即不同类中训练样本数量的不一致带来的模型于不同类别学习能力的差异，由此引起的一个严重问题是模型的决策边界会主要由数量多的类来决定 。</p>
@@ -277,12 +264,7 @@ $$
       <pubDate>Fri, 01 Apr 2022 10:55:44 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/neuralsparse/</guid>
-      <description>Paper
-Introduction GNN的neighborhood aggregation中会引入邻域中任务无关的邻居，所以要移除图中有大量任务无关的边，顾本文提出NeuralSparse来解决该问题。
-在构造数据集时，两个节点连接的动机可能与拿到这张图后要进行的下游任务无关，例如下游任务是节点分类，那么和这个任务相关的连接应是同类节点间产生边。但是构造图数据集是的两个节点连接的动机可能是特征相似的节点（不一定同类）。
-下图给出一个例子，Blue 和 Red节点分别采样自两个独立的二维Gaussian distribution, 图1(a)显示两类节点的原始features有大量重合。对于每个节点，随机抽取10个其他节点作为他的邻居，这样生成的图（图1(b) )中的边和node label没有任何关系，即所有边都与节点分类任务无关。在这个图上做GCN得到(图1(b)下方)的node embedding，可以看到GCN学到的node embedding在任务无关的边上，无法区分两类节点。 图1(c)是DropEdge学到的node embedding，图1(d)为本文的NeuralSparse学到的node embedding。
-Present work：根据监督信号来选择任务相关的边。 由sparsification network 和GNN两个模块组成. sparsification network旨在参数化稀疏过程，即在给定预算下， 为每个节点选择任务相关的一节邻居。在训练阶段，优化稀疏策略，即训练一个可以将图稀疏化的网络。在测试阶段，将测试图输入网络，得到一个稀疏化的图。
-NeuralSparse Theoretical justification 首先从统计学习角度建模问题。将预测任务定义为$P(Y|G)$, 其中$Y$是预测目标，$G$是输入图。本文利用稀疏化子图来移除任务无关的边, 问题形式化为: $$ P(Y \mid G) \approx \sum_{g \in \mathbb{S}_{G}} P(Y \mid g) P(g \mid G) $$ $g$是一个稀疏化子图，$\mathbb{S}_{G}$为$G$的稀疏化子图集合。 $P(Y \mid g)$ 为给定一个稀疏化子图$g$，用$g$过GNN后预测为$Y$的概率。 $$ \sum_{g \in \mathbb{S}_{G}} P(Y \mid g) P(g \mid G) \approx \sum_{g \in \mathbb{S}_{G}} Q_{\theta}(Y \mid g) Q_{\phi}(g \mid G) $$ 用函数来近似(计算) 分布， 即给定$g$ 预测为$Y$的概率$ P(Y \mid g)$定义为一个参数为$\theta$的函数$Q_{\theta}(Y \mid g)$, 从$G$中获得子图$g$的概率$P(g \mid G)$定义为一个参数为$\phi$的函数$Q_{\phi}(g \mid G)$。</description>
+      <description>ICML2020 &amp;#34;Robust Graph Representation Learning via Neural Sparsification&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://proceedings.mlr.press/v119/zheng20d.html">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>GNN的neighborhood aggregation中会引入邻域中任务无关的邻居，所以要移除图中有大量任务无关的边，顾本文提出NeuralSparse来解决该问题。</p>
@@ -365,10 +347,7 @@ $$</p>
       <pubDate>Wed, 30 Mar 2022 13:51:57 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/neo-gnns/</guid>
-      <description>Paper
-Introduction 由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure。
- Link prediction heuristics: 基于预定义的假设的链路预测。举几个例子[1]：
-  Common Neighbors (CN)： 公共邻居较多的节点存在边（heuristic），则需要计算节点对间的公共邻居。 Preferential Attachment (PA): 一个节点当前的连接越多，那么它越有可能接受到新的连接（heuristic）,这需要统计每个节点的度, i.e., $P A(x, y)=|N(x)| *|N(y)|$ Katz Index heuristic: $\sum^{\infty}_{\ell=1} \beta^{\ell}|walks(x,y)=\ell|$ 表示从$x$到$y$的所有路径数， $0&amp;lt;\beta&amp;lt;1$， 表示越长的路径权重越低。 katz Index作为Link prediction heuristic假设来作为边是否存在的预测。  本文提出了Neighborhood Overlap-aware Graph Neural Networks (Neo-GNNs)来从邻接矩阵中学习结构信息，并且估计重叠多跳邻域用于link prediction。</description>
+      <description>NeurIPS2021 &amp;#34;Neo-GNNs:Neighborhood Overlap-aware Graph Neural Networks for Link Prediction&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=Ic9vRN3VpZ">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 <strong>Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure</strong>。</p>
@@ -445,15 +424,7 @@ $$
       <pubDate>Wed, 30 Mar 2022 10:37:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/graphtrans/</guid>
-      <description>Paper
-Introduction 加深GNN层数来增加感受野会导致优化不稳定性，比如梯度消失和oversmoothing。 因此本文采用Transformer-based self-attention来学习成对节点间的长距离关系，并且提出一种新型的readout池化机制来学习global graph embedding。即在一个GNN模块后接一个置换不变（permutation-invariant）Transformer, GNN模块捕获local信息，Transformer捕获global信息。
-GNN作为一种专门的架构医学系节点直接邻域结构的局部表示， 而Transformer作为全局推理模块以位置无关的方式计算所有成对节点的交互。作者认为，一个没有positional encoding的Transformer是置换不变的，因此很适合图。
-Motivation 强关系Inductive bias(我的理解是Homophily假设) 鼓励学习局部短距离的关联性。 而对于长距离相关性，结构化较低的模块（不需要过于考虑图的结构信息）更受欢迎。
-GraphTrans leaves learning long-range dependencies to Transformer, 通过Transformer来学习图中所有节点对的依赖关系而不是只关注局部邻居。
-下图中展示了一个子图的attention map。一共有17个节点，横坐标表示目标节点，纵坐标表示源节点，第$i$行第$j$列表示节点$i$在Transformer中聚合$j$的attention权重。第18行为一个特殊的$&amp;lt;CLS&amp;gt;$token 作为图的readout embedding。结合本文的SOTA效果，表面在学习长距离依赖时不考虑图结构先验（spatial priors）对Graph summarization（graph-level representation）是有必要的
-Model GNN Module 一个通用的GNN模块： $$ \boldsymbol{h}_{v}^{\ell}=f_{\ell}\left(\boldsymbol{h}_{v}^{\ell-1},\left\{\boldsymbol{h}_{u}^{\ell-1} \mid u \in \mathcal{N}(v)\right\}\right), \quad \ell=1, \ldots, L_{\mathrm{GNN}} $$
-Transformer Module 通过上面的GNN模块，我们可以得到每个节点的embedding $h_{v}^{L_{\mathrm{GNN}}}$, 将所有节点作为Transformer的Input。传统Transformer中输入先计算Self-attention（当前输入的$Q$向量和所有节点的$K$向量做内积得到输入节点和其他节点的att值，再用这个att值来为当前输入节点加权聚合所有节点的$V$向量），聚合后再和自身相加做residual,然后在做Layer Norm, 即对节点$i$的表示做Layer Norm 为$x_i^\prime = \frac{x_i-m}{\sigma}$, 其中$m$为$x_i$的均值， $\sigma$为$x_i$的标准差。
-这里的Transformer不同的是， 先对所有节点做一次MLP，然后直接计算Layer Norm: $$ \overline{\boldsymbol{h}}_{v}^{0}=\operatorname{LayerNorm}\left(\boldsymbol{W}^{\text {Proj }} \boldsymbol{h}_{v}^{L_{\mathrm{GNN}}}\right) $$ 其中$\boldsymbol{W}^{\text {Proj }} \in \mathbb{R}^{d_{\mathrm{TF}} \times d_{L_{\mathrm{GNN}}}}$， 把GNN的输出维度转为TF的输入维度$d_{\mathrm{TF}}$。将所有节点的GNN node embeddings作为Transformer的输入（无positional encoding）。 每个节点的$Q$, $K$和$V$向量分别用$\boldsymbol{W}_{\ell}^{Q}, \boldsymbol{W}_{\ell}^{K}, \boldsymbol{W}_{\ell}^{V} \in \mathbb{R}^{d_{\mathrm{TF}} / n_{\text {head }} \times d_{\mathrm{TF}} / n_{\text {head }}}$计算， 对于第$\ell$层 Transformer, 节点$v$ 的$Q$向量$Q_v = \boldsymbol{W}_{\ell}^{Q} \overline{\boldsymbol{h}}_{v}^{\ell-1}$和节点$u$的$K$向量$K_u = \boldsymbol{W}_{\ell}^{K} \overline{\boldsymbol{h}}_{u}^{\ell-1}$做内积，得到两个节点之间的attention。然后用$\alpha_{v, u}^{\ell}$来为节点$v$聚合其他所有节点的$V$向量$V_u = \boldsymbol{W}_{\ell}^{V} \overline{\boldsymbol{h}}_{u}^{\ell-1}$, 如下所示: $$ a_{v, u}^{\ell}=\left(\boldsymbol{W}_{\ell}^{Q} \overline{\boldsymbol{h}}_{v}^{\ell-1}\right)^{\top}\left(\boldsymbol{W}_{\ell}^{K} \overline{\boldsymbol{h}}_{u}^{\ell-1}\right) / \sqrt{d_{\mathrm{TF}}} \tag{1} $$</description>
+      <description>NeurIPS2021 &amp;#34;Representing Long-Range Context for Graph Neural Networks with Global Attention&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://arxiv.org/pdf/2201.08821.pdf">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>加深GNN层数来增加感受野会导致优化不稳定性，比如梯度消失和oversmoothing。 因此本文采用Transformer-based self-attention来学习成对节点间的长距离关系，并且提出一种新型的readout池化机制来学习global graph embedding。即在一个GNN模块后接一个置换不变（permutation-invariant）Transformer, GNN模块捕获local信息，Transformer捕获global信息。</p>
@@ -503,10 +474,7 @@ $$</p>
       <pubDate>Mon, 28 Mar 2022 23:44:01 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/seed/</guid>
-      <description>Paper
-Code
-Introduction 无监督图学习算法基于重构损失，不可避免的需要图相似度计算（重构embedding和输入embedding的loss), 计算复杂度较高。本文提出一种通用的归纳式无监督图学习算法SEED（Sampling, Encoding, and Embedding Distributions）。通过计算采样子图的重构损失来代替整个图的重构损失。 即 先采样子图，在用GNN编码子图，最后计算子图分布的embedding来作为整个图的representation. 过程如下图所示：
-SEED: Sampling, Encoding, and Embedding Distributions Anonymous Random Walk Definition 1 (Random Anonymous Walks[1]): Given a random walk $\mathbf{w}=(w_1, \cdots, w_l)$ where $\langle w_i, w_{i+1} \rangle \in E$, the anonymous walk for $\mathbf{w}$ is defined as： $$ \mathrm{aw}(\mathbf{w}) = (\mathrm{DIS}(\mathbf{w}, w_1),\mathrm{DIS}(\mathbf{w}, w_2),\cdots, \mathrm{DIS}(\mathbf{w}, w_l) ) $$ where $\mathrm{DIS}(\mathbf{w}, w_i)$ denotes the number of distinct nodes in $\mathbf{w}$ when $w_i$ first appears in $\mathbf{w}$, i.</description>
+      <description>ICLR2020 &amp;#34;Inductive and Unsupervised Representation Learning on Graph Structured Objects&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=rkem91rtDB">Paper</a></p>
 <p><a href="https://github.com/wenwen0319/SEED-Reimplementation">Code</a></p>
 <h1 id="introduction">Introduction</h1>
@@ -581,15 +549,7 @@ $$
       <pubDate>Fri, 14 Sep 2018 23:01:31 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/gat/</guid>
-      <description>论文地址：GAT
-Introduction 本文介绍了一种新型的神经网络架构用来处理图结构。即__Graph Attention Networks__(GATs)。该方法利用masked self-attentional layer，即通过网络层的堆叠，可以获取网络中每个节点的领域特征，同时为领域中的不同节点指定不同的权重。这样做的好处是可以不需要各种高成本的矩阵运算也不依赖于的图结构信息。通过这种方式，GAT可以解决基于谱的图神经网络存在的问题，同时，GAT可以使用用归纳（inductive）和直推（transductive）问题。
-归纳学习:先从训练样本中学习到一定的模式，然后利用其对测试样本进行预测（即首先从特殊到一般，然后再从一般到特殊），这类模型如常见的贝叶斯模型。
-直推学习:先观察特定的训练样本，然后对特定的测试样本做出预测（从特殊到特殊），这类模型如k近邻、SVM等。
-Architecture 图$G$中有$N$个节点，他们的特征向量为：$\textbf{h}={\vec{h_1},\vec{h_2},&amp;hellip;,\vec{h_N}}$，其中，$\vec{h_i} \in \mathbb{R}^F$，$F$是每个节点特征数。我们的目的是输出一个新的节点特征向量集$\textbf{h&amp;rsquo;}={\vec{h_1&amp;rsquo;},\vec{h_2&amp;rsquo;},&amp;hellip;,\vec{h_N&amp;rsquo;}}$，其中$\vec{h_i&amp;rsquo;} \in \mathbb{R}^{F&amp;rsquo;}$。 本质就是修改特征向量的维度（Network embedding）
-为了获得足够的表达能力以将输入特征变换为更高级别的特征，需要至少一个可学习的线性变换。因此，以任意节点$i$和$j$为例，分别对节点$i$和节点$j$的特征向量做线性变换$W \in \mathbb{R}^{F \times F&amp;rsquo;}$，这样 就将$\vec{h_i}$和$\vec{h_j}$从$F$维的向量转化为$F&amp;rsquo;$维的向量： $$ e_{ij} = a(W\vec{h_i},W\vec{h_j}) $$ 上式中，分别对$\vec{h_i}$和$\vec{h_j}$做线性变换，然后使用self-attention为图中的每一个节点分配注意力（权重）。上式中，注意力机制$a$是一个$\mathbb{R}^{F&amp;rsquo;} \times \mathbb{R}^{F&amp;rsquo;} \to \mathbb{R}$的映射。最终得到的$e_{ij}$是节点$j$对节点$i$的影响力系数（一个实数）。
-但是，上面的方法考虑其他节点对$i$的影响时，将图中的所有节点都纳入了考虑范围，这样就丢失了图的结构信息。因此，本文引入masked attention机制，即计算影响力系数$e_{ij}$时， 仅考虑节点$i$的一部分邻居节点 $j \in \mathcal{N}_i$（$i$也属于$\mathcal{N}_i$）。使用softmax将节点$i$部分邻居的注意力系数分配到(0,1)上： $$ \alpha_{ij} = \mathrm{softmax}_j(e_{ij}) = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}_i}\exp(e_{ik})} $$ 在本文中，$a$是一个单层前馈神经网络，参数是一个权重向量$\vec{\text{a}} \in \mathbb{R}^{2F&amp;rsquo;}$，然后使用负半轴斜率为0.2的LeakyReLU作为非线性激活函数： $$ \alpha_{ij} = \frac{\exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_j}]))}{\sum_{k\in \mathcal{N}_i} \exp(\mathrm{LeakyReLU}(\vec{\text{a}}^T[W\vec{h_i}||W\vec{h_k}]))} $$ 其中$||$表示向量的连接操作。上述过程可以用下图表示：
-这样，我们就可以获得节点$j$对节点$i$的注意力系数$\alpha_{ij}$，那么，节点$i$最终的输出特征$\vec{h_i&amp;rsquo;}$就是对$\mathcal{N}_i$中所有节点的加权（加注意力）求和： $$ \vec{h_i&amp;rsquo;} = \sigma (\sum_{j \in \mathcal{N}_i}\alpha_{ij} W\vec{h_j}) $$
-另外，本文使用multi-head attention来稳定self-attention的学习过程，如下图所示：</description>
+      <description>ICLR2018 &amp;#34;Graph Attention Networks&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p>论文地址：<a href="https://arxiv.org/abs/1710.10903">GAT</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>本文介绍了一种新型的神经网络架构用来处理图结构。即__Graph Attention Networks__(<strong>GATs</strong>)。该方法利用masked self-attentional layer，即通过网络层的堆叠，可以获取网络中每个节点的领域特征，同时为领域中的不同节点指定不同的权重。这样做的好处是可以不需要各种高成本的矩阵运算也不依赖于的图结构信息。通过这种方式，GAT可以解决基于谱的图神经网络存在的问题，同时，GAT可以使用用归纳（inductive）和直推（transductive）问题。</p>

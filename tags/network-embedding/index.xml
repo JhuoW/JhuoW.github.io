@@ -120,10 +120,10 @@ $$\mathcal{L_{reg}}=\frac{1}{2}\sum_{k=1}^k({||W^{(k)}||^2_F+||\hat{W}^{k}||_F^2
     
     <item>
       <title>ACL2017 《CANE:Context-Aware Network Embedding for Relation Modeling》 Reading Notes</title>
-      <link>https://JhuoW.github.io/posts/cane/</link>
+      <link>https://JhuoW.github.io/posts/context-aware-ne/</link>
       <pubDate>Fri, 09 Mar 2018 20:41:15 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/cane/</guid>
+      <guid>https://JhuoW.github.io/posts/context-aware-ne/</guid>
       <description>ACL2017 &amp;#34;CANE:Context-Aware Network Embedding for Relation Modeling&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://aclanthology.org/P17-1158.pdf">paper</a></p>
 <h1 id="introduction">Introduction</h1>

@@ -10,11 +10,11 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GNN</title>
       <link>https://JhuoW.github.io/categories/gnn/</link>
-      <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
+      <pubDate>Fri, 08 Apr 2022 21:23:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/categories/gnn/</guid>
       <description></description>
@@ -24,9 +24,19 @@
     <item>
       <title>paper</title>
       <link>https://JhuoW.github.io/categories/paper/</link>
-      <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
+      <pubDate>Fri, 08 Apr 2022 21:23:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/categories/paper/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>https://JhuoW.github.io/categories/machine-learning/</link>
+      <pubDate>Mon, 04 Apr 2022 16:41:42 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/machine-learning/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -42,31 +52,11 @@
     </item>
     
     <item>
-      <title>Machine Learning</title>
-      <link>https://JhuoW.github.io/categories/machine-learning/</link>
-      <pubDate>Sat, 02 Apr 2022 15:00:20 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/categories/machine-learning/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
       <title>Code</title>
       <link>https://JhuoW.github.io/categories/code/</link>
       <pubDate>Sun, 27 Mar 2022 15:38:50 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/categories/code/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>Machine Leaning</title>
-      <link>https://JhuoW.github.io/categories/machine-leaning/</link>
-      <pubDate>Sun, 27 Mar 2022 10:45:08 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/categories/machine-leaning/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -92,19 +82,9 @@
     </item>
     
     <item>
-      <title>IM</title>
-      <link>https://JhuoW.github.io/categories/im/</link>
-      <pubDate>Mon, 06 May 2019 20:16:17 +0000</pubDate>
-      
-      <guid>https://JhuoW.github.io/categories/im/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
       <title>Influence Maximization</title>
       <link>https://JhuoW.github.io/categories/influence-maximization/</link>
-      <pubDate>Wed, 20 Mar 2019 21:34:08 +0000</pubDate>
+      <pubDate>Mon, 06 May 2019 20:16:17 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/categories/influence-maximization/</guid>
       <description></description>

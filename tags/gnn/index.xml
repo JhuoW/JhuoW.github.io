@@ -10,11 +10,11 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/gnn/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/gnn/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>NeurIPS2021 《Graph Neural Networks with Adaptive Residual》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/airgnn/</link>
-      <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
+      <pubDate>Fri, 08 Apr 2022 21:23:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/airgnn/</guid>
       <description>NeurIPS2021 &amp;#34;Graph Neural Networks with Adaptive Residual&amp;#34; 阅读笔记</description>
@@ -190,71 +190,128 @@ $$</p>
     </item>
     
     <item>
-      <title>NeurIPS2021 《Topology-Imbalance Learning for Semi-Supervised Node Classification》 Reading Notes</title>
-      <link>https://JhuoW.github.io/posts/2022-04-02-tinl/</link>
-      <pubDate>Sat, 02 Apr 2022 10:34:01 +0800</pubDate>
+      <title>ICML2020 《When Does Self-Supervision Help Graph Convolutional Networks?》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/2020-04-03-ssgcns/</link>
+      <pubDate>Fri, 08 Apr 2022 14:04:49 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/2022-04-02-tinl/</guid>
-      <description>NeurIPS2021 &amp;#34;Topology-Imbalance Learning for Semi-Supervised Node Classification&amp;#34; 阅读笔记</description>
-      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2110.04099v1">Paper</a></p>
+      <guid>https://JhuoW.github.io/posts/2020-04-03-ssgcns/</guid>
+      <description>ICML2020 &amp;#34;When Does Self-Supervision Help Graph Convolutional Networks?&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2006.09136v4">Paper</a></p>
 <h1 id="introduction">Introduction</h1>
-<p>类别不均衡（Class Imbalance）是真实场景中非常常见的问题。一般在我们提及类别不均衡时，默认指的是<strong>数量不均衡</strong>：即不同类中训练样本数量的不一致带来的模型于不同类别学习能力的差异，由此引起的一个严重问题是模型的决策边界会主要由数量多的类来决定 。</p>
-<p>但是在图结构中，<strong>不同类别的训练样本不仅有在数量上的差异，也有在位置结构上的差异</strong>.这就使得图上的类别不均衡问题有了一个独特的来源：<strong>拓扑不均衡</strong>。这个工作最主要的动机就是研究拓扑不均衡的特点，危害以及解决方法，希望能够引起社区对拓扑不均衡问题的重视。</p>
-<p><img loading="lazy" src="/posts/2022-04-02-tnil/1.png" alt="1"  />
+<p>本文是自监督方法在GCNs上首次系统的探索，设计了3种自监督任务来将分析自监督在GCN中起到的作用。自监督旨在充分利用unlabeled数据中的知识来设计前置任务（pretext task），来帮助模型学习更具迁移性和泛化能力的表示。前置任务可以认为是对目标任务有帮助的辅助正则化网络，设计用于帮助原任务学习到更多下游任务相关的语义信息。</p>
+<p>GCN任务通常是直推半监督的（transductive semi-supervised）,含有大量unlabeled数据，而self-supervision(SSL)可以充分利用unlabeled data， 那么就产生了一个值得探索的问题：<strong>将自监督学习应用到GCN上是否也可以达到提升泛化能力和鲁棒能力的效果？</strong></p>
+<p>先给结论</p>
+<p>Q1: 自监督学习可否在分类任务中提升GCN？ 如果可以，如何将其合并到 GCN 中以最大化增益？</p>
+<p>A1: 本文证明了通过多任务学习将自监督学习融入 GCN 是有效的，即多任务损失作为 GCN 训练中的正则化项。 这种作为自监督作为正则化项的方法，强于用自监督来预训练或者self-training。</p>
+<p>Q2: 前置任务的设计重要吗？ GCN 有哪些有用的自监督前置任务？</p>
+<p>A2: 本文研究了三个基于图属性的自监督任务。 分别是节点聚类node clustering, 图划分graph partitioning 和图补全graph completion。 并且进一步说明不同的模型和数据集倾向于不同的自监督任务。</p>
+<p>Q3: 自监督也会影响 GCN 的对抗鲁棒性吗？ 如果是，如何设计前置任务？</p>
+<p>A3: 本文进一步将上述发现推广到对抗性训练环境中。提供了广泛的结果，以表明自监督还可以提高 GCN 在各种攻击下的鲁棒性，而不需要更大的模型或额外的数据。</p>
+<h1 id="method">Method</h1>
+<p>GCNs $\boldsymbol{Z}=\hat{\boldsymbol{A}} \operatorname{ReLU}\left(\hat{\boldsymbol{A}} \boldsymbol{X} \boldsymbol{W}_{0}\right) \boldsymbol{W}_{1}$可以分为两块来看 (1) 特征提取模块$f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) = \hat{\boldsymbol{A}} \operatorname{ReLU}\left(\hat{\boldsymbol{A}} \boldsymbol{X} \boldsymbol{W}_{0}\right)$ 参数为$\theta = \{\boldsymbol{W}_{0}\}$和（2）线性变换模块$\boldsymbol{Z}=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta}$ 其中 参数$ \boldsymbol{\Theta} = \boldsymbol{W}_{1}$。 半监督GCN优化任务的目标函数为：
+$$
+\begin{aligned}
+\boldsymbol{Z} &amp;=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta} \\
+\theta^{*}, \boldsymbol{\Theta}^{} &amp;=\arg \min_{\theta, \boldsymbol{\Theta}} \mathcal{L}_{\mathrm{sup}}(\theta, \boldsymbol{\Theta}) \\
+&amp;=\arg \min_{\theta, \boldsymbol{\Theta}} \frac{1}{\left|\mathcal{V}_{\text {label }}\right|} \sum_{v_{n} \in \mathcal{V}_{\text {label }}} L\left(\boldsymbol{z}_{n}, \boldsymbol{y}_{n}\right)
+\end{aligned} \tag{1}
+$$
+其中$L(\cdot, \cdot)$是每个labeled node的损失函数。</p>
+<h2 id="three-schemes-self-supervision-meets-gcns">Three Schemes: Self-Supervision Meets GCNs</h2>
+<p>研究三种将SSL配置到GCNs的方式。 其中 给定输入$\boldsymbol{X}_{ss}$, $\hat{\boldsymbol{A}}_{\mathrm{ss}}$, label $\boldsymbol{Y}_{ss}$和节点集$\mathcal{V}_{ss}$。</p>
+<h3 id="pretraining--fintuning">Pretraining &amp; Fintuning</h3>
+<p>预训练过程：
+$$
+\begin{aligned}
+\boldsymbol{Z}_{\mathrm{ss}} &amp;=f_{\theta}\left(\boldsymbol{X}_{\mathrm{ss}}, \hat{\boldsymbol{A}}_{\mathrm{ss}}\right) \boldsymbol{\Theta}_{\mathrm{Ss}} \\
+\theta_{\mathrm{ss}}^{*}, \boldsymbol{\Theta}_{\mathrm{ss}}^{*} &amp;=\arg \min_{\theta, \boldsymbol{\Theta}_{\mathrm{ss}}} \mathcal{L}_{\mathrm{ss}}\left(\theta, \boldsymbol{\Theta}_{\mathrm{ss}}\right) \\
+&amp;=\arg \min_{\theta, \boldsymbol{\Theta}} \frac{1}{\left|\mathcal{V}_{\mathrm{ss}}\right|} \sum_{v_{n} \in \mathcal{V}_{\mathrm{ss}}} \underbrace{L_{\mathrm{ss}}\left(\boldsymbol{z}_{\mathrm{ss}, n}, \boldsymbol{y}_{\mathrm{ss}, n}\right)}_{\text{loss of other task}}<br>
+\end{aligned} \tag{2}
+$$
+也就是在另一个任务训练好的模型参数$\theta_{\mathrm{ss}}^{*}, \boldsymbol{\Theta}_{\mathrm{ss}}^{*}$迁移到新任务（如半监督节点分类任务）上作为初始化参数训练新模型。</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/1.png#center" alt=""  />
 </p>
-<p>本文提出Topology-Imbalance Node Representation Learning （TINL）, 主要关注拓扑不平衡导致的决策边界漂移。所谓拓扑不平衡值得是， labeled nodes的位置如果位于拓扑中的决策边界，那么会传播错误的影响。 如上图所示，颜色和色调分别表示节点从labeled node接收到的influence类型和强度，节点R1位于两类节点的拓扑边界，第一张图可以看出，两个$\mathbf{x}$节点面临influence conflict问题，两个$\mathbf{Y}$节点由于远离R2，面临影响力不足的问题。也就是，如果决策便捷有labeled node（如R1）, 那么他的影响力很容易传播给另一个类的边界unlabeled节点，导致影响力冲突，从而分类错误。 而冲突较小的labeled node更可能位于类的拓扑中心（如R2）,顾增加其权重，是的它在训练过程中发挥更大作用。</p>
-<h1 id="understanding-topology-imbalance-via-label-propagation">Understanding Topology Imbalance via Label Propagation</h1>
-<p><img loading="lazy" src="/posts/2022-04-02-tnil/2.png" alt="1"  />
+<p>上表中，可以看出用graph partitioning作为预训练任务，得到的模型fine-tuning到节点分类任务上之后，效果仅从79.10变成了79.19,是非常微小的。 本文推测可能原因有两个（1）.两个不同的任务的Loss function不一样，从$\mathcal{L}_{\mathrm{ss}}$变为$\mathcal{L}_{\mathrm{sup}}$会影响实验效果。（2）参数迁移前一句是在多层GCN上的训练结果了，迁移后再训练，相当于深层，易oversmoothing。</p>
+<h3 id="self-training">Self-Training</h3>
+<p>每次迭代为unlabeled samples分配高度可信的为标签，然后将这些分配了伪标签的节点纳入到下一次迭代的监督训练中，随迭代过程不断更新标签。</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/2.png#center" alt=""  />
 </p>
-<p>Label Propagation中，labels从labeled node延边传播， 看做label从labeled node开始的随机游走过程。LP最终收敛状态可以认为每个节点的soft-labels:
+<p>表2可以看出Self-training的方式带来的提升有限</p>
+<h3 id="multi-task-learning">Multi-task Learning</h3>
+<p>考虑一个目标task和一个自监督task. GCN的目标为公式（1）。该多任务的训练过程如下：
 $$
-\boldsymbol{Y}=\alpha\left(\boldsymbol{I}-(1-\alpha) \boldsymbol{A}^{\prime}\right)^{-1} \boldsymbol{Y}^{0}
+\begin{aligned}
+\boldsymbol{Z} &amp;=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta}, \quad \boldsymbol{Z}_{\mathrm{ss}}=f_{\theta}\left(\boldsymbol{X}_{\mathrm{ss}}, \hat{\boldsymbol{A}}_{\mathrm{ss}}\right) \boldsymbol{\Theta}_{\mathrm{ss}} \\
+\theta^{*}, \boldsymbol{\Theta}^{*}, \boldsymbol{\Theta}_{\mathrm{ss}}^{*} &amp;=\arg \min_{\theta, \boldsymbol{\Theta}, \boldsymbol{\Theta}_{\mathrm{ss}}} \alpha_{1} \mathcal{L}_{\mathrm{sup}}(\theta, \boldsymbol{\Theta})+\alpha_{2} \mathcal{L}_{\mathrm{ss}}\left(\theta, \boldsymbol{\Theta}_{\mathrm{ss}}\right)
+\end{aligned} \tag{3}
 $$
-其中$\boldsymbol{A}^{\prime}=\boldsymbol{D}^{-\frac{1}{2}} A D^{-\frac{1}{2}}$，其实就是PageRank的极限分布， $\boldsymbol{Y}^{0}$为每个节点的初始one-hot label。 第$i$个节点的预测结果为$\boldsymbol{q}_{i}=\arg \max _{j} \boldsymbol{Y}_{i j}$，每个节点的预测向量反映了每个节点主要受哪个类的影响。图(a)反映了GCN与LP的预测一致性，所以LP的节点影响力边界可以作为GNN的决策边界。理想状态下，labeled node的影响力边界应与真实类边界一致，例如红色的labeled node 在LP下所传播的影响力范围，应与所有红色node的范围一致。但是如图(b)所示，蓝色的labeled node如果较多位于真实类边界，这些位于边界的节点也会传播影响力，从而导致位于边界的真是红色节点被预测为蓝色，预测边界向红色类偏移。</p>
-<h1 id="measuring-topology-imbalance-by-influence-conflict">Measuring Topology Imbalance by Influence Conflict</h1>
-<p>可以看出，位于决策边界的labeled node 会不可避免的将影响力传播到其他类节点，因此需要衡量labeled node与其所属类的相对拓扑位置（位于类边缘还是中心）。由于Homophily， 位于类边缘的节点也具有和其邻居相似的性质，因此利用邻域特征差别来判断labeled node是否位于边缘是不可靠的。因此本文利用整个图中的节点影响力冲突，提出基于冲突检测的拓扑相对位置Conflict Detection-based Topology Relative Location metric (Totoro).</p>
-<p>Personalized PageRank矩阵定义为：
-$$
-\boldsymbol{P} = \alpha\left(\boldsymbol{I}-(1-\alpha) \boldsymbol{A}^{\prime}\right)^{-1}
-$$
-$\boldsymbol{P}_{ij} = \boldsymbol{P}(j \to^\infty i)$， 可以用来反映拓扑中节点$i$对节点$j$的影响力（随机游走越有可能到达的两个节点，在拓扑中的越能相互影响）。</p>
-<p><strong>Node influence conflict denotes topological position.</strong> $\boldsymbol{P}$可以看做每个节点向外施加影响力的分布。 如果一个labeled node $v$ 在周围子图中受到了来自其他类中的labeled node的异质影响，而$v$本身也具有较大的影响力，那么可以认为$v$具有较大影响力冲突，他更可能位于所在类的拓扑边界。</p>
-<p>基于上述假设，本文将 从节点$v$开始在图上随机游走时， 节点$v$与其他类的labeled nodes之间的影响力冲突的期望作为节点$v$与其所在类的类中心的接近程度的度量。labeled node $v$ 的Totoro值定义如下：
-$$
-\boldsymbol{T}_{v}=\mathbb{E}_{x \sim \boldsymbol{P}_{v, :}}\left[\sum_{j \in[1, k], j \neq \boldsymbol{y}_{v}} \frac{1}{\left|\mathcal{C}_{j}\right|} \sum_{i \in \mathcal{C}_{j}} \boldsymbol{P}_{i, x}\right]
-$$
-其中， $\mathbb{E}_{x \sim \boldsymbol{P}_{v, :}}$： $x$节点受$v$的影响程度，$\sum_{j \in[1, k], j \neq \boldsymbol{y}_{v}}$表示其他所有类（不包括$v$所在的类）。 $\frac{1}{\left|\mathcal{C}_{j}\right|} \sum_{i \in \mathcal{C}_{j}} \boldsymbol{P}_{i, x}$表示类$\mathcal{C}_{j}$中的labeled node对$x$的平均影响。 $\boldsymbol{T}_{v}$越大，表示labeled node $v$对$x$的影响力很大，而且其他类的labeled node 对$x$的影响也很大，那么可以认为$v$越接近类边界。</p>
-<p>整个数据集的conflict可以表示为所有labeled node 的Totoro value之和：$\sum_{v \in \mathcal{L}} \boldsymbol{T}_{v}$</p>
-<h1 id="node-re-weighting">Node Re-weighting</h1>
-<h2 id="preliminary">Preliminary</h2>
-<p>余弦退火：
-$$
-\eta_{t}=\eta_{\min }^{i}+\frac{1}{2}\left(\eta_{\max }^{i}-\eta_{\min }^{i}\right)\left(1+\cos \left(\frac{T_{\text {cur }}}{T_{i}} \pi\right)\right)
-$$
-$\eta_{\min }$: 最小学习率</p>
-<p>$\eta_{\max }$: 最大学习率</p>
-<p>$T_{\text {cur }}$: 当前执行多少个epoch</p>
-<p>$i$: 第$i$次迭代</p>
-<p><img loading="lazy" src="/posts/2022-04-02-tnil/3.png#center" alt="1"  />
+其中任务的权重参数$\alpha_{1}, \alpha_{2} \in \mathbb{R}_{&gt;0}$, 半监督目标任务的损失$\mathcal{L}_{\mathrm{sup}}$定义为公式（1）， 辅助自监督损失$\mathcal{L}_{\mathrm{ss}}$定义为公式（2）.其中特征提取器$f_{\theta}(\cdot, \cdot)$对于自监督任务和目标任务是参数共享的，而线性变换参数$\boldsymbol{\Theta}, \boldsymbol{\Theta}_{\mathrm{ss}}$是各自任务的。</p>
+<p>在公式(3)中，自监督任务的loss作为一个<strong>regularization term</strong> 与目标任务一同训练。正则化项在图信号处理中是广泛应用的， 常见的有Graph Laplaician Regularization（GLR）， 它用于惩罚相邻节点间的不平滑，用于在学习目标任务的同时保持特征在图结构上的smoothing。虽然GLR可以作为一个自监督任务，但是它是给予不涉及具体数据情况下的平滑先验，SSL的regularization term不用的是，SSL是给予unlabeled data,是一种引入数据驱动的先验知识。综上所述， 多任务学习是3种自监督方式中最通用的。</p>
+<h2 id="gcn-specific-self-supervised-tasks">GCN-Specific Self-Supervised Tasks</h2>
+<p>本文为 GCN 扩展了一个自监督任务的“工具包”。 通过利用图中的丰富节点和边信息，可以定义各种GCN特定的自监督任务（如表 3 所示），并且进一步证明了不同的自监督任务对不同类型的监督/下游任务有益。这些自监督任务会为节点分配伪标签来构造自监督损失$\mathcal{L}_{ss}$, 如公式（3）所示。</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/4.png#center" alt=""  />
 </p>
-<h2 id="renode">ReNode</h2>
-<p>本文提出模型无关的训练权重re-weight 机制：<strong>ReNode</strong>.</p>
-<p>本文基于余弦退货算法来为训练节点（labeled nodes）加权：
+<h3 id="node-clustering">Node clustering</h3>
+<p>第一个任务为节点聚类， 给定节点集$\mathcal{V}$以及feature set $\boldsymbol{X}$, 一个预设值的簇数量$K \in\{1, \ldots,|\mathcal{V}|\}$（是一个超参数）一定要小于等于节点数$|\mathcal{V}|$。 聚类算法输出一个节点集合的集合$\left\{\mathcal{V}_{\text {clu }, 1}, \ldots, \mathcal{V}_{\text {clu }, K} \mid \mathcal{V}_{\text {clu }, n} \subseteq \mathcal{V}, n=1, \ldots, K\right\}$， 其中$\mathcal{V}_{\text {clu }, i}$是一个集合表示在簇$i$中的节点集。
 $$
-\boldsymbol{w}_{v}=w_{\min }+\frac{1}{2}\left(w_{\max }-w_{\min }\right)\left(1+\cos \left(\frac{\operatorname{Rank}\left(\boldsymbol{T}_{v}\right)}{|\mathcal{L}|} \pi\right)\right), \quad v \in \mathcal{L}
+\begin{aligned}
+&amp;\mathcal{V}_{\text {clu }, n} \neq \emptyset \quad(n=1, \ldots, K), \quad \cup_{n=1}^{K} \mathcal{V}_{\text {clu }, n}=\mathcal{V} \\
+&amp;\mathcal{V}_{\text {clu }, i} \cap \mathcal{V}_{\text {clu }, j}=\emptyset \quad(\forall i, j=1, \ldots, K \text { and } i \neq j)
+\end{aligned}
 $$
-上式中$\boldsymbol{T}_{v}$越大(越接近决策边界)，在所有labeled node $v \in \mathcal{L}$的排名越高，$\operatorname{Rank}\left(\boldsymbol{T}_{v}\right)$越大，$\boldsymbol{w}_{v}$越小，越接近$w_{\min }$。</p>
-<p>最终，对于一个quantity-balanced，topology-imbalanced (class labeled node 数量是平衡的，但拓扑不平衡) node classification task, the training loss $L_T$ is computed by:
+这$K$个簇互相之间没有公共的节点，SSL任务将每个节点所在的簇的index作为伪标签来构造自监督损失$\mathcal{L}_{ss}$：
 $$
-L_{T}=-\frac{1}{|\mathcal{L}|} \sum_{v \in \mathcal{L}} \boldsymbol{w}_{v} \sum_{c=1}^{k} \boldsymbol{y}_{v}^{* c} \log \boldsymbol{g}_{v}^{c}, \quad \boldsymbol{g}=\operatorname{softmax}(\mathcal{F}(\boldsymbol{X}, \boldsymbol{A}, \boldsymbol{\theta}))
+y_{\mathrm{ss}, n}=k \text { if } v_{n} \in \mathcal{V}_{\mathrm{clu}, k}(\forall n=1, \ldots,|\mathcal{V}|, \forall k=1, \ldots, K)
+$$</p>
+<h3 id="graph-partitioning">Graph partitioning</h3>
+<p>上面的节点聚类任务，是基于特征的，与拓扑无关。 而这里的图划分任务，与feature无关，只与拓扑有关。 具体来说，通过“强”边连接的两个节点很可能属于同一标签类别。 因此，本文提出了一种使用图划分的基于拓扑的自监督任务。</p>
+<p>图划分是将图的节点划分为大致相等的子集，使得跨子集间的边数最小化（高聚类，低耦合，同时簇中节点数不能差别太大）。先预定义一个簇数量，$K \in\{1, \ldots,|\mathcal{V}|\}$（超参数）。 和节点聚类任务类似，图划分算法也会输出一个节点集合的集合，用来标识每个节点属于哪个partition: $\left\{\mathcal{V}_{\text {par }, 1}, \ldots, \mathcal{V}_{\text {par }, K} \mid \mathcal{V}_{\text {par }, n} \subseteq \mathcal{V}, n=1, \ldots, K\right\}$, 使得：
 $$
-其中$\mathcal{F}$是任意GNN encoder,$g_i$为GNN对第$i$个节点的output。$\boldsymbol{y}_{v}^{* c} \log \boldsymbol{g}_{v}^{c}$为cross-entropy。 对于每个training labeled node，计算它的CE loss时，用这个节点的权重为loss加权，说明越靠近决策边界的节点，他的损失权重尽可能小，意味着model倾向于把它当做一个unlabeled node，它的损失对于总损失贡献较小。</p>
-<h2 id="renode-to-jointly-handle-tinl-and-qinl">ReNode to Jointly Handle TINL and QINL</h2>
-<p>若要同时处理数量不平衡且拓扑不平衡问题， loss定义如下：
+\begin{aligned}
+&amp;\mathcal{V}_{\text {par }, n} \neq \emptyset \quad(\forall n=1, \ldots, K), \quad \cup_{n=1}^{K} \mathcal{V}_{\text {par }, n}=\mathcal{V} \\
+&amp;\mathcal{V}_{\text {par }, i} \cap \mathcal{V}_{\text {par }, j}=\emptyset \quad(\forall i, j=1, \ldots, K \text { and } i \neq j)
+\end{aligned}
 $$
-L_{Q}=-\frac{1}{|\mathcal{L}|} \sum_{v \in \mathcal{L}} \boldsymbol{w}_{v} \frac{|\overline{\mathcal{C}}|}{\left|\mathcal{C}_{j}\right|} \sum_{c=1}^{k} \boldsymbol{y}_{v}^{* c} \log \boldsymbol{g}_{v}^{c}
+上面的约束其实和node clustering任务差不多，Graph partitioning任务还需要两个约束，一个是平衡约束来保证簇不要太大：
 $$
-与$L_T$的不同就是多了对类的加权，若labeled node所在的类 training node较少，那么增加权重。同时，接近拓扑边界的节点权重降低。</p>
+K \frac{\max_{k}\left|\mathcal{V}_{\text {par }, k}\right|}{|\mathcal{V}|} \leqslant 1+\epsilon, \text { where } \epsilon \in(0,1)
+$$
+其中$\max_{k}\left|\mathcal{V}_{\text {par }, k}\right|$是节点数最多的簇中的节点数。 另一个约束要保证簇间边要尽可能少，即最小化edgecut:
+$$
+\text { edgecut }=\frac{1}{2} \sum_{k=1}^{K} \sum_{v_{i} \in \mathcal{V}_{\text {par }, k}} \quad\sum_{\left(v_{i}, v_{j}\right) \in \mathcal{E} ,\text {and } v_{j} \notin \mathcal{V}_{\text {par }, k}} \quad a_{i j}
+$$
+将每个节点所在的partition index作为label。</p>
+<h3 id="graph-completion">Graph completion</h3>
+<p>图补全任务如下图所示。</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/5.png#center" alt=""  />
+</p>
+<p>图补全首先通过删除目标节点的特征来mask目标节点。 然后，通过向 GCN 提供未掩蔽的节点特征（目前仅限于 2 层 GCN 的每个目标节点的二阶邻居）来恢复/预测被mask的节点特征。设计该自监督任务的原因如下：1）标签可以自由获取，也就是节点特征本身； 2）图补全可以帮助网络获得更好的特征表示，这可以教会网络从上下文中提取特征。</p>
+<p>最终多任务自监督GCN模型的框架如下图所示：</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/3.png#center" alt=""  />
+</p>
+<h2 id="self-supervision-in-graph-adversarial-defense">Self-Supervision in Graph Adversarial Defense</h2>
+<p>本文专注于Evasion Attack，在模型训练好后对目标节点$v_n$扰动， 实际上对于Evasion Attack，对扰动图重新训练或许可以纠正扰动的影响，但是本文这里不考虑重新训练。一个attacker $g$生成新的特征和邻接矩阵：
+$$
+\boldsymbol{X}^{\prime}, \boldsymbol{A}^{\prime}=g\left(\boldsymbol{X}, \boldsymbol{A}, \boldsymbol{Y}, v_{n}, \theta^{*}, \boldsymbol{\Theta}^{*}\right)
+$$
+其中$ \theta^{*}, \boldsymbol{\Theta}^{*}$是在clean 图上训练好的模型参数。</p>
+<p>对抗训练的目标函数定义为:
+$$
+\begin{aligned}
+\boldsymbol{Z} &amp;=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta}, \quad \boldsymbol{Z}^{\prime}=f_{\theta}\left(\boldsymbol{X}^{\prime}, \boldsymbol{A}^{\prime}\right) \boldsymbol{\Theta} \\
+\theta^{*}, \boldsymbol{\Theta}^{*} &amp;=\arg \min_{\theta, \boldsymbol{\Theta}}\left(\mathcal{L}_{\text {sup }}(\theta, \boldsymbol{\Theta})+\alpha_{3} \mathcal{L}_{\mathrm{adv}}(\theta, \boldsymbol{\Theta})\right)
+\end{aligned}
+$$
+表示模型要同时在扰动图和训练图上都保持较好的效果。 本文将基于自监督的对抗训练定义为：
+$$
+\begin{aligned}
+\boldsymbol{Z} &amp;=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta}, \quad \boldsymbol{Z}^{\prime}=f_{\theta}\left(\boldsymbol{X}^{\prime}, \boldsymbol{A}^{\prime}\right) \boldsymbol{\Theta} \\
+\boldsymbol{Z}_{\mathrm{ss}}=&amp; f_{\theta}\left(\boldsymbol{X}_ \mathrm{ss}, \boldsymbol{A}_{\mathrm{ss}}\right) \\
+\theta^{*}, \boldsymbol{\Theta}^{*}, \boldsymbol{\Theta}_{\mathrm{ss}}^{*}=&amp; \arg \min_{\theta, \boldsymbol{\Theta}, \boldsymbol{\Theta}_{\mathrm{ss}}}\left(\alpha_{1} \mathcal{L}_{\mathrm{sup}}(\theta, \boldsymbol{\Theta})\right.\\
+&amp;\left.+\alpha_{2} \mathcal{L}_{\mathrm{ss}}\left(\theta, \boldsymbol{\Theta}_{\mathrm{ss}}\right)+\alpha_{3} \mathcal{L}_{\mathrm{adv}}(\theta, \boldsymbol{\Theta})\right)
+\end{aligned}
+$$
+其中自监督损失被引入到以扰动图数据作为输入的训练中（自监督标签矩阵 $\boldsymbol{Y}_{ss}$ 也是从扰动输入生成的）。</p>
 ]]></content:encoded>
     </item>
     
@@ -338,83 +395,6 @@ $$</p>
 <h1 id="reference">Reference</h1>
 <p>[1] Jang, E., Gu, S., and Poole, B. Categorical reparameteriza- tion with gumbel-softmax. In ICLR, 2017.</p>
 <p>[2] Maddison, C. J., Mnih, A., and Teh, Y. W. The concrete distribution: A continuous relaxation of discrete random variables. In ICLR, 2017.</p>
-]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>NeurIPS2021 《Neo-GNNs:Neighborhood Overlap-aware Graph Neural Networks for Link Prediction》 Reading Notes</title>
-      <link>https://JhuoW.github.io/posts/neo-gnns/</link>
-      <pubDate>Wed, 30 Mar 2022 13:51:57 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/posts/neo-gnns/</guid>
-      <description>NeurIPS2021 &amp;#34;Neo-GNNs:Neighborhood Overlap-aware Graph Neural Networks for Link Prediction&amp;#34; 阅读笔记</description>
-      <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=Ic9vRN3VpZ">Paper</a></p>
-<h1 id="introduction">Introduction</h1>
-<p>由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 <strong>Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure</strong>。</p>
-<blockquote>
-<p><strong>Link prediction heuristics:</strong>  基于预定义的假设的链路预测。举几个例子[1]：</p>
-</blockquote>
-<ol>
-<li>Common Neighbors (CN)： 公共邻居较多的节点存在边（heuristic），则需要计算节点对间的公共邻居。</li>
-<li>Preferential Attachment (PA): 一个节点当前的连接越多，那么它越有可能接受到新的连接（heuristic）,这需要统计每个节点的度, i.e., $P A(x, y)=|N(x)| *|N(y)|$</li>
-<li>Katz Index heuristic: $\sum^{\infty}_{\ell=1} \beta^{\ell}|walks(x,y)=\ell|$ 表示从$x$到$y$的所有路径数， $0&lt;\beta&lt;1$， 表示越长的路径权重越低。 katz Index作为Link prediction heuristic假设来作为边是否存在的预测。</li>
-</ol>
-<p>本文提出了Neighborhood Overlap-aware Graph Neural Networks (Neo-GNNs)来从邻接矩阵中学习结构信息，并且估计重叠多跳邻域用于link prediction。</p>
-<h1 id="preliminaries">Preliminaries</h1>
-<h2 id="gnns-for-link-prediction">GNNs for Link Prediction</h2>
-<p>$$
-\hat{y}_{i j}=\sigma\left(s\left(h_{i}^{(L)}, h_{j}^{(L)}\right)\right)
-$$</p>
-<p>其中$s(\cdot, \cdot)$ 是一个相似度计算函数 e.g., inner product or MLP. $h_{i}^{(L)}$为 $v_i$的 node embedding.</p>
-<h2 id="neighborhood-overlap-based-heuristic-methods">Neighborhood Overlap-based Heuristic Methods</h2>
-<p>就是上面提到的CN heuristic。Common Neighbors 通过count节点的公共邻居来衡量两个节点之间的链路存在分数$\mathrm{link}(u,v)$：
-$$
-S_{C N}(u, v)=|\mathcal{N}(u) \cap \mathcal{N}(v)|=\sum_{k \in \mathcal{N}(u) \cap \mathcal{N}(v)} 1
-$$
-CN的缺点在于不能衡量公共节点的权重。</p>
-<p>Resource Allocation (RA) 认为度叫小的节点因更加重要， 所以用度的倒数来加权公共节点：
-$$
-S_{R A}(u, v)=\sum_{k \in \mathcal{N}(u) \cap \mathcal{N}(v)} \frac{1}{d_{k}}
-$$</p>
-<p>Adamic-Adar：通过使用节点 $u$ 和$v$之间的共同邻居度的倒数对数，与 RA 相比，Adamic-Adar 对更高度的惩罚相对减少：
-$$
-S_{A A}(u, v)=\sum_{k \in \mathcal{N}(u) \cap \mathcal{N}(v)} \frac{1}{\log d_{k}}
-$$
-上述基于公共邻居的方法存在两个局限，1. 需要手动设计邻居结构特征，比如CN的公共邻居结构特征为1， RA的结构特征为$\frac{1}{d}$, AA 的邻居结构特征为$\frac{1}{\log d}$。 2. 忽略了node features</p>
-<p>本文提出的Neo-GNN从邻接矩阵中学习结构特征，并且结合了node feature信息来做Link prediction。</p>
-<h1 id="model-neo-gnns">Model: Neo-GNNs</h1>
-<p>定义structural feature generator $\mathcal{F}_{\theta}$:
-$$
-x_{i}^{\text {struct }}=\mathcal{F}_{\theta}\left(A_{i}\right)=f_{\theta_{n o d e}}\left(\sum_{j \in \mathcal{N}_{i}} f_{\theta_{e d g e}}\left(A_{i j}\right)\right)
-$$
-输入节点$i$的邻居$A_i$，提取自邻接矩阵$A$, Neo-GNNs 只是用$A$作为输入来获得节点的结构特征。 其中，$f_{\theta_{e d g e}}(A_{ij})$生成节点$i$的局部边特征，然后聚合起来用$f_{\theta_{n o d e}}$生成节点$i$的总体结构特征$x_{i}^{\text {struct }}$， 作为节点$i$的structural feature，表示反映了节点$i$的局部结构。其中$f_{\theta_{n o d e}}$和$f_{\theta_{e d g e}}$是两个MLP。 也可以把上面的$A$替换成$A$的幂的组合，那就是$k$跳以内邻域的结构特征。</p>
-<p>得到了节点的邻居结构特征$x_{i}^{\text {struct }}$后， 要用<strong>重叠邻居的结构特征</strong>来计算两个节点的相似度分数。 传统的GNN无法计算重叠邻域的结构特征的原因有两个：1. normalized adjacency matrix: 归一化邻接矩阵阻止了GNN计数邻居数量（我的理解是因为Norm adj上的元素为小数）2. 远低于节点数的hidden representation维度$d \ll N$：低维度的节点表示向量使得在neighborhood aggregration后 节点邻域特征难以区分。</p>
-<p><img loading="lazy" src="/posts/2022-03-30-NeoGNN/frameworks.png#center" alt=""  />
-</p>
-<p>本文提出了邻域重叠感知的聚合模式。 注意，上面的节点邻域特征是一个scale, 即$x_{i}^{\text {struct }} \in \mathbb{R}^1$, 整个图的节点邻域结构特征可以表示为$X^{struct} \in \mathbb{R}^{N \times N}$, 为一个对角阵，对角线元素为每个节点的邻域<strong>结构</strong>特征，如Figure 1所示。也就是$X^{struct}$的每一行为一个节点的局部结构特征表示向量，作为这个节点的结构特征。</p>
-<p>那么$Z = AX^{struct}$就可以为节点聚合结构特征。 因为$X^{struct}_i$表示节点$v_i$的structural feature (neighborhood structural), 所以$Z_i$表示节点$i$的1-st neighborhood structural feature, 所以$z_{i}^{T} z_{j}=\sum_{k \in \mathcal{N}(i) \cap \mathcal{N}(j)}\left(x_{k}^{s t r u c t}\right)^{2}$表可以表示节点$i$和节点$j$的重叠邻域。</p>
-<p><strong>注意</strong> $X_{i}^{\text {struct }}$表示节点$i$自身的结构特征。 而$Z_i$表示节点$i$的邻居的结构特征聚合, 所以$z_{i}^{T} z_{j}$表示节点$i$邻居的结构特征和节点$j$邻居的结构特征的相似度。 $x_i^T x_j$表示节点$i$自身的结构特征和节点$j$自身的结构特征的相似度。</p>
-<p>进一步，考虑多跳邻居：
-$$
-Z=g_{\Phi}\left(\sum_{l=1}^{L} \beta^{l-1} A^{l} X^{\text {struct }}\right)
-$$</p>
-<p>$A^lX^{struct}$的第$i$行表示节点$i$ 的$l$跳邻居特征。 $Z_i$表示节点$i$在$L$跳以内的邻居结构特征总和。</p>
-<p>除了考虑结构特征来预测链接外，还应考虑node features，直接用GNN：
-$$
-H=\operatorname{GNN}\left(X, \tilde{A}_{G N N} ; W\right)
-$$
-最终节点$i$和节点$j$的相似度分数表示为：
-$$
-\left.\hat{y}_{i j}=\alpha \cdot \sigma\left(z_{i}^{T} z_{j}\right)+(1-\alpha) \cdot \sigma\left(s\left(h_{i}, h_{j}\right)\right)\right)
-$$
-即为邻域结构相似度 与 特征相似度 的加权平均。</p>
-<p>最终损失函数要求 3种相似度衡量标准（基于邻域结构，基于节点feature, 两者加权平均）都可以你和真实的相似度，即：
-$$
-\mathcal{L}=\sum_{(i, j) \in D}\left(\lambda_{1} B C E\left(\hat{y}_{i j}, y_{i j}\right)+\lambda_{2} B C E\left(\sigma\left(z_{i}^{T} z_{j}\right), y_{i j}\right)+\lambda_{3} B C E\left(\sigma\left(s\left(h_{i}, h_{j}\right)\right), y_{i j}\right)\right)
-$$
-其中$BCE(\cdot, \cdot)$为 binary cross entropy loss。</p>
-<h1 id="reference">Reference</h1>
-<p>[1] Link Prediction Based on Graph Neural Networks. NeurIPS 2018.</p>
 ]]></content:encoded>
     </item>
     

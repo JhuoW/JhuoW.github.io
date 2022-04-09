@@ -3,28 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://JhuoW.github.io/categories/</loc>
-    <lastmod>2022-04-04T21:23:41+08:00</lastmod>
+    <lastmod>2022-04-08T21:23:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/gnn/</loc>
-    <lastmod>2022-04-04T21:23:41+08:00</lastmod>
+    <lastmod>2022-04-08T21:23:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/gnn/</loc>
-    <lastmod>2022-04-04T21:23:41+08:00</lastmod>
+    <lastmod>2022-04-08T21:23:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/</loc>
-    <lastmod>2022-04-04T21:23:41+08:00</lastmod>
+    <lastmod>2022-04-08T21:23:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/airgnn/</loc>
-    <lastmod>2022-04-04T21:23:41+08:00</lastmod>
+    <lastmod>2022-04-08T21:23:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/paper/</loc>
-    <lastmod>2022-04-04T21:23:41+08:00</lastmod>
+    <lastmod>2022-04-08T21:23:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/</loc>
-    <lastmod>2022-04-04T21:23:41+08:00</lastmod>
+    <lastmod>2022-04-08T21:23:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/</loc>
-    <lastmod>2022-04-04T21:23:41+08:00</lastmod>
+    <lastmod>2022-04-08T21:23:41+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/2020-04-03-ssgcns/</loc>
+    <lastmod>2022-04-08T14:04:49+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/self-supervised-learning/</loc>
+    <lastmod>2022-04-08T14:04:49+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
+    <lastmod>2022-04-04T16:41:42+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/notebook/</loc>
     <lastmod>2022-04-04T16:41:42+08:00</lastmod>
@@ -41,8 +50,8 @@
     <loc>https://JhuoW.github.io/tags/laplacian/</loc>
     <lastmod>2022-04-02T15:00:20+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
-    <lastmod>2022-04-02T15:00:20+08:00</lastmod>
+    <loc>https://JhuoW.github.io/tags/imbalance/</loc>
+    <lastmod>2022-04-02T10:34:01+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2022-04-02-tinl/</loc>
     <lastmod>2022-04-02T10:34:01+08:00</lastmod>
@@ -50,16 +59,16 @@
     <loc>https://JhuoW.github.io/posts/neuralsparse/</loc>
     <lastmod>2022-04-01T10:55:44+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/mcts/</loc>
-    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/posts/monte-carlo-tree-search/</loc>
-    <lastmod>2022-03-30T18:09:58+08:00</lastmod>
+    <loc>https://JhuoW.github.io/tags/link-prediction/</loc>
+    <lastmod>2022-03-30T13:51:57+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/neo-gnns/</loc>
     <lastmod>2022-03-30T13:51:57+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/graphtrans/</loc>
+    <lastmod>2022-03-30T10:37:41+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/transformer/</loc>
     <lastmod>2022-03-30T10:37:41+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/gcn-lfr/</loc>
@@ -83,9 +92,6 @@
     <loc>https://JhuoW.github.io/tags/networkx/</loc>
     <lastmod>2022-03-27T15:38:50+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/machine-leaning/</loc>
-    <lastmod>2022-03-27T10:45:08+08:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/posts/mmd/</loc>
     <lastmod>2022-03-27T10:45:08+08:00</lastmod>
   </url><url>
@@ -95,10 +101,16 @@
     <loc>https://JhuoW.github.io/posts/rkhs_kernel/</loc>
     <lastmod>2022-03-26T22:39:20+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/posts/diffpool/</loc>
+    <loc>https://JhuoW.github.io/tags/mcts/</loc>
+    <lastmod>2022-03-25T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/monte-carlo-tree-search/</loc>
+    <lastmod>2022-03-25T18:09:58+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/graph-pooling/</loc>
     <lastmod>2019-12-19T19:32:36+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/paper/</loc>
+    <loc>https://JhuoW.github.io/posts/diffpool/</loc>
     <lastmod>2019-12-19T19:32:36+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/algorithm/</loc>
@@ -140,19 +152,16 @@
     <loc>https://JhuoW.github.io/posts/2019-05-12-embedding-ic/</loc>
     <lastmod>2019-05-12T22:09:38+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/im/</loc>
+    <loc>https://JhuoW.github.io/tags/influence-maximization/</loc>
     <lastmod>2019-05-06T20:16:17+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/influence-maximization/</loc>
+    <loc>https://JhuoW.github.io/categories/influence-maximization/</loc>
     <lastmod>2019-05-06T20:16:17+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2019-05-06-im-conclusion/</loc>
     <lastmod>2019-05-06T20:16:17+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/im/</loc>
-    <lastmod>2019-03-20T21:34:08+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/influence-maximization/</loc>
     <lastmod>2019-03-20T21:34:08+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2019-03-20-ic-lt/</loc>

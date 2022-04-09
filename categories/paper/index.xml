@@ -10,11 +10,11 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/paper/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/paper/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>NeurIPS2021 《Graph Neural Networks with Adaptive Residual》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/airgnn/</link>
-      <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
+      <pubDate>Fri, 08 Apr 2022 21:23:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/airgnn/</guid>
       <description>NeurIPS2021 &amp;#34;Graph Neural Networks with Adaptive Residual&amp;#34; 阅读笔记</description>
@@ -186,6 +186,132 @@ $$</p>
 <h1 id="reference">Reference</h1>
 <p>[1] <a href="https://math.stackexchange.com/questions/2665254/proximal-operator-of-summation-of-l-1-norm-and-l-2-1-norm">https://math.stackexchange.com/questions/2665254/proximal-operator-of-summation-of-l-1-norm-and-l-2-1-norm</a></p>
 <p>[2] <a href="https://math.stackexchange.com/questions/2190885/proximal-operator-of-the-euclidean-norm-l-2-norm">https://math.stackexchange.com/questions/2190885/proximal-operator-of-the-euclidean-norm-l-2-norm</a></p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>ICML2020 《When Does Self-Supervision Help Graph Convolutional Networks?》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/2020-04-03-ssgcns/</link>
+      <pubDate>Fri, 08 Apr 2022 14:04:49 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2020-04-03-ssgcns/</guid>
+      <description>ICML2020 &amp;#34;When Does Self-Supervision Help Graph Convolutional Networks?&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2006.09136v4">Paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>本文是自监督方法在GCNs上首次系统的探索，设计了3种自监督任务来将分析自监督在GCN中起到的作用。自监督旨在充分利用unlabeled数据中的知识来设计前置任务（pretext task），来帮助模型学习更具迁移性和泛化能力的表示。前置任务可以认为是对目标任务有帮助的辅助正则化网络，设计用于帮助原任务学习到更多下游任务相关的语义信息。</p>
+<p>GCN任务通常是直推半监督的（transductive semi-supervised）,含有大量unlabeled数据，而self-supervision(SSL)可以充分利用unlabeled data， 那么就产生了一个值得探索的问题：<strong>将自监督学习应用到GCN上是否也可以达到提升泛化能力和鲁棒能力的效果？</strong></p>
+<p>先给结论</p>
+<p>Q1: 自监督学习可否在分类任务中提升GCN？ 如果可以，如何将其合并到 GCN 中以最大化增益？</p>
+<p>A1: 本文证明了通过多任务学习将自监督学习融入 GCN 是有效的，即多任务损失作为 GCN 训练中的正则化项。 这种作为自监督作为正则化项的方法，强于用自监督来预训练或者self-training。</p>
+<p>Q2: 前置任务的设计重要吗？ GCN 有哪些有用的自监督前置任务？</p>
+<p>A2: 本文研究了三个基于图属性的自监督任务。 分别是节点聚类node clustering, 图划分graph partitioning 和图补全graph completion。 并且进一步说明不同的模型和数据集倾向于不同的自监督任务。</p>
+<p>Q3: 自监督也会影响 GCN 的对抗鲁棒性吗？ 如果是，如何设计前置任务？</p>
+<p>A3: 本文进一步将上述发现推广到对抗性训练环境中。提供了广泛的结果，以表明自监督还可以提高 GCN 在各种攻击下的鲁棒性，而不需要更大的模型或额外的数据。</p>
+<h1 id="method">Method</h1>
+<p>GCNs $\boldsymbol{Z}=\hat{\boldsymbol{A}} \operatorname{ReLU}\left(\hat{\boldsymbol{A}} \boldsymbol{X} \boldsymbol{W}_{0}\right) \boldsymbol{W}_{1}$可以分为两块来看 (1) 特征提取模块$f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) = \hat{\boldsymbol{A}} \operatorname{ReLU}\left(\hat{\boldsymbol{A}} \boldsymbol{X} \boldsymbol{W}_{0}\right)$ 参数为$\theta = \{\boldsymbol{W}_{0}\}$和（2）线性变换模块$\boldsymbol{Z}=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta}$ 其中 参数$ \boldsymbol{\Theta} = \boldsymbol{W}_{1}$。 半监督GCN优化任务的目标函数为：
+$$
+\begin{aligned}
+\boldsymbol{Z} &amp;=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta} \\
+\theta^{*}, \boldsymbol{\Theta}^{} &amp;=\arg \min_{\theta, \boldsymbol{\Theta}} \mathcal{L}_{\mathrm{sup}}(\theta, \boldsymbol{\Theta}) \\
+&amp;=\arg \min_{\theta, \boldsymbol{\Theta}} \frac{1}{\left|\mathcal{V}_{\text {label }}\right|} \sum_{v_{n} \in \mathcal{V}_{\text {label }}} L\left(\boldsymbol{z}_{n}, \boldsymbol{y}_{n}\right)
+\end{aligned} \tag{1}
+$$
+其中$L(\cdot, \cdot)$是每个labeled node的损失函数。</p>
+<h2 id="three-schemes-self-supervision-meets-gcns">Three Schemes: Self-Supervision Meets GCNs</h2>
+<p>研究三种将SSL配置到GCNs的方式。 其中 给定输入$\boldsymbol{X}_{ss}$, $\hat{\boldsymbol{A}}_{\mathrm{ss}}$, label $\boldsymbol{Y}_{ss}$和节点集$\mathcal{V}_{ss}$。</p>
+<h3 id="pretraining--fintuning">Pretraining &amp; Fintuning</h3>
+<p>预训练过程：
+$$
+\begin{aligned}
+\boldsymbol{Z}_{\mathrm{ss}} &amp;=f_{\theta}\left(\boldsymbol{X}_{\mathrm{ss}}, \hat{\boldsymbol{A}}_{\mathrm{ss}}\right) \boldsymbol{\Theta}_{\mathrm{Ss}} \\
+\theta_{\mathrm{ss}}^{*}, \boldsymbol{\Theta}_{\mathrm{ss}}^{*} &amp;=\arg \min_{\theta, \boldsymbol{\Theta}_{\mathrm{ss}}} \mathcal{L}_{\mathrm{ss}}\left(\theta, \boldsymbol{\Theta}_{\mathrm{ss}}\right) \\
+&amp;=\arg \min_{\theta, \boldsymbol{\Theta}} \frac{1}{\left|\mathcal{V}_{\mathrm{ss}}\right|} \sum_{v_{n} \in \mathcal{V}_{\mathrm{ss}}} \underbrace{L_{\mathrm{ss}}\left(\boldsymbol{z}_{\mathrm{ss}, n}, \boldsymbol{y}_{\mathrm{ss}, n}\right)}_{\text{loss of other task}}<br>
+\end{aligned} \tag{2}
+$$
+也就是在另一个任务训练好的模型参数$\theta_{\mathrm{ss}}^{*}, \boldsymbol{\Theta}_{\mathrm{ss}}^{*}$迁移到新任务（如半监督节点分类任务）上作为初始化参数训练新模型。</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/1.png#center" alt=""  />
+</p>
+<p>上表中，可以看出用graph partitioning作为预训练任务，得到的模型fine-tuning到节点分类任务上之后，效果仅从79.10变成了79.19,是非常微小的。 本文推测可能原因有两个（1）.两个不同的任务的Loss function不一样，从$\mathcal{L}_{\mathrm{ss}}$变为$\mathcal{L}_{\mathrm{sup}}$会影响实验效果。（2）参数迁移前一句是在多层GCN上的训练结果了，迁移后再训练，相当于深层，易oversmoothing。</p>
+<h3 id="self-training">Self-Training</h3>
+<p>每次迭代为unlabeled samples分配高度可信的为标签，然后将这些分配了伪标签的节点纳入到下一次迭代的监督训练中，随迭代过程不断更新标签。</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/2.png#center" alt=""  />
+</p>
+<p>表2可以看出Self-training的方式带来的提升有限</p>
+<h3 id="multi-task-learning">Multi-task Learning</h3>
+<p>考虑一个目标task和一个自监督task. GCN的目标为公式（1）。该多任务的训练过程如下：
+$$
+\begin{aligned}
+\boldsymbol{Z} &amp;=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta}, \quad \boldsymbol{Z}_{\mathrm{ss}}=f_{\theta}\left(\boldsymbol{X}_{\mathrm{ss}}, \hat{\boldsymbol{A}}_{\mathrm{ss}}\right) \boldsymbol{\Theta}_{\mathrm{ss}} \\
+\theta^{*}, \boldsymbol{\Theta}^{*}, \boldsymbol{\Theta}_{\mathrm{ss}}^{*} &amp;=\arg \min_{\theta, \boldsymbol{\Theta}, \boldsymbol{\Theta}_{\mathrm{ss}}} \alpha_{1} \mathcal{L}_{\mathrm{sup}}(\theta, \boldsymbol{\Theta})+\alpha_{2} \mathcal{L}_{\mathrm{ss}}\left(\theta, \boldsymbol{\Theta}_{\mathrm{ss}}\right)
+\end{aligned} \tag{3}
+$$
+其中任务的权重参数$\alpha_{1}, \alpha_{2} \in \mathbb{R}_{&gt;0}$, 半监督目标任务的损失$\mathcal{L}_{\mathrm{sup}}$定义为公式（1）， 辅助自监督损失$\mathcal{L}_{\mathrm{ss}}$定义为公式（2）.其中特征提取器$f_{\theta}(\cdot, \cdot)$对于自监督任务和目标任务是参数共享的，而线性变换参数$\boldsymbol{\Theta}, \boldsymbol{\Theta}_{\mathrm{ss}}$是各自任务的。</p>
+<p>在公式(3)中，自监督任务的loss作为一个<strong>regularization term</strong> 与目标任务一同训练。正则化项在图信号处理中是广泛应用的， 常见的有Graph Laplaician Regularization（GLR）， 它用于惩罚相邻节点间的不平滑，用于在学习目标任务的同时保持特征在图结构上的smoothing。虽然GLR可以作为一个自监督任务，但是它是给予不涉及具体数据情况下的平滑先验，SSL的regularization term不用的是，SSL是给予unlabeled data,是一种引入数据驱动的先验知识。综上所述， 多任务学习是3种自监督方式中最通用的。</p>
+<h2 id="gcn-specific-self-supervised-tasks">GCN-Specific Self-Supervised Tasks</h2>
+<p>本文为 GCN 扩展了一个自监督任务的“工具包”。 通过利用图中的丰富节点和边信息，可以定义各种GCN特定的自监督任务（如表 3 所示），并且进一步证明了不同的自监督任务对不同类型的监督/下游任务有益。这些自监督任务会为节点分配伪标签来构造自监督损失$\mathcal{L}_{ss}$, 如公式（3）所示。</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/4.png#center" alt=""  />
+</p>
+<h3 id="node-clustering">Node clustering</h3>
+<p>第一个任务为节点聚类， 给定节点集$\mathcal{V}$以及feature set $\boldsymbol{X}$, 一个预设值的簇数量$K \in\{1, \ldots,|\mathcal{V}|\}$（是一个超参数）一定要小于等于节点数$|\mathcal{V}|$。 聚类算法输出一个节点集合的集合$\left\{\mathcal{V}_{\text {clu }, 1}, \ldots, \mathcal{V}_{\text {clu }, K} \mid \mathcal{V}_{\text {clu }, n} \subseteq \mathcal{V}, n=1, \ldots, K\right\}$， 其中$\mathcal{V}_{\text {clu }, i}$是一个集合表示在簇$i$中的节点集。
+$$
+\begin{aligned}
+&amp;\mathcal{V}_{\text {clu }, n} \neq \emptyset \quad(n=1, \ldots, K), \quad \cup_{n=1}^{K} \mathcal{V}_{\text {clu }, n}=\mathcal{V} \\
+&amp;\mathcal{V}_{\text {clu }, i} \cap \mathcal{V}_{\text {clu }, j}=\emptyset \quad(\forall i, j=1, \ldots, K \text { and } i \neq j)
+\end{aligned}
+$$
+这$K$个簇互相之间没有公共的节点，SSL任务将每个节点所在的簇的index作为伪标签来构造自监督损失$\mathcal{L}_{ss}$：
+$$
+y_{\mathrm{ss}, n}=k \text { if } v_{n} \in \mathcal{V}_{\mathrm{clu}, k}(\forall n=1, \ldots,|\mathcal{V}|, \forall k=1, \ldots, K)
+$$</p>
+<h3 id="graph-partitioning">Graph partitioning</h3>
+<p>上面的节点聚类任务，是基于特征的，与拓扑无关。 而这里的图划分任务，与feature无关，只与拓扑有关。 具体来说，通过“强”边连接的两个节点很可能属于同一标签类别。 因此，本文提出了一种使用图划分的基于拓扑的自监督任务。</p>
+<p>图划分是将图的节点划分为大致相等的子集，使得跨子集间的边数最小化（高聚类，低耦合，同时簇中节点数不能差别太大）。先预定义一个簇数量，$K \in\{1, \ldots,|\mathcal{V}|\}$（超参数）。 和节点聚类任务类似，图划分算法也会输出一个节点集合的集合，用来标识每个节点属于哪个partition: $\left\{\mathcal{V}_{\text {par }, 1}, \ldots, \mathcal{V}_{\text {par }, K} \mid \mathcal{V}_{\text {par }, n} \subseteq \mathcal{V}, n=1, \ldots, K\right\}$, 使得：
+$$
+\begin{aligned}
+&amp;\mathcal{V}_{\text {par }, n} \neq \emptyset \quad(\forall n=1, \ldots, K), \quad \cup_{n=1}^{K} \mathcal{V}_{\text {par }, n}=\mathcal{V} \\
+&amp;\mathcal{V}_{\text {par }, i} \cap \mathcal{V}_{\text {par }, j}=\emptyset \quad(\forall i, j=1, \ldots, K \text { and } i \neq j)
+\end{aligned}
+$$
+上面的约束其实和node clustering任务差不多，Graph partitioning任务还需要两个约束，一个是平衡约束来保证簇不要太大：
+$$
+K \frac{\max_{k}\left|\mathcal{V}_{\text {par }, k}\right|}{|\mathcal{V}|} \leqslant 1+\epsilon, \text { where } \epsilon \in(0,1)
+$$
+其中$\max_{k}\left|\mathcal{V}_{\text {par }, k}\right|$是节点数最多的簇中的节点数。 另一个约束要保证簇间边要尽可能少，即最小化edgecut:
+$$
+\text { edgecut }=\frac{1}{2} \sum_{k=1}^{K} \sum_{v_{i} \in \mathcal{V}_{\text {par }, k}} \quad\sum_{\left(v_{i}, v_{j}\right) \in \mathcal{E} ,\text {and } v_{j} \notin \mathcal{V}_{\text {par }, k}} \quad a_{i j}
+$$
+将每个节点所在的partition index作为label。</p>
+<h3 id="graph-completion">Graph completion</h3>
+<p>图补全任务如下图所示。</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/5.png#center" alt=""  />
+</p>
+<p>图补全首先通过删除目标节点的特征来mask目标节点。 然后，通过向 GCN 提供未掩蔽的节点特征（目前仅限于 2 层 GCN 的每个目标节点的二阶邻居）来恢复/预测被mask的节点特征。设计该自监督任务的原因如下：1）标签可以自由获取，也就是节点特征本身； 2）图补全可以帮助网络获得更好的特征表示，这可以教会网络从上下文中提取特征。</p>
+<p>最终多任务自监督GCN模型的框架如下图所示：</p>
+<p><img loading="lazy" src="/posts/2022-04-09-SSGCNs/3.png#center" alt=""  />
+</p>
+<h2 id="self-supervision-in-graph-adversarial-defense">Self-Supervision in Graph Adversarial Defense</h2>
+<p>本文专注于Evasion Attack，在模型训练好后对目标节点$v_n$扰动， 实际上对于Evasion Attack，对扰动图重新训练或许可以纠正扰动的影响，但是本文这里不考虑重新训练。一个attacker $g$生成新的特征和邻接矩阵：
+$$
+\boldsymbol{X}^{\prime}, \boldsymbol{A}^{\prime}=g\left(\boldsymbol{X}, \boldsymbol{A}, \boldsymbol{Y}, v_{n}, \theta^{*}, \boldsymbol{\Theta}^{*}\right)
+$$
+其中$ \theta^{*}, \boldsymbol{\Theta}^{*}$是在clean 图上训练好的模型参数。</p>
+<p>对抗训练的目标函数定义为:
+$$
+\begin{aligned}
+\boldsymbol{Z} &amp;=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta}, \quad \boldsymbol{Z}^{\prime}=f_{\theta}\left(\boldsymbol{X}^{\prime}, \boldsymbol{A}^{\prime}\right) \boldsymbol{\Theta} \\
+\theta^{*}, \boldsymbol{\Theta}^{*} &amp;=\arg \min_{\theta, \boldsymbol{\Theta}}\left(\mathcal{L}_{\text {sup }}(\theta, \boldsymbol{\Theta})+\alpha_{3} \mathcal{L}_{\mathrm{adv}}(\theta, \boldsymbol{\Theta})\right)
+\end{aligned}
+$$
+表示模型要同时在扰动图和训练图上都保持较好的效果。 本文将基于自监督的对抗训练定义为：
+$$
+\begin{aligned}
+\boldsymbol{Z} &amp;=f_{\theta}(\boldsymbol{X}, \hat{\boldsymbol{A}}) \boldsymbol{\Theta}, \quad \boldsymbol{Z}^{\prime}=f_{\theta}\left(\boldsymbol{X}^{\prime}, \boldsymbol{A}^{\prime}\right) \boldsymbol{\Theta} \\
+\boldsymbol{Z}_{\mathrm{ss}}=&amp; f_{\theta}\left(\boldsymbol{X}_ \mathrm{ss}, \boldsymbol{A}_{\mathrm{ss}}\right) \\
+\theta^{*}, \boldsymbol{\Theta}^{*}, \boldsymbol{\Theta}_{\mathrm{ss}}^{*}=&amp; \arg \min_{\theta, \boldsymbol{\Theta}, \boldsymbol{\Theta}_{\mathrm{ss}}}\left(\alpha_{1} \mathcal{L}_{\mathrm{sup}}(\theta, \boldsymbol{\Theta})\right.\\
+&amp;\left.+\alpha_{2} \mathcal{L}_{\mathrm{ss}}\left(\theta, \boldsymbol{\Theta}_{\mathrm{ss}}\right)+\alpha_{3} \mathcal{L}_{\mathrm{adv}}(\theta, \boldsymbol{\Theta})\right)
+\end{aligned}
+$$
+其中自监督损失被引入到以扰动图数据作为输入的训练中（自监督标签矩阵 $\boldsymbol{Y}_{ss}$ 也是从扰动输入生成的）。</p>
 ]]></content:encoded>
     </item>
     

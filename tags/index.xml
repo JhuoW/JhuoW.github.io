@@ -10,13 +10,23 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 08 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GNN</title>
       <link>https://JhuoW.github.io/tags/gnn/</link>
-      <pubDate>Mon, 04 Apr 2022 21:23:41 +0800</pubDate>
+      <pubDate>Fri, 08 Apr 2022 21:23:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/gnn/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Self-Supervised Learning</title>
+      <link>https://JhuoW.github.io/tags/self-supervised-learning/</link>
+      <pubDate>Fri, 08 Apr 2022 14:04:49 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/self-supervised-learning/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -42,11 +52,31 @@
     </item>
     
     <item>
-      <title>MCTS</title>
-      <link>https://JhuoW.github.io/tags/mcts/</link>
-      <pubDate>Wed, 30 Mar 2022 18:09:58 +0800</pubDate>
+      <title>Imbalance</title>
+      <link>https://JhuoW.github.io/tags/imbalance/</link>
+      <pubDate>Sat, 02 Apr 2022 10:34:01 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/tags/mcts/</guid>
+      <guid>https://JhuoW.github.io/tags/imbalance/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Link prediction</title>
+      <link>https://JhuoW.github.io/tags/link-prediction/</link>
+      <pubDate>Wed, 30 Mar 2022 13:51:57 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/link-prediction/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Transformer</title>
+      <link>https://JhuoW.github.io/tags/transformer/</link>
+      <pubDate>Wed, 30 Mar 2022 10:37:41 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/transformer/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -82,11 +112,21 @@
     </item>
     
     <item>
-      <title>paper</title>
-      <link>https://JhuoW.github.io/tags/paper/</link>
+      <title>MCTS</title>
+      <link>https://JhuoW.github.io/tags/mcts/</link>
+      <pubDate>Fri, 25 Mar 2022 18:09:58 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/mcts/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Graph pooling</title>
+      <link>https://JhuoW.github.io/tags/graph-pooling/</link>
       <pubDate>Thu, 19 Dec 2019 19:32:36 +0000</pubDate>
       
-      <guid>https://JhuoW.github.io/tags/paper/</guid>
+      <guid>https://JhuoW.github.io/tags/graph-pooling/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

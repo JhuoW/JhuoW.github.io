@@ -10,7 +10,177 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 02 Apr 2022 15:00:20 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/machine-learning/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Apr 2022 16:41:42 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/machine-learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Proximal Gradient Descent</title>
+      <link>https://JhuoW.github.io/posts/pgd/</link>
+      <pubDate>Mon, 04 Apr 2022 16:41:42 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/pgd/</guid>
+      <description>当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）
+假设目标函数如下： $$ \definecolor{energy}{RGB}{114,0,172} \definecolor{freq}{RGB}{45,177,93} \definecolor{spin}{RGB}{251,0,29} \definecolor{signal}{RGB}{18,110,213} \definecolor{circle}{RGB}{217,86,16} \definecolor{average}{RGB}{203,23,206} \definecolor{red}{RGB}{255,0,0} f(w) = g(w) + h(w) $$ 其中$g(w)$是可微凸函数，$h(w)$是不可微（或局部不可微）凸函数。 以线性回归为例，
+给定$X \in \mathbb{R}^{m \times n}$, $y \in \mathbb{R}^m$， Ridge Regression的目标函数为
+$$ f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{2}}_{h(\boldsymbol{w})} $$ 因为$\ell_2$ norm处处可导，所以Ridge可以用SGD或GD来直接优化。但是若目标函数为Lasso，即正则化项定义为$\ell_1$ norm: $$ f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{1}}_{h(\boldsymbol{w})} $$ 这里$h(w)=\lambda||\boldsymbol{w}||_{1}$在$w=0$处不可导，那么可用PGD来优化。
+Proximity Operator 近端算子： 对于不可微函数$h(w)$, $h(w)$的proximity operator定义为：
+$$ u^* = \operatorname{prox}_{\color{signal}h}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2}||u-w||_{2}^{2}\right) $$ 近端算子$\operatorname{prox}_{\color{signal}h}(w)$只和不可微凸函数$h(\cdot)$有关。 上式含义，给定一个不可微凸函数$h(\cdot)$, 给定向量$w \in \mathbb{R}^n$, 找到向量$u = u^*$, 使得公式$h(u)+\frac{1}{2}||u-w||_{2}^{2}$最小。 这个$u^* = \operatorname{prox}_{\color{signal}h}(w)$就是$h(\cdot)$在给定$w$条件下的近端算子（Proximity Operator）。$u^* = \operatorname{prox}_{\color{signal}h}(w)$要求最佳的$u^* $可以使得函数值$h(u^*)$尽可能小，同时$u^*$要尽可能接近给定的$w$。</description>
+      <content:encoded><![CDATA[<p>当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）</p>
+<p>假设目标函数如下：
+$$
+\definecolor{energy}{RGB}{114,0,172}
+\definecolor{freq}{RGB}{45,177,93}
+\definecolor{spin}{RGB}{251,0,29}
+\definecolor{signal}{RGB}{18,110,213}
+\definecolor{circle}{RGB}{217,86,16}
+\definecolor{average}{RGB}{203,23,206}
+\definecolor{red}{RGB}{255,0,0}
+f(w) = g(w) + h(w)
+$$
+其中$g(w)$是可微凸函数，$h(w)$是不可微（或局部不可微）凸函数。 以线性回归为例，</p>
+<p>给定$X \in \mathbb{R}^{m \times n}$, $y \in \mathbb{R}^m$， Ridge Regression的目标函数为</p>
+<p>$$
+f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{2}}_{h(\boldsymbol{w})}
+$$
+因为$\ell_2$ norm处处可导，所以Ridge可以用SGD或GD来直接优化。但是若目标函数为Lasso，即正则化项定义为$\ell_1$ norm:
+$$
+f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{1}}_{h(\boldsymbol{w})}
+$$
+这里$h(w)=\lambda||\boldsymbol{w}||_{1}$在$w=0$处不可导，那么可用PGD来优化。</p>
+<h1 id="proximity-operator">Proximity Operator</h1>
+<p>近端算子： 对于不可微函数$h(w)$, $h(w)$的proximity operator定义为：</p>
+<p>$$
+u^* = \operatorname{prox}_{\color{signal}h}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2}||u-w||_{2}^{2}\right)
+$$
+近端算子$\operatorname{prox}_{\color{signal}h}(w)$只和不可微凸函数$h(\cdot)$有关。 上式含义，给定一个不可微凸函数$h(\cdot)$, 给定向量$w \in \mathbb{R}^n$, 找到向量$u = u^*$, 使得公式$h(u)+\frac{1}{2}||u-w||_{2}^{2}$最小。 这个$u^* = \operatorname{prox}_{\color{signal}h}(w)$就是$h(\cdot)$在给定$w$条件下的近端算子（Proximity Operator）。$u^* = \operatorname{prox}_{\color{signal}h}(w)$要求最佳的$u^* $可以使得函数值$h(u^*)$尽可能小，同时$u^*$要尽可能接近给定的$w$。</p>
+<p>基于后面的公式推导，我们给$\operatorname{prox}_{\color{signal}h}(w)$添加一个参数$\color{energy}\gamma$:
+$$
+u^* = \operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2\color{energy}\gamma}||u-w||_{2}^{2}\right)
+$$
+上式表示，给定一个不可微凸函数$h(\cdot)$， 一个给定的点$w$, 一个参数$\gamma$, 要找到一个$u = u^*$, 使得$u^*$带入公式$h(u)+\frac{1}{2\color{energy}\gamma}||u-w||_{2}^{2}$的到的结果最小。 $\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)$是使得$h(u)+\frac{1}{2\color{energy}\gamma}||u-w||_{2}^{2}$最小的输入$u$。</p>
+<p>因为$h(u)$和$||u-w||_{2}^{2}$都为凸函数，所以一定存在$u^*$使得函数值最小， 这个$u^* = \operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)$要求使得$h(u^*)$尽可能小（第一项），同时$u^*$要尽可能接近给定的$w$（第二项）。</p>
+<p>例子：</p>
+<ul>
+<li>
+<p>若$h(w)=0$, $\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w) = u^* = w$。</p>
+</li>
+<li>
+<p>当$h(w) = ||w||_{1}$时，$\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w) = \operatorname{prox}_{\color{signal}||\cdot||_{1}\color{energy}\gamma}(w)$是软阈值操作</p>
+</li>
+</ul>
+<p>$$
+u^* = \left(\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)\right)_{i}= \begin{cases}w_{i}-\gamma &amp; w_{i} \geq \gamma \\ 0 &amp; \left|\mathrm{w}_{i}\right| \leq \gamma \\ w_{i}+ \gamma &amp; w_{i} \leq-\gamma\end{cases}
+$$</p>
+<p>如果在$\ell_1$ norm前加上参数$\lambda$， 即$h(w) = \lambda||w||_{1}$， 那么近端算子为：
+$$
+u^* = \left(\operatorname{prox}_{\color{signal}h\color{energy}\gamma}(w)\right)_{i}= \begin{cases}w_{i}-\lambda\gamma &amp; w_{i} \geq \lambda\gamma \\ 0 &amp; \left|\mathrm{w}_{i}\right| \leq \lambda\gamma \\ w_{i}+ \lambda\gamma &amp; w_{i} \leq-\lambda\gamma\end{cases}
+$$</p>
+<h1 id="近端梯度算法">近端梯度算法</h1>
+<p>回到Lasso 回归，要求解：
+$$
+\min_{w}(g(w)+h(w))
+$$
+$w$可以通过递推式求出：
+$$
+\boldsymbol{w}^{k}=\operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{w}^{k-1}-\gamma \nabla g\left(\boldsymbol{w}^{k-1}\right)\right)
+$$
+为什么可以通过不断迭代迭代上式来求解最佳的$w^{K}$, 使得$g(w)+h(w)$收敛到最小？下面先给出证明
+$$
+\begin{equation}
+\begin{aligned}
+\boldsymbol{w}^{k} &amp; =\operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{w}^{k-1}-\gamma \nabla g\left(\boldsymbol{w}^{k-1}\right)\right)\\
+&amp;=\underset{u}{\operatorname{argmin}}\left(\underbrace{h(u)}_{\color{red}h(u)尽可能小}+\frac{1}{2 \gamma}\left|\left|\underbrace{u-\left(w^{k-1}-\gamma \nabla g\left(w^{k-1}\right)\right)}_{\color{red}u尽可能接近w^{k-1}-\gamma \nabla g\left(w^{k-1}\right)}\right|\right|_{2}^{2}\right)\\
+&amp;= \underset{u}{\operatorname{argmin}}\left(h(u)+\frac{1}{2 \gamma}\left|\left|(u-w^{k-1} )+\gamma \nabla g\left(w^{k-1}\right)\right|\right|_{2}^{2}\right)\\
+&amp; = \underset{u}{\operatorname{argmin}}\left(h(u)+\underbrace{\frac{\gamma}{2}\left|\left|\nabla g\left(w^{k-1}\right)\right|\right|_{2}^{2}}_{\color{red}\gamma和w^{k-1}给定， 所以该项与u无关，视为常数，可省略}+\left(u-w^{k-1}\right)^{T}\nabla g\left(w^{k-1}\right)+\frac{1}{2 \gamma}\left|\left|u-w^{k-1}\right|\right|_{2}^{2}\right) \\
+&amp;= \underset{u}{\operatorname{argmin}}\left(h(u)+\underbrace{g\left(w^{k-1}\right)}_{\color{red}添加与u无关的项，不影响结果}+\left(u-w^{k-1}\right)^T\nabla g\left(w^{k-1}\right)+\frac{1}{2 \gamma}\left|\left|u-w^{k-1}\right|\right|_{2}^{2}\right) \quad \quad (5)\\ &amp;
+\approx \underset{u}{\arg \min }(g(u)+h(u))
+\end{aligned}
+\end{equation}
+$$
+<strong>整个过程不涉及对$h(u)$求梯度</strong></p>
+<p>最后两步怎么来的？</p>
+<blockquote>
+<p>泰勒展开式：</p>
+<p>$$f(x)=\frac{f\left(a\right)}{0 !}+\frac{f^{\prime}\left(a\right)}{1 !}\left(x-a\right)+\frac{f^{\prime \prime}\left(a\right)}{2 !}\left(x-a\right)^{2}+\ldots+\frac{f^{(n)}\left(a\right)}{n !}\left(x-a\right)^{n}$$</p>
+</blockquote>
+<p>对$g(u)$做泰勒展开， 令$a=w^{k-1}$:
+$$
+\begin{equation}
+\begin{aligned}
+g(u) &amp;= g(w^{k-1}) + (u-w^{k-1})^{T}\nabla g\left(w^{k-1}\right) + \langle u-w^{k-1}, u-w^{k-1}\rangle \nabla^2 g\left(w^{k-1}\right) \\
+&amp; \approx (5)式最后三项
+\end{aligned}
+\end{equation}
+$$
+综上：
+$$
+\begin{equation}
+\begin{aligned}
+\boldsymbol{w}^{k} &amp; =\operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{w}^{k-1}-\gamma \nabla g\left(\boldsymbol{w}^{k-1}\right)\right) \\
+&amp; \approx \underset{u}{\arg \min }(g(u)+h(u))
+\end{aligned}
+\end{equation}
+$$
+<strong>所以通过迭代的方式求$w^k = \operatorname{prox}_{\color{signal}h\color{energy}\gamma}\left(\boldsymbol{w}^{k-1}-\gamma \nabla g\left(\boldsymbol{w}^{k-1}\right)\right)$ 就是$\min_{w}(g(w)+h(w))$的迭代递推求解过程。</strong></p>
+<h2 id="求解ell_1-范数">求解$\ell_1$ 范数</h2>
+<p><strong>将求解问题转为递推式</strong>。</p>
+<p>现在我们有问题，形式为：
+$$
+\min_{w}(\underbrace{g(w)}_{\color{red}凸可微}+\underbrace{\lambda \left|\left| w \right|\right|_1}_{\color{red}h(w)凸不可微})
+$$
+找到最佳$w$使得上式最小的过程可以迭代递推为：
+$$
+\begin{equation}
+\begin{aligned}
+w^{k+1}&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left(w^{k}-\gamma \nabla g\left(w^{k}\right)\right)\\
+&amp;= \underset{u}{\arg \min }\left(\lambda \left|\left| u \right|\right|_1+\frac{1}{2\color{energy}\gamma}||u-\left(w^{k}-\gamma \nabla g\left(w^{k}\right)\right)||_{2}^{2}\right)
+\end{aligned}
+\end{equation}
+$$</p>
+<h2 id="求解lasso回归">求解Lasso回归</h2>
+<p>待求解问题形如：
+$$
+\min_{w}\left(\frac{1}{2}||X w-y||_{2}^{2}+r||w||_1\right)
+$$
+可见第一项可微，第二项为$\ell_1$ norm 在$w=0$处不可微。</p>
+<p>根据递推式：
+$$
+w^{k+1}=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left(\underbrace{w^{k}-\gamma \nabla g\left(w^{k}\right)}_{\color{red}z^k}\right)
+$$
+令$z^k = w^{k}-\gamma \nabla g\left(w^{k}\right)$, 上式可改写为</p>
+<p>因为learning step size $\gamma$ 与$w$无关，所以上式可以改写为：
+$$
+\begin{equation}
+\begin{aligned}
+w^{k+1}&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left(z^k\right)\\
+&amp;= \underset{w}{\arg \min } \left(  \lambda \left|\left| w \right|\right|_1 + \frac{1}{2\color{energy}\gamma}||w-z^k||_{2}^{2}\right) \\
+&amp;= \underset{w}{\arg \min } \left(  \lambda \gamma\left|\left| w \right|\right|_1 + \frac{1}{2}||w-z^k||_{2}^{2}\right)
+\end{aligned}
+\end{equation}
+$$</p>
+<p>$\because g(w^k) = \frac{1}{2}||X w-y||_{2}^{2}$</p>
+<p>$\therefore \nabla g(w^k) = X^{T}(Xw^k-y) = X^TXw^k-X^Ty$</p>
+<p>$\therefore z^k = w^k-\gamma (X^TXw^k-X^Ty)$</p>
+<p>把$z^k$带入$w^{k+1}$中：
+$$
+\begin{equation}
+\begin{aligned}
+w^{k+1}&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left(z^k\right)\\
+&amp;=\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left( w^k-\gamma X^TXw^k+ \gamma X^Ty\right)
+\end{aligned}
+\end{equation}
+$$
+因为$\left(\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}(w)\right)_{i}= \begin{cases}w_{i}-\lambda\gamma &amp; w_{i} \geq \lambda\gamma \\ 0 &amp; \left|w_{i}\right| \leq \lambda\gamma \\ w_{i}+ \lambda\gamma &amp; w_{i} \leq-\lambda\gamma\end{cases}$,</p>
+<p>所以$w^k$到$w^{k+1}$的迭代优化方式如下：
+$$
+w_i^{k+1} = \left(\operatorname{prox}_{\color{signal}\lambda||\cdot||_{1}\color{energy}\gamma}\left( z^k\right)\right)_i = \begin{cases} z^k_{i}-\lambda\gamma &amp; z^k_{i} \geq \lambda\gamma \\ 0 &amp; \left|z^k_{i}\right| \leq \lambda\gamma \\ z^k_{i}+ \lambda\gamma &amp; z^k_{i} \leq-\lambda\gamma \end{cases}
+$$
+其中 $z^k_{i}$是$z^k$的第$i$行。</p>
+<h1 id="reference">Reference</h1>
+<p><a href="https://blog.csdn.net/Chaolei3/article/details/81320940">https://blog.csdn.net/Chaolei3/article/details/81320940</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/82622940">https://zhuanlan.zhihu.com/p/82622940</a></p>
+<p><a href="http://roachsinai.github.io/2016/08/03/1Proximal_Method/">http://roachsinai.github.io/2016/08/03/1Proximal_Method/</a></p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Everything about Graph Laplacian</title>
       <link>https://JhuoW.github.io/posts/laplacian/</link>
@@ -777,170 +947,136 @@ $$</p>
     </item>
     
     <item>
-      <title>Monte Carlo Tree Search</title>
-      <link>https://JhuoW.github.io/posts/monte-carlo-tree-search/</link>
-      <pubDate>Wed, 30 Mar 2022 18:09:58 +0800</pubDate>
+      <title>Maximum Mean Discrepancy</title>
+      <link>https://JhuoW.github.io/posts/mmd/</link>
+      <pubDate>Sun, 27 Mar 2022 10:45:08 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/monte-carlo-tree-search/</guid>
-      <description>单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits） 单一状态$s$, $k$种action（$k$个摇臂）。
-在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?
-多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。
-  利用（Exploitation）： 保证在过去决策中得到最佳回报
-  探索（Exploration）：寄希望在未来能够得到更大的汇报
-  例如， $s$摇动10次赌博机，其中第5次获得最大回报，那么下一次摇动赌博机可能选第5个赌博机，即“利用”（根据过去的最佳回报来施展下一次行为），第11次摇动的action为$a_5$。
-但是摇动10次后，可能有的赌博机尚未摇动，未摇动的赌博机可能会有更大回报，即“探索”。
-悔值函数 如果有$k$个赌博机， 这$k$个赌博机产生的操作序列为$X_{i,1}, X_{i,2}, \cdots (i = 1,\cdots, k)$。 在时刻$t=1,2,\cdots$, 选择第$I_t$个赌博机后，可得到的奖励为$X_{I_t,t}$, 则在$n$次操作$I_1,\cdots,I_n$后，可如下定义悔值函数： $$ R_n = \max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}-\sum^n_{t=1}X_{I_t, t} $$ $i$: 第$i$个赌博机
-$I_t$: $t$时刻选择的赌博机
-$\max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}$: 最理想（大）的奖励
-$X_{I_t, t}$: $t$时刻选择赌博机$I_t$的reward
-$\sum^n_{t=1}X_{I_t, t}$: $n$次选择的总奖励。
-$R_n$越大，就代表$n$次决策的结果越差。
-上置信区间（Upper Confidence Bound, UCB） UCB旨在探索和利用间去的平衡
-在UCB方法中，使$X_{i, T_{i}(t-1)}$ 来记录第$i$个赌博机在过去$t-1$时刻内的平均奖励，则在第$t$时刻，选择使如下具有最佳上限置信区间的赌博机： $$ I_{t}=\max_{i \in{1, \ldots, k}}\left\{\overline{X_{i, T_{i}(t-1)}}+C_{t-1, T_{i}(t-1)} \right\}.</description>
-      <content:encoded><![CDATA[<h1 id="单一状态monte-carlo规划多臂赌博机multi-armed-bandits">单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits）</h1>
-<p>单一状态$s$, $k$种action（$k$个摇臂）。</p>
-<p>在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?</p>
-<p>多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。</p>
-<ul>
-<li>
-<p>利用（Exploitation）： 保证在过去决策中得到最佳回报</p>
-</li>
-<li>
-<p>探索（Exploration）：寄希望在未来能够得到更大的汇报</p>
-</li>
-</ul>
-<p>例如， $s$摇动10次赌博机，其中第5次获得最大回报，那么下一次摇动赌博机可能选第5个赌博机，即“利用”（根据过去的最佳回报来施展下一次行为），第11次摇动的action为$a_5$。</p>
-<p>但是摇动10次后，可能有的赌博机尚未摇动，未摇动的赌博机可能会有更大回报，即“探索”。</p>
-<h2 id="悔值函数">悔值函数</h2>
-<p>如果有$k$个赌博机， 这$k$个赌博机产生的操作序列为$X_{i,1}, X_{i,2}, \cdots (i = 1,\cdots, k)$。 在时刻$t=1,2,\cdots$, 选择第$I_t$个赌博机后，可得到的奖励为$X_{I_t,t}$, 则在$n$次操作$I_1,\cdots,I_n$后，可如下定义悔值函数：
+      <guid>https://JhuoW.github.io/posts/mmd/</guid>
+      <description>Mean Discrepancy (MD)均值差异 判断2个分布$p$ 和$q$是否相同。
+$p$分布生成一个样本空间$\mathbb{P}$ (从$p$中采样$m$个样本)
+$q$分布生成一个样本空间$\mathbb{Q}$（从$q$中采样$n$个样本）
+函数$f$的输入为 分布生成的样本空间
+如果 $$ \begin{equation} \begin{aligned} \mathrm{mean}(f(\mathbb{P})) == \mathrm{mean}(f(\mathbb{Q})) \\ i.e., \frac{1}{m}\sum^m_{i=1}f(p_i) = \frac{1}{n}\sum^n_{i=1}f(q_i) \end{aligned} \end{equation} $$
+则$p$和$q$是同一分布。
+MD can be defined as $$ \begin{equation} \begin{aligned} \mathrm{MD}&amp;amp;=|\mathrm{mean}(f(\mathbb{P})) -\mathrm{mean}(f(\mathbb{Q})) | \\ &amp;amp;= |\frac{1}{m}\sum^m_{i=1}f(p_i) - \frac{1}{n}\sum^n_{i=1}f(q_i)| \end{aligned} \end{equation} $$
+Maximum Mean Discrepancy (MMD) 最大均值差异 定义 MMD: 在函数集$\mathcal{F}=\{f_1, f_2, \cdots \}$中， 找到一个函数$f^*$， 使得$|\mathrm{mean}(f^*(\mathbb{P})) -\mathrm{mean}(f^*(\mathbb{Q})) |$ 最大。 这个最大值就是两个分布之间的最大均值差异（MMD）。MMD =0 表示两个分布相同。 $$ \operatorname{MMD}[\mathcal{F}, p, q]:=\sup _{f \in \mathcal{F}}\left(\mathbf{E}_{x \sim p}[f(x)]-\mathbf{E}_{y \sim q}[f(y)]\right) $$ 其中$\mathbf{E}_{x \sim p}[f(x)]$表示分布$p$在函数$f$下的均值， $\sup$为上确界直接理解为max就好。</description>
+      <content:encoded><![CDATA[<h1 id="mean-discrepancy-md均值差异">Mean Discrepancy (MD)均值差异</h1>
+<p>判断2个分布$p$ 和$q$是否相同。</p>
+<p>$p$分布生成一个样本空间$\mathbb{P}$ (从$p$中采样$m$个样本)</p>
+<p>$q$分布生成一个样本空间$\mathbb{Q}$（从$q$中采样$n$个样本）</p>
+<p>函数$f$的输入为 分布生成的样本空间</p>
+<p>如果
 $$
-R_n = \max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}-\sum^n_{t=1}X_{I_t, t}
-$$
-$i$: 第$i$个赌博机</p>
-<p>$I_t$: $t$时刻选择的赌博机</p>
-<p>$\max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}$: 最理想（大）的奖励</p>
-<p>$X_{I_t, t}$: $t$时刻选择赌博机$I_t$的reward</p>
-<p>$\sum^n_{t=1}X_{I_t, t}$: $n$次选择的总奖励。</p>
-<p>$R_n$越大，就代表$n$次决策的结果越差。</p>
-<h2 id="上置信区间upper-confidence-bound-ucb">上置信区间（Upper Confidence Bound, UCB）</h2>
-<p>UCB旨在探索和利用间去的平衡</p>
-<p>在UCB方法中，使$X_{i, T_{i}(t-1)}$ 来记录第$i$个赌博机在过去$t-1$时刻内的平均奖励，则在第$t$时刻，选择使如下具有最佳上限置信区间的赌博机：
-$$
-I_{t}=\max_{i \in{1, \ldots, k}}\left\{\overline{X_{i, T_{i}(t-1)}}+C_{t-1, T_{i}(t-1)} \right\}.
-$$
-其中$I_{t}$为$t$时刻要摇的赌博机，</p>
-<p>$\overline{X_{i, T_{i}(t-1)}}$要尽可能大：为$t$时刻之前赌博机$i$的平均reward 要尽可能大，</p>
-<p>$C_{t-1, T_{i}(t-1)}$要尽可能小：$t$时刻之前$i$出现的次数要尽可能少</p>
-<p>其中$C_{t,T_i(t)}$的取值定义如下：
-$$
-C_{t,T_i(t)}=\sqrt{\frac{2 \operatorname{In} t}{T_i(t)}}
-$$
-其中$T_i(t)$表示 $t$时刻以前（包括$t$），选到赌博机$i$的次数总和。</p>
-<p>若赌博机在$t$时刻之前（包括$t$）时刻摇动的次数越少，$C_{t,T_i(t)}$越大</p>
-<p>选出的$I_t$要满足在$t$之前的平均reward尽可能大（利用）， 且在$t$之前出现次数尽可能少（探索）。</p>
-<p>也就是说，在第时刻，UCB算法一般会选择具有如下最大值的第$j$个赌博机：
-$$
+\begin{equation}
 \begin{aligned}
-U C B&amp;=\bar{X}_{j}+\sqrt{\frac{2 \operatorname{Inn}}{n_{j}}} \text { 或者 } U C B=\bar{X}_{j}+C \times \sqrt{\frac{2 \operatorname{In} n}{n_{j}}} \\
-I_t &amp;= \mathrm{argmax}_j UCB(j)
+\mathrm{mean}(f(\mathbb{P})) == \mathrm{mean}(f(\mathbb{Q})) \\
+i.e., \frac{1}{m}\sum^m_{i=1}f(p_i) = \frac{1}{n}\sum^n_{i=1}f(q_i)
 \end{aligned}
-$$
-其中$\bar{X}_{j}$是第$j$个赌博机在过去时间内所获得的平均奖赏值，$n_j$是在过去时间内拉动第$j$个赌博机臂膀的总次数，$n$是过去时间内拉动所有赌博机臂膀的总次数。$C$是一个平衡因子，其决定着在选择时偏重探索还是利用。</p>
-<p>从这里可看出UCB算法如何在探索-利用(exploration-exploitation)之间寻找平衡：既需要拉动在过去时间内获得最大平均奖赏的赌博机，又希望去选择拉动臂膀次数最少的赌博机。</p>
-<h1 id="monte-carlo-tree-search">Monte Carlo Tree Search</h1>
-<p>MCTS has four step:</p>
-<ul>
-<li>Selection 选择</li>
-<li>Expansion 拓展</li>
-<li>Simulation（rollout) 模拟</li>
-<li>Backpropagation 回溯</li>
-</ul>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/1.png#center" alt=""  />
-</p>
-<h2 id="选择">选择</h2>
-<p>从根节点R开始，向下递归选择子节点，直至选择一个叶子节点L。
-具体来说，通常用UCBl(Upper Confidence Bound,上限置信区间)选择最具“潜力”的后续节点：
-$$
-U C B=\bar{X}_{j}+\sqrt{\frac{2 \operatorname{In} n}{n_{j}}}
+\end{equation}
 $$</p>
-<h2 id="拓展">拓展</h2>
-<p>如果L不是一个终止节点（即博弈游戏不)，则随机创建其后的一个未被访问节点，选择该节点作为后续子节点C。</p>
-<h2 id="模拟">模拟</h2>
-<p>从节点C出发，对游戏进行模拟，直到博弈游戏结束。</p>
-<h2 id="反向传播">反向传播</h2>
-<p>用模拟所得结果来回溯更新导致这个结果的每个节点中获胜次数和访问次数。</p>
-<p><strong>包含两种策略学习机制：</strong></p>
-<p><strong>搜索树策略</strong>：从已有的搜索树中选择或创建一个叶子结点（即蒙特卡洛中选择和拓展两个步骤).搜索树策略需要在利用和探索之间保持平衡。</p>
-<p><strong>模拟策略</strong>：从非叶子结点出发模拟游戏，得到游戏仿真结果。</p>
-<h1 id="例子-围棋">例子： 围棋</h1>
-<ul>
-<li>
-<p>以围棋为例，假设根节点是执黑棋方。</p>
-</li>
-<li>
-<p>图中每一个节点都代表一个局面，每一个局面记录两个值A/B</p>
-</li>
-</ul>
-<p>A: 该局面被访问中黑棋胜利次数。对于黑棋表示己方胜利次数，对于白棋表示己方失败次数（对方胜利次数)；</p>
-<p>B: 该局面被访问的总次数</p>
-<p>初始状态：<img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
-</p>
-<p>根节点（12/21）是当前局面，该局面被访问过21次，其中黑棋访问该局面后最终获胜12次。 黑执棋方遇到该局面（根节点局面）开始选择下一步action。</p>
-<h3 id="选择-1">选择</h3>
-<p>黑执棋方遇到（12/21）这个局面时有3个有效action, 黑执行这三个action会得到3种局面（7/10）,（5/8）, (0/3). 黑执棋方要选择其中一个action，是的棋局变为这三种中的一种，那么要如何选择action呢？我们先分别计算UCB1：</p>
-<p>左一： 7/10对应的局面Reward为：
+<p>则$p$和$q$是同一分布。</p>
+<p><strong>MD</strong> can be defined as
 $$
-\frac{7}{10} + \sqrt{\frac{\log (21)}{10}} = 1.252
+\begin{equation}
+\begin{aligned}
+\mathrm{MD}&amp;=|\mathrm{mean}(f(\mathbb{P})) -\mathrm{mean}(f(\mathbb{Q})) | \\
+&amp;= |\frac{1}{m}\sum^m_{i=1}f(p_i) - \frac{1}{n}\sum^n_{i=1}f(q_i)|
+\end{aligned}
+\end{equation}
+$$</p>
+<h1 id="maximum-mean-discrepancy-mmd-最大均值差异">Maximum Mean Discrepancy (MMD) 最大均值差异</h1>
+<h2 id="定义">定义</h2>
+<p><strong>MMD:</strong>  在函数集$\mathcal{F}=\{f_1, f_2, \cdots \}$中， 找到一个函数$f^*$， 使得$|\mathrm{mean}(f^*(\mathbb{P})) -\mathrm{mean}(f^*(\mathbb{Q})) |$ 最大。 这个最大值就是两个分布之间的<strong>最大均值差异</strong>（MMD）。MMD =0 表示两个分布相同。
 $$
-3中局面共21次被模拟到，其中，该局面被访问过10次（探索， 第二项）， 黑棋遇到该局面后最终获胜7次（利用， 第一项）。</p>
-<p>左二：（5/8）对应局面Reward:
+\operatorname{MMD}[\mathcal{F}, p, q]:=\sup _{f \in \mathcal{F}}\left(\mathbf{E}_{x \sim p}[f(x)]-\mathbf{E}_{y \sim q}[f(y)]\right)
 $$
-\frac{5}{8} + \sqrt{\frac{\log(21)}{8}} = 1.243
+其中$\mathbf{E}_{x \sim p}[f(x)]$表示分布$p$在函数$f$下的均值， $\sup$为上确界直接理解为max就好。</p>
+<h2 id="条件">条件</h2>
+<p>为了准确判断分布$p$和$q$之间的距离，需要找到一个合适的函数，使得两个分布在这个函数上的距离尽可能大，但搜索空间不能过于大，所以函数空间$\mathcal{F}$要满足两个条件：</p>
+<p><strong>C1:</strong> 函数集$\mathcal{F}$要足够丰富， 使得MMD尽可能准确</p>
+<p><strong>C2:</strong> 考虑数据集样本数量，随着数据集的增大，MMD要能迅速收敛，要求$\mathcal{F}$足够restrictive (函数集不能无限大)</p>
+<p>所以利用<a href="https://jhuow.github.io/posts/rkhs_kernel/">kernel</a> 方法，即， 将两个分布的样本空间映射到一个高维或者无限维的空间$\mathcal{H}$中，如果两个分布的样本在$\mathcal{H}$中的均值依然相等，那么这两个分布相等，MMD=0。两个分布在$\mathcal{H}$中的最大均值为MMD。</p>
+<p><strong>因此，当$\mathcal{F}$是再生核Hilbert Space 上的单位球（unit ball）时，可以满足以上两个条件</strong>。 即，将$\mathcal{F}$定义为某个kernel对应的RKHS中的函数， 例如，</p>
+<p>给定一个Gaussian Kernel: $k(u,v) = \{\exp({-\frac{||u-v||^2}{2\sigma}})\}_\sigma$, 这个kernel函数是一个Hilbert Space的再生核，那么这个空间可以表示为</p>
+<p>$$
+\begin{equation}
+\mathcal{H}_k = \operatorname{span}({\Phi(x): x \in \mathcal{X}})=\left\{f(\cdot)=\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right): m \in \mathbf{N}, x_{i} \in \mathcal{X}, \alpha_{i} \in \mathbf{R}\right\} \tag{1}
+\end{equation}
 $$
-左三： （0/3）对应局面Reward:
+空间$\mathcal{X}$中的每个元素$x_i$都对应于一个函数$k(\cdot,x_i)=k_{x_i}(\cdot)$, 那么$\mathcal{X}$中的所有元素所产生的函数$\{k_{x_i}(\cdot)\}_{x_i \in \mathcal{X}}$ 可以span成一个<strong>Function Space</strong>, 如公式1所示， 这个function space中的每个function可以由&quot;basis functions&quot;$\{k_{x_i}(\cdot)\}_{x_i \in \mathcal{X}}$ 通过线性组合得到。那么</p>
+<p>$$f(\cdot)=\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right)$$</p>
+<p>可以表示kernel $k(\cdot, \cdot)$的RKHS中的每个function。 每个valid kernel都有一个RKHS $\mathcal{H}_k$与它对应。</p>
+<p>我们将MMD的候选函数集$\mathcal{F}$定义为某一个kernel $k(\cdot,\cdot)$所对应的RKHS $\mathcal{H}_k$中的函数，这样就可以满足所有候选函数都在$\mathcal{H}_k$中(足够多)，同时如果kernel是Gaussian Kernel, 相当于把样本空间映射到无限高维来做MD,更加准确。</p>
+<p>另外，我们限制范式norm$||f||_{\mathcal{H}_k} \leq 1$来避免上界取到无限大</p>
+<h2 id="回到mmd">回到MMD</h2>
+<p>已知$\mathcal{F}=\{f_1(\cdot), f_2(\cdot), \cdots \}$中的每个函数都是一个高斯核函数$k(\cdot,\cdot)$的RKHS中的函数，要从$\mathcal{H}_k$中选一个函数$f^*(\cdot)$，使得两个分布的样本间距离在$k(\cdot,\cdot)$的RKHS上最大。</p>
+<p>因为$f(\cdot)$是$\mathcal{H}_k$中的一个函数，那么$f(\cdot)$可以表示为$\sum_{i=1}^{m} \alpha_{i} k\left(\cdot, x_{i}\right)$, 此时，下式一定成立（参考<a href="https://jhuow.github.io/posts/rkhs_kernel/">这里</a>）：</p>
+<p>$$
+f(x) = \langle f(\cdot), k(\cdot, x) \rangle_{\mathcal{H}_k}
 $$
-\frac{0}{3} + \sqrt{\frac{\log(21)}{3}} = 1.007
+$k(\cdot, x) = \Phi(x)$表示将$x$映射到空间$\mathcal{H}_{k}$上的值，即$x$在$\mathcal{H}_{k}$上的表示。 若$k$是Gaussian Kernel, 那么$k(\cdot, x)$就是$x$在无限维空间上的表示。</p>
+<p>连续空间中$\mathbf{E}_{x \sim p}[f(x)]$可以写为：
 $$
-由此可见，黑棋选择会导致局面（7/10）的action进行走琪。</p>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
-</p>
-<p>白棋遇到局面（7/10）时，有两个有效的action, 分别会导致局面A/B = 2/4和5/6, A为白棋访问该局面后失败的次数，所以白棋访问该局面最终胜利的次数应该是$B-A$：</p>
-<p>左一： (2/4)对应的局面Reward (白棋尽可能获胜)为：
+\begin{equation}
+\begin{aligned}
+\mathbf{E}_{x \sim p}[f(x)] &amp;= \int_x p(x)f(x) dx\\
+&amp; = \int_x p(x) \langle f(\cdot), k(\cdot, x) \rangle_{\mathcal{H}_k} dx \\
+&amp;= \langle \int_x p(x)f(\cdot) dx, \int_x p(x)k(\cdot, x) dx \rangle_{\mathcal{H}_k}\\
+&amp;= \langle f(\cdot), \mu_p\rangle_{\mathcal{H}_k}
+\end{aligned}
+\end{equation}
 $$
-(1-\frac{2}{4}) + \sqrt{\frac{\log(21)}{4}}=1.372
+其中$\mu_p = \int_x p(x)k(\cdot, x) dx$.</p>
+<p>因此，MMD可以改写为：
 $$
-左二：  (5/6)对应的局面Reward为：
+\begin{equation}
+\begin{aligned}
+\operatorname{MMD}(\mathrm{p}, \mathrm{q}, \mathcal{H})&amp;:=\sup_{f \in \mathcal{H},|f|_{\mathcal{H}} \leq 1}(\underset{\mathrm{p}(\boldsymbol{x})}{\mathbb{E}}[f(\boldsymbol{x})]-\underset{\mathrm{q}(\boldsymbol{y})}{\mathbb{E}}[f(\boldsymbol{y})])\\
+&amp;=\sup_{f \in \mathcal{H},|f|_{\mathcal{H}_k} \leq 1}\left(\left\langle\mu_{\mathrm{p}}-\mu_{\mathrm{q}}, f\right\rangle_{\mathcal{H}_k}\right)
+\end{aligned}
+\end{equation}
 $$
-(1-\frac{5}{6}) + \sqrt{\frac{\log(21)}{4}}=0.879
+利用内积性质：$\langle a, b \rangle \leq ||a|| ||b||$， 因为
 $$
-因此白棋会选择（2/4）局面</p>
-<p>即<strong>每一步都寻找最佳应对方式，来最终评估更节点局面的好坏</strong></p>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
-</p>
-<p>白色执棋方选择action后到达局面（2/4）, 黑棋执棋方面对该局面，有两种action可选，分别会到达（1/3）和（1/1）， 分别计算UCB1 得：</p>
-<p>左一： (1/3)对应reward 为：
+||f(\cdot)||_{\mathcal{H}_k}\leq 1
 $$
-\frac{1}{3} + \sqrt{\frac{\log (21)}{3}} = 1.341
+,
 $$
-左二：(1/1)对应reward为：
+\left\langle\mu_{\mathrm{p}}-\mu_{\mathrm{q}}, f\right\rangle_{\mathcal{H}_k} \leq ||\mu_{\mathrm{p}}-\mu_{\mathrm{q}}||_{\mathcal{H}_k}||f||_{\mathcal{H}_k}
 $$
-\frac{1}{1} + \sqrt{\frac{\log (21)}{1}} = 2.745
+Then,
 $$
-则黑棋选择action 使得局面变为(1/1)。右图中可见(1/1)为叶子节点， 白棋面对该局面暂时无候选局面（action）,则进入下一个步骤，拓展。</p>
-<h3 id="拓展-1">拓展</h3>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
-</p>
-<p>白棋执棋方面对局面(1/1),因为已经是叶子节点， 所以(1/1)会随机产生一个未被访问过的新节点，初始化为(0/0),接着在该节点下进行模拟。 进入第三部， 模拟。</p>
-<h3 id="模拟-1">模拟</h3>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq3.png#center" alt=""  />
-</p>
-<p>黑棋执棋方面局面（0/0），开始进行游戏仿真， 假设经过一些列仿真后，最终白棋获胜，即从更节点到最终模拟结束的叶子节点黑棋失败了。 进入第四部，回溯</p>
-<h3 id="回溯">回溯</h3>
-<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq4.png#center" alt=""  />
-</p>
-<p>根据仿真结果来更新该仿真路径上的每个节点的A/B值。 因为该次模拟最终白棋获胜，所以向上回溯路径上的所有父节点，父节点的A不变，B+1。 若最终黑棋获胜，则父节点的A+1, B+1。</p>
-<p><strong>在有限时间里， MCTS会不断重复4个步骤，所有节点的A,B 值会不断变化</strong></p>
-<p><strong>到某个局面（节点）后如何下棋（action）, 会选择所有有效Action中UCB1值最大的节点，作为下棋的下一步。</strong></p>
+\sup_{f \in \mathcal{H},|f|_{\mathcal{H}_k} \leq 1}\left(\left\langle\mu_{\mathrm{p}}-\mu_{\mathrm{q}}, f\right\rangle_{\mathcal{H}_k}\right) =||\mu_{\mathrm{p}}-\mu_{\mathrm{q}}||_{\mathcal{H}_k}
+$$
+其中$\mu_p = \int_x p(x)k(\cdot, x) dx$, $\mu_q = \int_y q(y)k(\cdot, y) dy$ 分别表示分布的期望(均值)。 然而期望无法直接计算，因此用样本空间的均值代替分布的期望：
+$$
+\begin{equation}
+\begin{aligned}
+\mathrm{M M D}(p,q,\mathcal{H}_k) &amp; \approx \mathrm{M M D}(X,Y,\mathcal{F}_{\mathcal{H}_k})\\ &amp;=\left|\left|\frac{1}{n} \sum_{i=1}^{n} f(x_i)-\frac{1}{m} \sum_{j=1}^{m} f(x_j)\right|\right|_{\mathcal{H}_k}
+\end{aligned}
+\end{equation}
+$$</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+\mathrm{M M D}^2(p,q,\mathcal{H}_k) &amp; \approx \mathrm{M M D}^2(X,Y,\mathcal{F}_{\mathcal{H}_k})\\
+&amp;=\left|\left|\frac{1}{n} \sum_{i=1}^{n} f(x_i)-\frac{1}{m} \sum_{j=1}^{m} f(x_j)\right|\right|_{\mathcal{H}_k}^{2}\\
+&amp;= \left|\left|\frac{1}{n^{2}} \sum_{i}^{n} \sum_{i^{\prime}}^{n} \left\langle f(x_i),f(x_i^{\prime})\right\rangle-\frac{2}{n m} \sum_{i}^{n} \sum_{j}^{m} \left\langle f(x_i), f(y_j)\right\rangle+\frac{1}{m^{2}} \sum_{j}^{m} \sum_{j^{\prime}}^{m} \left\langle f(y_j), f(y_j^{\prime})\right\rangle\right|\right|_{\mathcal{H}_k} \\
+&amp; = \frac{1}{n^2} K_{x, x^\prime}-\frac{2}{nm} K_{x, y}+\frac{1}{m^{2}} K_{y, y^{\prime}}
+\end{aligned}
+\end{equation}
+$$</p>
+<p>令
+$$
+K=\begin{bmatrix} K_{x, x^{\prime}} &amp; K_{x, y} \\ K_{x, y}&amp; K_{y, y^{\prime}} \end{bmatrix}
+$$</p>
+<p>$$
+M=\begin{bmatrix}\frac{1}{n^{2}} &amp;-\frac{1}{n m} \\ -\frac{1}{n m}&amp; \frac{1}{m^{3}} \end{bmatrix}
+$$</p>
+<p>最后：
+$$
+\mathrm{M M D}^2(X,Y,\mathcal{F}_{\mathcal{H}_k}) = tr(KM)
+$$</p>
 ]]></content:encoded>
     </item>
     
@@ -1146,6 +1282,491 @@ $$
 <p>[2] <a href="http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf">http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf</a></p>
 <p>[3] <a href="https://ocw.mit.edu/courses/sloan-school-of-management/15-097-prediction-machine-learning-and-statistics-spring-2012/lecture-notes/MIT15_097S12_lec13.pdf">https://ocw.mit.edu/courses/sloan-school-of-management/15-097-prediction-machine-learning-and-statistics-spring-2012/lecture-notes/MIT15_097S12_lec13.pdf</a></p>
 <p>我把本文整理成了<a href="/posts/rkhs/RKHS.pdf">PDF</a></p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Monte Carlo Tree Search</title>
+      <link>https://JhuoW.github.io/posts/monte-carlo-tree-search/</link>
+      <pubDate>Fri, 25 Mar 2022 18:09:58 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/monte-carlo-tree-search/</guid>
+      <description>单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits） 单一状态$s$, $k$种action（$k$个摇臂）。
+在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?
+多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。
+  利用（Exploitation）： 保证在过去决策中得到最佳回报
+  探索（Exploration）：寄希望在未来能够得到更大的汇报
+  例如， $s$摇动10次赌博机，其中第5次获得最大回报，那么下一次摇动赌博机可能选第5个赌博机，即“利用”（根据过去的最佳回报来施展下一次行为），第11次摇动的action为$a_5$。
+但是摇动10次后，可能有的赌博机尚未摇动，未摇动的赌博机可能会有更大回报，即“探索”。
+悔值函数 如果有$k$个赌博机， 这$k$个赌博机产生的操作序列为$X_{i,1}, X_{i,2}, \cdots (i = 1,\cdots, k)$。 在时刻$t=1,2,\cdots$, 选择第$I_t$个赌博机后，可得到的奖励为$X_{I_t,t}$, 则在$n$次操作$I_1,\cdots,I_n$后，可如下定义悔值函数： $$ R_n = \max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}-\sum^n_{t=1}X_{I_t, t} $$ $i$: 第$i$个赌博机
+$I_t$: $t$时刻选择的赌博机
+$\max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}$: 最理想（大）的奖励
+$X_{I_t, t}$: $t$时刻选择赌博机$I_t$的reward
+$\sum^n_{t=1}X_{I_t, t}$: $n$次选择的总奖励。
+$R_n$越大，就代表$n$次决策的结果越差。
+上置信区间（Upper Confidence Bound, UCB） UCB旨在探索和利用间去的平衡
+在UCB方法中，使$X_{i, T_{i}(t-1)}$ 来记录第$i$个赌博机在过去$t-1$时刻内的平均奖励，则在第$t$时刻，选择使如下具有最佳上限置信区间的赌博机： $$ I_{t}=\max_{i \in{1, \ldots, k}}\left\{\overline{X_{i, T_{i}(t-1)}}+C_{t-1, T_{i}(t-1)} \right\}.</description>
+      <content:encoded><![CDATA[<h1 id="单一状态monte-carlo规划多臂赌博机multi-armed-bandits">单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits）</h1>
+<p>单一状态$s$, $k$种action（$k$个摇臂）。</p>
+<p>在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?</p>
+<p>多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。</p>
+<ul>
+<li>
+<p>利用（Exploitation）： 保证在过去决策中得到最佳回报</p>
+</li>
+<li>
+<p>探索（Exploration）：寄希望在未来能够得到更大的汇报</p>
+</li>
+</ul>
+<p>例如， $s$摇动10次赌博机，其中第5次获得最大回报，那么下一次摇动赌博机可能选第5个赌博机，即“利用”（根据过去的最佳回报来施展下一次行为），第11次摇动的action为$a_5$。</p>
+<p>但是摇动10次后，可能有的赌博机尚未摇动，未摇动的赌博机可能会有更大回报，即“探索”。</p>
+<h2 id="悔值函数">悔值函数</h2>
+<p>如果有$k$个赌博机， 这$k$个赌博机产生的操作序列为$X_{i,1}, X_{i,2}, \cdots (i = 1,\cdots, k)$。 在时刻$t=1,2,\cdots$, 选择第$I_t$个赌博机后，可得到的奖励为$X_{I_t,t}$, 则在$n$次操作$I_1,\cdots,I_n$后，可如下定义悔值函数：
+$$
+R_n = \max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}-\sum^n_{t=1}X_{I_t, t}
+$$
+$i$: 第$i$个赌博机</p>
+<p>$I_t$: $t$时刻选择的赌博机</p>
+<p>$\max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}$: 最理想（大）的奖励</p>
+<p>$X_{I_t, t}$: $t$时刻选择赌博机$I_t$的reward</p>
+<p>$\sum^n_{t=1}X_{I_t, t}$: $n$次选择的总奖励。</p>
+<p>$R_n$越大，就代表$n$次决策的结果越差。</p>
+<h2 id="上置信区间upper-confidence-bound-ucb">上置信区间（Upper Confidence Bound, UCB）</h2>
+<p>UCB旨在探索和利用间去的平衡</p>
+<p>在UCB方法中，使$X_{i, T_{i}(t-1)}$ 来记录第$i$个赌博机在过去$t-1$时刻内的平均奖励，则在第$t$时刻，选择使如下具有最佳上限置信区间的赌博机：
+$$
+I_{t}=\max_{i \in{1, \ldots, k}}\left\{\overline{X_{i, T_{i}(t-1)}}+C_{t-1, T_{i}(t-1)} \right\}.
+$$
+其中$I_{t}$为$t$时刻要摇的赌博机，</p>
+<p>$\overline{X_{i, T_{i}(t-1)}}$要尽可能大：为$t$时刻之前赌博机$i$的平均reward 要尽可能大，</p>
+<p>$C_{t-1, T_{i}(t-1)}$要尽可能小：$t$时刻之前$i$出现的次数要尽可能少</p>
+<p>其中$C_{t,T_i(t)}$的取值定义如下：
+$$
+C_{t,T_i(t)}=\sqrt{\frac{2 \operatorname{In} t}{T_i(t)}}
+$$
+其中$T_i(t)$表示 $t$时刻以前（包括$t$），选到赌博机$i$的次数总和。</p>
+<p>若赌博机在$t$时刻之前（包括$t$）时刻摇动的次数越少，$C_{t,T_i(t)}$越大</p>
+<p>选出的$I_t$要满足在$t$之前的平均reward尽可能大（利用）， 且在$t$之前出现次数尽可能少（探索）。</p>
+<p>也就是说，在第时刻，UCB算法一般会选择具有如下最大值的第$j$个赌博机：
+$$
+\begin{aligned}
+U C B&amp;=\bar{X}_{j}+\sqrt{\frac{2 \operatorname{Inn}}{n_{j}}} \text { 或者 } U C B=\bar{X}_{j}+C \times \sqrt{\frac{2 \operatorname{In} n}{n_{j}}} \\
+I_t &amp;= \mathrm{argmax}_j UCB(j)
+\end{aligned}
+$$
+其中$\bar{X}_{j}$是第$j$个赌博机在过去时间内所获得的平均奖赏值，$n_j$是在过去时间内拉动第$j$个赌博机臂膀的总次数，$n$是过去时间内拉动所有赌博机臂膀的总次数。$C$是一个平衡因子，其决定着在选择时偏重探索还是利用。</p>
+<p>从这里可看出UCB算法如何在探索-利用(exploration-exploitation)之间寻找平衡：既需要拉动在过去时间内获得最大平均奖赏的赌博机，又希望去选择拉动臂膀次数最少的赌博机。</p>
+<h1 id="monte-carlo-tree-search">Monte Carlo Tree Search</h1>
+<p>MCTS has four step:</p>
+<ul>
+<li>Selection 选择</li>
+<li>Expansion 拓展</li>
+<li>Simulation（rollout) 模拟</li>
+<li>Backpropagation 回溯</li>
+</ul>
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/1.png#center" alt=""  />
+</p>
+<h2 id="选择">选择</h2>
+<p>从根节点R开始，向下递归选择子节点，直至选择一个叶子节点L。
+具体来说，通常用UCBl(Upper Confidence Bound,上限置信区间)选择最具“潜力”的后续节点：
+$$
+U C B=\bar{X}_{j}+\sqrt{\frac{2 \operatorname{In} n}{n_{j}}}
+$$</p>
+<h2 id="拓展">拓展</h2>
+<p>如果L不是一个终止节点（即博弈游戏不)，则随机创建其后的一个未被访问节点，选择该节点作为后续子节点C。</p>
+<h2 id="模拟">模拟</h2>
+<p>从节点C出发，对游戏进行模拟，直到博弈游戏结束。</p>
+<h2 id="反向传播">反向传播</h2>
+<p>用模拟所得结果来回溯更新导致这个结果的每个节点中获胜次数和访问次数。</p>
+<p><strong>包含两种策略学习机制：</strong></p>
+<p><strong>搜索树策略</strong>：从已有的搜索树中选择或创建一个叶子结点（即蒙特卡洛中选择和拓展两个步骤).搜索树策略需要在利用和探索之间保持平衡。</p>
+<p><strong>模拟策略</strong>：从非叶子结点出发模拟游戏，得到游戏仿真结果。</p>
+<h1 id="例子-围棋">例子： 围棋</h1>
+<ul>
+<li>
+<p>以围棋为例，假设根节点是执黑棋方。</p>
+</li>
+<li>
+<p>图中每一个节点都代表一个局面，每一个局面记录两个值A/B</p>
+</li>
+</ul>
+<p>A: 该局面被访问中黑棋胜利次数。对于黑棋表示己方胜利次数，对于白棋表示己方失败次数（对方胜利次数)；</p>
+<p>B: 该局面被访问的总次数</p>
+<p>初始状态：<img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
+</p>
+<p>根节点（12/21）是当前局面，该局面被访问过21次，其中黑棋访问该局面后最终获胜12次。 黑执棋方遇到该局面（根节点局面）开始选择下一步action。</p>
+<h3 id="选择-1">选择</h3>
+<p>黑执棋方遇到（12/21）这个局面时有3个有效action, 黑执行这三个action会得到3种局面（7/10）,（5/8）, (0/3). 黑执棋方要选择其中一个action，是的棋局变为这三种中的一种，那么要如何选择action呢？我们先分别计算UCB1：</p>
+<p>左一： 7/10对应的局面Reward为：
+$$
+\frac{7}{10} + \sqrt{\frac{\log (21)}{10}} = 1.252
+$$
+3中局面共21次被模拟到，其中，该局面被访问过10次（探索， 第二项）， 黑棋遇到该局面后最终获胜7次（利用， 第一项）。</p>
+<p>左二：（5/8）对应局面Reward:
+$$
+\frac{5}{8} + \sqrt{\frac{\log(21)}{8}} = 1.243
+$$
+左三： （0/3）对应局面Reward:
+$$
+\frac{0}{3} + \sqrt{\frac{\log(21)}{3}} = 1.007
+$$
+由此可见，黑棋选择会导致局面（7/10）的action进行走琪。</p>
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
+</p>
+<p>白棋遇到局面（7/10）时，有两个有效的action, 分别会导致局面A/B = 2/4和5/6, A为白棋访问该局面后失败的次数，所以白棋访问该局面最终胜利的次数应该是$B-A$：</p>
+<p>左一： (2/4)对应的局面Reward (白棋尽可能获胜)为：
+$$
+(1-\frac{2}{4}) + \sqrt{\frac{\log(21)}{4}}=1.372
+$$
+左二：  (5/6)对应的局面Reward为：
+$$
+(1-\frac{5}{6}) + \sqrt{\frac{\log(21)}{4}}=0.879
+$$
+因此白棋会选择（2/4）局面</p>
+<p>即<strong>每一步都寻找最佳应对方式，来最终评估更节点局面的好坏</strong></p>
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
+</p>
+<p>白色执棋方选择action后到达局面（2/4）, 黑棋执棋方面对该局面，有两种action可选，分别会到达（1/3）和（1/1）， 分别计算UCB1 得：</p>
+<p>左一： (1/3)对应reward 为：
+$$
+\frac{1}{3} + \sqrt{\frac{\log (21)}{3}} = 1.341
+$$
+左二：(1/1)对应reward为：
+$$
+\frac{1}{1} + \sqrt{\frac{\log (21)}{1}} = 2.745
+$$
+则黑棋选择action 使得局面变为(1/1)。右图中可见(1/1)为叶子节点， 白棋面对该局面暂时无候选局面（action）,则进入下一个步骤，拓展。</p>
+<h3 id="拓展-1">拓展</h3>
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq1.png#center" alt=""  />
+</p>
+<p>白棋执棋方面对局面(1/1),因为已经是叶子节点， 所以(1/1)会随机产生一个未被访问过的新节点，初始化为(0/0),接着在该节点下进行模拟。 进入第三部， 模拟。</p>
+<h3 id="模拟-1">模拟</h3>
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq3.png#center" alt=""  />
+</p>
+<p>黑棋执棋方面局面（0/0），开始进行游戏仿真， 假设经过一些列仿真后，最终白棋获胜，即从更节点到最终模拟结束的叶子节点黑棋失败了。 进入第四部，回溯</p>
+<h3 id="回溯">回溯</h3>
+<p><img loading="lazy" src="/posts/2022-03-30-MCTS/wq4.png#center" alt=""  />
+</p>
+<p>根据仿真结果来更新该仿真路径上的每个节点的A/B值。 因为该次模拟最终白棋获胜，所以向上回溯路径上的所有父节点，父节点的A不变，B+1。 若最终黑棋获胜，则父节点的A+1, B+1。</p>
+<p><strong>在有限时间里， MCTS会不断重复4个步骤，所有节点的A,B 值会不断变化</strong></p>
+<p><strong>到某个局面（节点）后如何下棋（action）, 会选择所有有效Action中UCB1值最大的节点，作为下棋的下一步。</strong></p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Notes for Spectral Clustering</title>
+      <link>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</link>
+      <pubDate>Sat, 07 Sep 2019 09:11:09 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</guid>
+      <description>最近在看GNN/GCN的时候遇到谱聚类，学了下，做了些笔记。
+本文主要参考了：[1] https://www.cnblogs.com/pinard/p/6221564.html#!comments
+Introduction 谱聚类是图论中的算法，主要思想是空间中距离较远的两个点之间边的权重值较低， 距离较近的两个点之间边的权重值较高， 通过对所有数据点组成的图（Graph）进行切图， 使不同子图之间边的权重和尽可能低， 子图内边的权重值的和尽可能高，从而达到聚类的目的。
+基础1： 无向权重图 对于边$(v_i,v_j)$, 它的权重$w_{ij} &amp;gt; 0$。对于没有边的节点$v_i$和$v_j$, 他们之间的权重$w_{ij}=0$。图中的节点$v_i$, 它的度$d_i$定义为和它连接的所有边的权重之和，即： $$ d_i = \sum_{j=1}^n w_{ij} $$ 根据所有节点的度值，我们可以得到一个度矩阵$D$: $$ D=\displaystyle \left(\begin{array}{ccc}{d_{1}} &amp;amp; {\ldots} &amp;amp; {\ldots} \\\ {\ldots} &amp;amp; {d_{2}} &amp;amp; {\ldots} \\\ {\vdots} &amp;amp; {\vdots} &amp;amp; {\ddots} \\\ {\ldots} &amp;amp; {\ldots} &amp;amp; {d_{n}}\end{array}\right) ^{n\times n} $$ 是一个$n \times n$的对角阵，对角元素是每个节点的度和。
+定义图的邻接矩阵为$W \in \mathbb{R}^{n \times n}$， 每个元素$W_{ij}$表示节点对$(v_i,v_j)$之间的权重。 对于$V$中的一个子节点集$A \subset V$， 定义： $$|A|=A 中的节点个数 $$
+$$vol(A) = \sum_{i \in A} d_i \quad 表示A中所有节点的权重之和$$</description>
+      <content:encoded><![CDATA[<p>最近在看GNN/GCN的时候遇到谱聚类，学了下，做了些笔记。</p>
+<p>本文主要参考了：[1] <a href="https://www.cnblogs.com/pinard/p/6221564.html#!comments">https://www.cnblogs.com/pinard/p/6221564.html#!comments</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>谱聚类是图论中的算法，主要思想是空间中距离较远的两个点之间边的权重值较低， 距离较近的两个点之间边的权重值较高， 通过对所有数据点组成的图（Graph）进行切图， 使不同子图之间边的权重和尽可能低， 子图内边的权重值的和尽可能高，从而达到聚类的目的。</p>
+<h1 id="基础1-无向权重图">基础1： 无向权重图</h1>
+<p>对于边$(v_i,v_j)$, 它的权重$w_{ij} &gt; 0$。对于没有边的节点$v_i$和$v_j$,  他们之间的权重$w_{ij}=0$。图中的节点$v_i$, 它的度$d_i$定义为和它连接的所有边的权重之和，即：
+$$
+d_i = \sum_{j=1}^n w_{ij}
+$$
+根据所有节点的度值，我们可以得到一个度矩阵$D$:
+$$
+D=\displaystyle \left(\begin{array}{ccc}{d_{1}} &amp; {\ldots} &amp; {\ldots} \\\ {\ldots} &amp; {d_{2}} &amp; {\ldots} \\\ {\vdots} &amp; {\vdots} &amp; {\ddots} \\\ {\ldots} &amp; {\ldots} &amp; {d_{n}}\end{array}\right) ^{n\times n}
+$$
+是一个$n \times n$的对角阵，对角元素是每个节点的度和。</p>
+<p>定义图的邻接矩阵为$W \in \mathbb{R}^{n \times n}$， 每个元素$W_{ij}$表示节点对$(v_i,v_j)$之间的权重。 对于$V$中的一个子节点集$A \subset V$， 定义：
+$$|A|=A 中的节点个数 $$</p>
+<p>$$vol(A) = \sum_{i \in A} d_i \quad 表示A中所有节点的权重之和$$</p>
+<h1 id="基础2相似矩阵">基础2：相似矩阵</h1>
+<p>再提下谱聚类的基本思想： 距离较远的两个点之间权重值较低，距离较近的两个点之间权重值较高</p>
+<p>但是在谱聚类中，我们只能获得数据点的定义，无法给出邻接矩阵，因为是离散的分布在空间中，无法得知其中的连接关系。</p>
+<p>一般来说，通过样本点距离度量的相似矩阵$S$来获得邻接矩阵$W$.</p>
+<p>构建邻接矩阵$W$有两种方法: $\epsilon$-邻近法， K邻近法和全连接法。</p>
+<h2 id="epsilon-邻近法">$\epsilon$-邻近法</h2>
+<p>$\epsilon$为距离的阈值，欧式距离$S_{ij}$表示两点$v_i$,$v_j$的坐标$x_i$,$x_j$之间的距离。 即 $S_{ij} =||x_i-x_j||^2_2$为相似矩阵$S \in \mathbb{R}^{n \times n}$的第$i$行第$j$个元素，则邻接矩阵$W$可以表示为：</p>
+<p>$$
+w_{ij}=\left\{\begin{array}{ll}{0} &amp; {s_{i j}&gt;\epsilon} \\  {\epsilon} &amp; {s_{i j} \leq \epsilon}\end{array}\right.
+$$</p>
+<p>意思是如果两点之间的距离大于$\epsilon$，那么他们之间的权重为0， 如果他们之间的距离小于$\epsilon$，他们之间的权重为$\epsilon$。 这种方法的弊端在于点之间的距离只有两种情况，不够精确，故很少采用。</p>
+<h2 id="k邻近法">K邻近法</h2>
+<p>利用<strong>KNN</strong>算法遍历所有样本点，取每个样本点最近的$k$个点作为近邻，只有和样本点距离最近的$k$个点的$w_{ij} &gt;0$，但会出现一种情况， $v_i$的k个近邻中有$v_j$，但$v_j$的k个近邻中没有$v_i$，这样会造成邻接矩阵$W$的不对称， 因此提供两种解决办法</p>
+<p>第一种： 只要$v_j$在$v_i$的K邻域中，那么不管$v_i$在不在$v_j$的K邻域中，都把$v_i$加入$v_j$的邻域中，即：</p>
+<p>$$
+w_{i j}=w_{j i}=\left\{\begin{array}{ll}{0} &amp; {x_{i} \notin K N N\left(x_{j}\right) \text { and } x_{j} \notin K N N\left(x_{i}\right)} \\ {\exp \left(-\frac{\left||x_{i}-x_{j}\right||^2_2}{2 \sigma^{2}}\right)} &amp; {x_{i} \in K N N\left(x_{j}\right) \text { or } x_{j} \in K N N\left(x_{i}\right)}\end{array}\right.
+$$
+第二种，必须$v_i$在$v_j$的K邻域中，且$v_j$在$v_i$的K邻域中，那么才保留两者间的权重，否则都为0，即：</p>
+<p>$$
+w_{i j}=w_{j i}=\left\{\begin{array}{ll}{0} &amp; {x_{i} \notin K N N\left(x_{j}\right) \text { or } x_{j} \notin K N N\left(x_{i}\right)} \\ {\exp \left(-\frac{||x_{i}-x_{j}||^2_2}{2 \sigma^{2}}\right)} &amp; {x_{i} \in K N N\left(x_{j}\right) \text { and } x_{j} \in K N N\left(x_{i}\right)}\end{array}\right.
+$$</p>
+<h2 id="全连接法">全连接法</h2>
+<p>设所有点之间的权重都大于0，可以选择不同的核函数来定义边的权重，常用的如多项式核函数，高斯核函数， Sigmod核函数。 最常用的为高斯核函数RBF，将两点之间的距离带入高斯核函数RBF中，即：
+$$
+w_{i j}=w_{ji}=s_{i j}=s_{ji}=\exp \left(-\frac{\left|x_{i}-x_{j}\right|_{2}^{2}}{2 \sigma^{2}}\right)
+$$
+其中，$sigma$为为函数的宽度参数 , 控制了函数的径向作用范围。</p>
+<h1 id="基础3拉普拉斯矩阵">基础3：拉普拉斯矩阵</h1>
+<p>拉普拉斯矩阵定义为$L = D-W$ 如上文所示，$D$为度矩阵，$W$为邻接矩阵。</p>
+<p>拉普拉斯矩阵具有如下性质：</p>
+<ol>
+<li>
+<p>$L$是对称阵 （因为$D$和$W$都是对称阵）</p>
+</li>
+<li>
+<p>$L$的所有特征值都是实数 （因为$L$是对称阵）</p>
+</li>
+<li>
+<p>对于任意向量$f$， 有$f^TLf = \displaystyle \frac{1}{2} \sum_{i = 1}^n \sum_{j = 1}^n w_{ij} (f_i-f_j)^2$</p>
+<p>推导：
+$$
+\begin{aligned}
+f^TLf &amp;= f^TDf-f^TWf\\
+&amp;= \sum^n_{i = 1}d_if_i^2 - \sum_{i = 1}^n\sum_{j =1}^n f_if_j w_{ij}\\
+&amp;= \frac{1}{2}\left(\sum^n_{i=1}d_if_i^2 -2\sum_{i = 1}^n\sum_{j =1}^n f_if_j w_{ij} + \sum^n_{i=1}d_if_i^2\right)\\
+&amp;由于d_i = \sum_{j = 1}^nw_{ij}, 将d_i带入上式得\\
+f^TLf &amp;= \frac{1}{2} \left(\sum_{i = 1}^n\sum_{j =1}^n w_{ij}f_i^2-2\sum_{i = 1}^n\sum_{j =1}^n f_if_j w_{ij} + \sum_{i = 1}^n\sum_{j =1}^n w_{ij}f_i^2\right)\\
+&amp; = \frac{1}{2} \left(\sum_{i = 1}^n\sum_{j =1}^n w_{ij}f_i^2-2\sum_{i = 1}^n\sum_{j =1}^n f_if_j w_{ij} + \sum_{j = 1}^n\sum_{i =1}^n w_{ji}f_j^2\right)\\
+&amp;= \frac{1}{2}\left(\sum_{i=1}^n\sum_{j = 1}^n w_{ij} (f_i-f_j)^2\right)
+\end{aligned}
+$$</p>
+</li>
+<li>
+<p>拉普帕斯矩阵是半正定的，且$n$个实数特征值都$\geq$，即 $0=\lambda_1 \leq \lambda_2 \cdots \leq \lambda_n$，且最小的特征值为0。</p>
+<p>证明，因为$f^TLf \geq 0$ 所以$L$半正定。</p>
+</li>
+</ol>
+<h1 id="基础4无向图切图">基础4：无向图切图</h1>
+<p>对于无向图$G$，目的是将图$G = (v,E)$切成相互没有连接的k个子图，每个子图是一个节点集合：$A_1,A_2,\cdots, A_k$，满足$A_i \cap A_j = \phi$ 且$A_1 \cup A_2 \cup \cdots \cup A_k = V$，对于两个节点集合$A ,B \subset V$, $A \cap B = \phi$，定义$A$,$B$之间的切图权重为：
+$$
+W(A,B) = \sum_{v_i\in A, v_j \in B} w_{ij}  \quad 表示A中节点到B中节点的权重和
+$$
+对于$k$个子图节点集合$A_1,A_2,\cdots, A_k$，定义切图$Cut$为：
+$$
+Cut(A_1,A_2, \cdots, A_k) = \frac{1}{2}\sum^k_{i = 1} W(A_i,\overline{A_i})
+$$
+其中$\overline{A_i}$是$A_i$的补集，也就是除$A_i$外其他所有节点的集合，$Cut$计算的是$A_i$中每个节点到$\overline{A_i}$中每个节点的权重总和，如果最小化$Cut$，就相当于最小化每个子集中节点到自己外节点的权重，但是会存在一个问题，如下图所示：</p>
+<p><img loading="lazy" src="1.jpg" alt=""  />
+</p>
+<p>如果按左边那条线分割，可以保证有边子图到左边子图的权重最小，但不是最佳分割。</p>
+<h1 id="谱聚类切图聚类">谱聚类：切图聚类</h1>
+<p>为了避免上述效果不佳的情况，提供两种切图方式，1.RatioCut, 2.Ncut.</p>
+<h2 id="ratiocut-切图">RatioCut 切图</h2>
+<p>最小化$Cut(A_1,A_2, \cdots, A_k)$的同时，最大化每个子图中接待你的个数，即：A_{i}, \overline{A}_{i}</p>
+<p>$$RatioCut\left(A_{1}, A_{2}, \ldots A_{k}\right)=\frac{1}{2} \sum_{i=1}^{k} \frac{W\left(A_{i}, \overline{A_i}\right)}{\left|A_{i}\right|}$$</p>
+<p>目标是最小化$RatioCut\left(A_{1}, A_{2}, \ldots A_{k}\right)$。</p>
+<p>为此，我们引入一个<strong>指示向量（indicator vector）</strong>$h_j \in {h_1,h_2,\cdots, h_k}$，其中$j = 1,2,\cdots,k$，对于其中任意一个向量$h_j$，它是一个$n$维向量，即：
+$$
+h_j = (h_{1j},h_{2j}, \cdots, h_{nj})^T \\
+h_{i j}=\left\{\begin{array}{ll}{0} &amp; {v_{i} \notin A_{j}} \\ {\frac{1}{\sqrt{\left|A_{j}\right|}}} &amp; {v_{i} \in A_{j}}\end{array}\right.
+$$
+$h_ij$表示节点$v_i$ 是否属于子图$A_j$, 如果属于，那么$h_{ij} = \frac{1}{\sqrt{\left|A_{j}\right|}}$，如果不属于，那么$h_{ij} = 0$。</p>
+<p>那么对于$h_i^TLh_i$有：
+$$
+\begin{aligned}
+h_i^T L h_i &amp;= \frac{1}{2}\sum_{m=1}\sum_{n=1}w_{mn}(h_{im}-h_{in})^2\\
+&amp;= \frac{1}{2}\left(\sum_{m\in A_i}\sum_{n \in A_i}w_{mn}(h_{im}-h_{in})^2+\sum_{m\in A_i}\sum_{n \notin A_i}w_{mn}(h_{im}-h_{in})^2 + \\
+\sum_{m\notin A_i}\sum_{n \in A_i}w_{mn}(h_{im}-h_{in})^2 + \sum_{m\notin A_i}\sum_{n \notin A_i}w_{mn}(h_{im}-h_{in})^2\right)\\
+&amp; 上式中的mn是图中任意选取的两个不同的节点， 针对子图A_i及其对应的指示向量h_i,\\
+&amp;任意选取的节点对有四种情况。其中 根据h_{ij}的定义，第一项和第四项为0，所以\\
+&amp;=\frac{1}{2} \left(\sum_{m\in A_i}\sum_{n \notin A_i}w_{mn}(h_{im}-h_{in})^2 +
+\sum_{m\notin A_i}\sum_{n \in A_i}w_{mn}(h_{im}-h_{in})^2\right) \\
+&amp;=\frac{1}{2} \left(\sum_{m\in A_i}\sum_{n \notin A_i}w_{mn}(\frac{1}{\sqrt{\left|A_{i}\right|}})^2 +
+\sum_{m\notin A_i}\sum_{n \in A_i}w_{mn}(-\frac{1}{\sqrt{\left|A_{i}\right|}})^2\right) \\
+&amp;=\frac{1}{2}\left(\frac{1}{|A_i|}Cut(A_i,\overline{A_i}) + \frac{1}{|A_i|}Cut(A_i,\overline{A_i})\right)\\
+&amp;=\frac{Cut(A_i,\overline{A_i})}{|A_i|} = RatioCut(A_i)
+\end{aligned}
+$$
+上式$h_i^TLh_i$可以看做是子图$A_i$的RatioCut，那么：
+$$
+\begin{aligned}
+RatioCut(A_1,A_2,\cdots,A_k) &amp;=\frac{1}{2} \sum_{i=1}^{k} \frac{W\left(A_{i}, \overline{A_i}\right)}{\left|A_{i}\right|}  = \sum_{i = 1}^k \frac{Cut(A_i,\overline{A_i})}{|A_i|} \\
+&amp;= \sum_{i=1}^k h_i^TLh^i = \sum_{i=1}^k (H^TLH)_{ii} = tr(H^TLH)
+\end{aligned}
+$$
+每个$h_i^TLh^j$的值对应于矩阵$H^TLH$在位置$ij$处的值：
+$$
+H=(h_1,h_2,\cdots,h_k) \in \mathbb{R}^{n\times k}
+$$
+$$
+h_i^TLh_j = (H^TLH)_{ij} \to h^T_iLh_i = (H^TLH)_{ii}
+$$</p>
+<p>由于$h_i\cdot h_j = 0, h_i \cdot h_i = 1$, 所以$H^TH = I$是一个单位矩阵</p>
+<p>所以切图优化函数为：
+$$
+\underbrace{\arg \min }_{H} RatioCut\left(A_1,A_2,\cdots A_k\right) = \underbrace{\arg \min }_{H} \operatorname{tr}\left(H^{T} L H\right) \quad \text { s.t. } \quad H^{T} H=I
+$$
+$H$中的每个指示向量$h$是$n$维的，每个向量中的元素有两种取值，分别是0和$\frac{1}{\sqrt{\left|A_{j}\right|}}$， 所以每个$h$有$2^n$种可能性，所以整个$H$有$k2^n$中，因此上述目标函数是个NP-hard问题。</p>
+<p>注意到$tr(H^TLH)$中每个优化子目标$h_i^TLh_i$，其中，$h$是单位正交基，基每个元素的平方和等于1，$L$为对称矩阵，<strong>此时$h^T_iLh_i$的最大值为$L$的最大特征值， $h^T_iLh_i$的最小值是$L$的最小特征值</strong>。在谱聚类中，我们的目标是找到目标函数的最小特征值，从而使目标函数最小，得到对应的特征向量。</p>
+<p>对于$h^T_iLh_i$，目标是找到$L$最小的特征值，这个值就是$h^T_iLh_i$的最小值，对于$tr(H^TLH) = \sum^k_{i=1} h^T_iLh_i$，目标是找到$k$个最小的特征值，从而使$tr(H^TLH)$最小。</p>
+<p>通过找到$L$最小的$k$个特征值，可以对应得到$k$个特征向量，这$k$个特征向量可以组成一个$n \times k$的矩阵，这个矩阵就是我们需要的指示向量矩阵$H$，里面包含了每个节点所属子图的信息。一般来说 我们需要对$H$按行做标准化：
+$$
+h_{ij}^* = \frac{h_{ij}}{\sqrt{\sum_{t=1}^kh^2_{it}}}
+$$
+注意到，$H$的每行是一个$k$维行向量，即$H_i = (H_{i1},H_{i2},\cdots, H_{ik})$， 表示节点$i$属于每个子图的指标值， 我们可以把$H_i$当做节点$v_i$的表示向量， 由于归一化后的$H$还不能明确指示各个样本的归属， 我们还需要对$H$代表的所有节点做一次传统聚类，如K-Means。</p>
+<h2 id="ncut切图">NCut切图</h2>
+<p>把$RatioCut$的分母从$|A_i|$换成$vol(A_i) = \sum_{j \in A_i}d_j$， 为$A_i$中所有节点的权重之和，一般来说$NCut$效果好于$RatioCut$:
+$$
+NCut(A_1,A_2,\cdots,A_k) = \frac{1}{2}\sum_{i=1}^k\frac{W(A_i,\overline{A_i})}{vol(A_i)} = \sum^k_{i = 1}\frac{Cut(A_i)}{vol(A_i)}
+$$
+$NCut$指示向量$h$做了改进，$RatioCut$切图在指示向量中使用$\frac{1}{\sqrt{|A_i|}}$表示某节点归属于子图$A_i$，而$NCut$切图使用子图权重$\frac{1}{\sqrt{vol{A_i}}}$来表示某节点归属子图$A_i$如下：
+$$
+h_{i j}=\left\{\begin{array}{ll}{0} &amp; {v_{i} \notin A_{j}} \\ {\frac{1}{\sqrt{v o l\left(A_{j}\right)}}} &amp; {v_{i} \in A_{j}}\end{array}\right.
+$$
+上式表示如果节点$v_i$在子图$A_j$中，那么指示向量$h_j$的第$i$个元素为$\frac{1}{\sqrt{vol{A_j}}}$。</p>
+<p>那么对于$h_i^TLh_i$有：
+$$
+h^T_iLh_i = \frac{1}{2}\sum_{m=1}\sum_{n=1}w_{mn}(h_{im}-h_{in})^2 = \frac{Cut(A_i)}{vol(A_i)} =NCut(A_i)
+$$
+目标函数：
+$$
+NCut(A_i,A_2,\cdots,A_k) = \sum^k_{i = 1} NCut(A_i) = \sum^k_{i=1}h^T_iLh_i =\sum^k_{i=1}(H^TLH)_{ii} = tr(H^TLH)
+$$
+此时，$h_i \cdot h_j = 0$，$h_i\cdot h_i = \frac{|A_i|}{vol(A_i)} \neq 1$， 所以$H^TH \neq I$。</p>
+<p>但是， 由于：$h^T_iDh_i = \sum^n_{j = 1} h_{ij}^2d_j$, $d_j$为节点$v_j$的权重和，$h_{ij}$的值表示节点j是否在子图$A_i$中，如果在子图$A_i$中，那么$h_{ij}^2 = \frac{1}{vol(A_i)}$，否则为0。</p>
+<p>$$h^T_iDh_i = \frac{1}{vol(A_i)} \sum_{v_j \in A_i} d_j = \frac{1}{vol(A_i)} \cdot vol(A_i) = 1$$</p>
+<p>最终目标函数为：
+$$
+\underbrace{\arg \min } _{H}\operatorname{tr}\left(H^{T} L H\right) \quad \text { s.t. }\quad H^{T} D H=I
+$$
+由于$H$中的指示向量$h$不是标准正交基，所以RatioCut中加粗的定理不能直接使用，所以，令$H = D^{-\frac{1}{2}}F$, $D^{-\frac{1}{2}}$表示对$D$对角线上元素开方后求逆，那么：
+$$
+H^TLH = F^TD^{-\frac{1}{2}}LD^{-\frac{1}{2}}F
+$$</p>
+<p>$$
+H^TDH = F^TD^{-\frac{1}{2}}DD^{-\frac{1}{2}}F = F^TF=I
+$$
+所以目标函数转化为：
+$$
+\underbrace{\arg \min }_{F} \operatorname{tr}\left(F^{T} D^{-1 / 2} L D^{-1 / 2} F\right) \quad \text { s.t. } \quad F^{T} F=I
+$$
+同$RatioCut$，$D^{-1 / 2} L D^{-1 / 2}$是对称矩阵，$F$中的每个向量为标准正交基，只需要求出$D^{-1 / 2} L D^{-1 / 2}$的最小的前$k$个特征值，然后求出对应的特征向量，并标准化，最后得到特征矩阵$F$，然后对$F$的行向量做一次传统聚类，如K-means.</p>
+<p>一般来说， $D^{-1 / 2} L D^{-1 / 2}$相当于对拉普拉斯矩阵$L$做了一次标准化，即$\frac{L_{i j}}{\sqrt{d_{i} * d_{j}}}$.</p>
+<p>我把本文整理成了<a href="/posts/2019-09-07-spectral-clustering/Spectral-Cluster.pdf">PDF</a></p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>深度学习中的优化算法总结</title>
+      <link>https://JhuoW.github.io/posts/optimizer/</link>
+      <pubDate>Sun, 28 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/optimizer/</guid>
+      <description>最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。
+Gradient Desent(梯度下降) 目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。
+(1).梯度下降的原理：目标函数（损失函数）$f(x)$关于参数$x$的梯度是损失函数上升最快的方向。所以只要让$x$沿梯度的反方向走，就可以缩小目标函数。
+(2).目标函数关于参数$x$在epoch $t$时的梯度：
+$$g_t = \nabla_x f(x_t)$$
+(3).我们要最小化$f(x)$, 所以参数$x$需要往梯度的反方向移动：
+$$x_{t+1} = x_t-\eta_t g_t$$
+其中$x_{t+1}$为$t+1$时刻的参数值。
+Stochastic Gradient Desent(随机梯度下降) 梯度下降存在的问题有鞍点问题以及无法找到全局最优解的问题。所以引入SGD。
+首先给出无偏估计的定义，稍后会用到：
+无偏估计：估计量的均值等于真实值，即具体每一次估计值可能大于真实值，也可能小于真实值，而不能总是大于或小于真实值（这就产生了系统误差）。
+深度学习中，目标函数通常是训练集中各个样本损失的平均，假设一个batch的大小为$n$，那么训练这个batch的损失就是$f_{batch}(x) = \frac{\displaystyle\sum_{i=1}^{n} f_i(x)}{n}$ , 所以目标函数对$x$的梯度就是：
+$$\nabla f_{batch}(x) = \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x)$$
+如果使用GD来优化：
+$$x_{t+1} = x_{t}- \eta_t \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x) \ = x_t-\eta_t \nabla f_{batch}(x)$$ 上式可以看出，当训练样本非常大时，n也将边的非常大，那么梯度计算的计算开销就比较大。
+随机梯度下降（SGD）的思想是： 以一个batch为例，这个batch中有n个样本，每个样本$i \in {1, \cdots,n}$, 每次从中随机选取一个样本来更新参数$x$。
+$$x_{t+1} = x_{t}-\eta_t \nabla f_i(x)$$
+这样就更新了一个batch的参数。 对比上面两个式子可以看出SGD降低了计算复杂度。上面两个式子是等价的，因为随机梯度$\nabla f_i(x)$是对梯度$\nabla f_{batch}(x)$的无偏估计，因为：</description>
+      <content:encoded><![CDATA[<p>最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。</p>
+<h1 id="gradient-desent梯度下降">Gradient Desent(梯度下降)</h1>
+<p>目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。<br>
+(1).梯度下降的原理：目标函数（损失函数）$f(x)$关于参数$x$的梯度是损失函数上升最快的方向。所以只要让$x$沿梯度的反方向走，就可以缩小目标函数。<br>
+(2).目标函数关于参数$x$在epoch $t$时的梯度：<br>
+$$g_t = \nabla_x f(x_t)$$<br>
+(3).我们要最小化$f(x)$, 所以参数$x$需要往梯度的反方向移动：<br>
+$$x_{t+1} = x_t-\eta_t g_t$$<br>
+其中$x_{t+1}$为$t+1$时刻的参数值。</p>
+<h2 id="stochastic-gradient-desent随机梯度下降">Stochastic Gradient Desent(随机梯度下降)</h2>
+<p>梯度下降存在的问题有鞍点问题以及无法找到全局最优解的问题。所以引入SGD。<br>
+首先给出无偏估计的定义，稍后会用到：<br>
+<a href="https://www.cnblogs.com/notwice/p/8538539.html">无偏估计</a>：估计量的均值等于真实值，即具体每一次估计值可能大于真实值，也可能小于真实值，而不能总是大于或小于真实值（这就产生了系统误差）。</p>
+<p>深度学习中，目标函数通常是训练集中各个样本损失的平均，假设一个batch的大小为$n$，那么训练这个batch的损失就是$f_{batch}(x) = \frac{\displaystyle\sum_{i=1}^{n} f_i(x)}{n}$ , 所以目标函数对$x$的梯度就是：<br>
+$$\nabla f_{batch}(x) = \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x)$$<br>
+如果使用GD来优化：<br>
+$$x_{t+1} = x_{t}- \eta_t \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x) \ = x_t-\eta_t \nabla f_{batch}(x)$$
+上式可以看出，当训练样本非常大时，n也将边的非常大，那么梯度计算的计算开销就比较大。</p>
+<p>随机梯度下降（SGD）的思想是： 以一个batch为例，这个batch中有n个样本，每个样本$i \in {1, \cdots,n}$, 每次从中随机选取一个样本来更新参数$x$。<br>
+$$x_{t+1} = x_{t}-\eta_t \nabla f_i(x)$$<br>
+这样就更新了一个batch的参数。 对比上面两个式子可以看出SGD降低了计算复杂度。上面两个式子是等价的，因为随机梯度$\nabla f_i(x)$是对梯度$\nabla f_{batch}(x)$的无偏估计，因为：<br>
+$$E_i \nabla f_i(\boldsymbol{x}) = \frac{1}{n} \sum_{i = 1}^n \nabla f_i(\boldsymbol{x}) = \nabla f_{batch}(\boldsymbol{x})$$<br>
+符合无偏估计的定义。</p>
+<h2 id="momentum动量法">Momentum(动量法)</h2>
+<h3 id="exponentially-weighted-moving-averagesema">Exponentially weighted moving averages(EMA)</h3>
+<p>EMA,指数加权移动平均数。</p>
+<p>在GD中,如果学习率过大，会导致目标函数发散，而无法逼近最小值，如下图所示：<br>
+<img loading="lazy" src="/posts/2019-02-28-Optimizer/images/EMA_1.png" alt="1"  />
+<br>
+如果学习率很低，那么会缓慢接近最优点，如下图红色轨迹：<br>
+<img loading="lazy" src="/posts/2019-02-28-Optimizer/images/EMA_2.png" alt="2"  />
+<br>
+我们希望在学习率较小的时候可以更快逼近最优点，在学习率大的时候自变量可以不发散，即在正确的方向上加速下降并且抑制震荡，也就是达到如下的效果：<br>
+<img loading="lazy" src="/posts/2019-02-28-Optimizer/images/EMA_3.png" alt="3"  />
+</p>
+<p>因此引入EMA。给定参数$0 \leq \gamma &lt; 1$,当前时间步$t$的变量$y_t$是上一时间步$t-1$的变量$y_{t-1}$和当前时间步另一变量$x_t$的线性组合。<br>
+$$y_t = \gamma y_{t-1} + (1-\gamma) x_t$$<br>
+展开上式:<br>
+$$\begin{split}\begin{aligned}
+y_t  &amp;= (1-\gamma) x_t + \gamma y_{t-1}\\
+&amp;= (1-\gamma)x_t + (1-\gamma) \cdot \gamma x_{t-1} + \gamma^2y_{t-2}\\
+&amp;= (1-\gamma)x_t + (1-\gamma) \cdot \gamma x_{t-1} + (1-\gamma) \cdot \gamma^2x_{t-2} + \gamma^3y_{t-3}\\
+&amp;\ldots
+\end{aligned}\end{split}$$<br>
+上式可以看出当前时刻变量是对过去时刻变量做指数加权，离当前时刻越近，加权越大（越接近1）。<br>
+在现实中，我们将$y_t$看作是最近$1/(1-\gamma)$个时间步的$x_t$的加权平均，当$\gamma = 0.95$时，是最近20个时间步的$x_t$值的加权平均。当$\gamma=0.9$时,可以看做是最近10个时间步加权平均。</p>
+<h3 id="动量法">动量法</h3>
+<p>$$\begin{split}\begin{aligned}
+\boldsymbol{v}_t &amp;= \gamma \boldsymbol{v}_{t-1} + \eta_t \boldsymbol{g}_t, \\
+\boldsymbol{x}_t &amp;= \boldsymbol{x}_{t-1} - \boldsymbol{v}_t,
+\end{aligned}\end{split}$$<br>
+其中$g_t = \nabla f_i(x)$上式可以看出，如果$\gamma=0$，则上式就是一个普通的随机梯度下降法。$0 \leq \gamma &lt; 1$. $\gamma$一般取0.9。<br>
+一般，初始化$v_0=0$, 则<br>
+$$v_1=\eta_t g_t \\ v_2=\gamma v_1+\eta_t g_t = \eta_t g_t(\gamma+1) \\ v_3 = \eta_t g_t (\gamma^2+\gamma+1) \\ v_{inf} = \frac{(\eta_t g_t)\cdot(1-\gamma^{inf+1})}{1-\gamma}\approx \frac{(\eta_t g_t)}{1-\gamma}$$</p>
+<p>相比原始梯度下降算法，动量梯度下降算法有助于加速收敛。当梯度与动量方向一致时，动量项会增加，而相反时，动量项减少，因此动量梯度下降算法可以减少训练的震荡过程。</p>
+<p>换种方式理解动量法：<br>
+<img loading="lazy" src="/posts/2019-02-28-Optimizer/images/m.jpg" alt="4"  />
+<br>
+如上图所示，A点为起始点，首先计算A点的梯度$\nabla a$，下降到B点，<br>
+$$\theta_{new} = \theta-\eta\nabla a$$<br>
+其中$\theta$为参数， $\eta$为学习率<br>
+到达B点后要加上A点的梯度，但是A点的梯度有个衰减值$\gamma$,推荐取0.9，相当于加上一个来自A点递减的加速度。这样的做法可以让早期的梯度对当前梯度的影响越来越小，如果没有衰减值，模型往往会震荡难以收敛，甚至发散。所以B点的参数更新公式是这样的：<br>
+$$v_t = \gamma v_{t-1}+\eta \nabla b$$<br>
+$$\theta_{new} = \theta-v_t$$<br>
+其中$v_{t-1}$表示之前所有步骤累计的动量和，$\nabla b$为B点的梯度方向。这样一步一步下去，带着初速度的小球就会极速的奔向谷底。</p>
+<h1 id="adagrad">AdaGrad</h1>
+<p>假设目标函数有两个参数分别为$x_1$,$x_2$,若梯度下降迭代过程中，始终使用相同的学习率$\eta$:<br>
+$$x_{1_{new}} = x_1-\eta \frac{\partial f}{\partial x_1}$$
+$$x_{2_{new}} = x_2-\eta \frac{\partial f}{\partial x_2}$$<br>
+AdaGard算法根据自变量在每个维度的梯度值来调整各个维度上的学习率，避免学习率难以适应维度的问题。adagrad方法是将每一个参数的每一次迭代的梯度取平方累加再开方，用基础学习率除以这个数，来做学习率的动态更新。<br>
+$\nabla_{\theta_i} J(\theta)$表示第$i$个参数的梯度，其中$\theta=(\theta_1,\theta_2,&hellip;)$有$n$个参数。如果使用SGD来优化第$i$个参数，我们可以表示为:<br>
+$$\theta_{i_new} = \theta_i-\eta \nabla_{\theta_i}J(\theta)$$<br>
+如果使用Adagrad，则可以表示为这样:<br>
+$$\theta_{i,t+1}=\theta_{i,t}-\frac{\eta}{\sqrt{G_{i,t}+\epsilon}} \nabla_{\theta_{i,t}}J(\theta)$$<br>
+$i,t$ 表示优化参数$\theta_i$时的第$t$次迭代，$\epsilon$防止分母为0，可以取$10^{-6}$,$G_{i,t}$表示对参数$\theta_i$优化的前$t$步的梯度的累加：<br>
+$$G_{i,t} = G_{i,t-1}+\nabla_{\theta_{i,t}}J(\theta) $$<br>
+新公式可以简化成:<br>
+$$\theta_{t+1}= \theta_t-\frac{\eta}{\sqrt{G_t+\epsilon}}\nabla_{\theta_t}J(\theta)$$<br>
+可以从上式看出，随着迭代的推移，新的学习率$\frac{\eta}{\sqrt{G_t+\epsilon}}$在缩小，说明Adagrad一开始激励收敛，到了训练的后期惩罚收敛，收敛速度变慢</p>
+<h1 id="rmsprop">RMSprop</h1>
+<p>主要解决Adagrad学习率过快衰减问题，类似动量的思想，引入一个超参数，在积累梯度平方项进行衰减.<br>
+$$s = \gamma \cdot s +(1-\gamma) \cdot \nabla J(\theta) \odot \nabla J(\theta) $$<br>
+参数$\theta$的迭代目标函数可以改写为:<br>
+$$\theta_{new} = \theta - \frac{\eta}{\sqrt{s+\varepsilon}} \odot \nabla J(\theta)$$<br>
+可以看出$s$是梯度的平方的指数加权移动平均值，$\gamma$一般取0.9，有助于解决 Adagrad中学习率下降过快的情况。</p>
+<h2 id="adaptive-moment-estimationadam">Adaptive moment estimation(Adam)</h2>
+<p>Adam可以说是用的最多的优化算法，Adam通过计算一阶矩估计和二阶矩估计为不同的参数设计独立的自适应学习率。</p>
+<h2 id="adabound">Adabound</h2>
+<p>正在学习中</p>
+<p>参考文献：<br>
+<a href="https://zhuanlan.zhihu.com/p/32626442">https://zhuanlan.zhihu.com/p/32626442</a><br>
+<a href="https://zhuanlan.zhihu.com/p/31630368">https://zhuanlan.zhihu.com/p/31630368</a><br>
+<a href="https://zh.gluon.ai/">https://zh.gluon.ai/</a><br>
+<a href="https://blog.csdn.net/tsyccnh/article/details/76270707">https://blog.csdn.net/tsyccnh/article/details/76270707</a></p>
 ]]></content:encoded>
     </item>
     

@@ -10,7 +10,93 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 08 Apr 2022 21:23:41 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/paper/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 09 Apr 2022 14:47:57 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/paper/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>WWW2022 《SimGRACE:A Simple Framework for Graph Contrastive Learning without Data Augmentation》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/simgrace/</link>
+      <pubDate>Sat, 09 Apr 2022 14:47:57 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/simgrace/</guid>
+      <description>WWW2022 &amp;#34;SimGRACE:A Simple Framework for Graph Contrastive Learning without Data Augmentation&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2202.03104">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>图对比学习（GCL）已经成为图表示学习的主要技术，它最大化了共享相同语义的成对图增强之间的互信息。鉴于图数据的多样性，在增强过程中很难很好地保留语义。目前，GCL 中选择图增强方式的途径通常有以下三种。 1.  适用于不同数据集的图增强方式可能是不同的，需要在每个数据集上做验证，手动选择最适用于每个数据集的增强。2. 通过繁琐的搜索来选择增强方式。3. 通过邻域只是来选择增强方式。所有这些都限制了现有 GCL 方法的效率和通用性。为了解决该问题，本文提出了一种不需要对图做编辑， 而是对GNN编码器做扰动的增强方式： <strong>SimGRACE</strong>。并且对SimGRACE设计了对抗训练的方案：<strong>AT-SimGRACE</strong>。</p>
+<p><img loading="lazy" src="/posts/2022-04-12-SimGRACE/1.png#center" alt="图1"  title="123"  />
+</p>
+<p>上图的实验中，两类图用不同的颜色标出，三种GCL模型分别在三个数据集上训练，训练完成后的分类效果如第一行所示。 对于GraphCL, 对边做扰动后再输入GraphCL 训练好的encoder,可以看出GraphCL的encoder对于扰动后的图数据集无法很好的保留分类语义。而对于SIMGRACE，不对图做扰动，而对训练好的encoder做扰动，扰动后的encoder对数据集的分类效果可以很好地保留语义信息。由此实验性表明了对encoder扰动可以保留比直接对图扰动更多的语义信息。</p>
+<p>GraphCL 表明 GNN 可以使用他们提出的框架获得鲁棒性。 但是，（1）他们没有解释为什么 GraphCL 可以增强鲁棒性； (2) GraphCL 似乎对随机攻击具有很好的免疫力，而对对抗性攻击的表现却不尽如人意。为了弥补这些缺陷，本文基于SimGRACE提出了一种新的算法 AT-SimGRACE通过对抗的方式来扰动编码器，从而是实现对抗训练的效果，它引入了更少的计算开销，同时显示出更好的鲁棒性。</p>
+<h1 id="method">Method</h1>
+<h2 id="simgrace">SimGRACE</h2>
+<p><img loading="lazy" src="/posts/2022-04-12-SimGRACE/2.png#center" alt="图1"  />
+</p>
+<h3 id="编码器扰动encoder-perturbation">编码器扰动（Encoder perturbation）</h3>
+<p>给定一个GNN编码器$f(\cdot;\theta)$,它的参数扰动版本表示为$f(\cdot;\theta^\prime)$。如图中所示，参数扰动版本的编码器不需要梯度反传训练参数，每次训练过程更新$f(\cdot;\theta)$，而$f(\cdot;\theta^\prime)$的参数$\theta^\prime$只通过对$\theta$扰动得到。第$l$层GNN的参数表示为$\theta_l$，那么它的扰动后参数$\theta^\prime_l$有下式得到：
+$$
+\theta_{l}^{\prime}=\theta_{l}+\eta \cdot \Delta \theta_{l} ; \quad \Delta \theta_{l} \sim \mathcal{N}\left(0, \sigma_{l}^{2}\right)
+$$
+其中$\eta$用来控制扰动的缩放，$\Delta \theta_{l}$是扰动项，扰动值采样自0均值$\sigma_{l}^{2}$的Gaussian Distribution。$f(\cdot;\theta)$和$f(\cdot;\theta^\prime)$的输出分别为$\mathbf{h}$和$\mathbf{h}^{\prime}$：
+$$
+\mathbf{h}=f(\mathcal{G} ; \boldsymbol{\theta}), \mathbf{h}^{\prime}=f\left(\mathcal{G} ; \boldsymbol{\theta}^{\prime}\right)
+$$
+从下图可以看出，如果不对编码器施加扰动，即超参数$\eta=0$，效果会很差，扰动太多效果也会很差。</p>
+<p><img loading="lazy" src="/posts/2022-04-12-SimGRACE/3.png#center" alt="图1"  />
+</p>
+<h3 id="映射头-projection-head">映射头 （Projection Head）</h3>
+<p>和其他大多数GCL方法一样，该方法也要一个projection head来对GNN的output representation做一次变换，通常就是个MLP，得到输出$z$和$z^\prime$：
+$$
+z=g(\mathbf{h}), z^{\prime}=g\left(\mathbf{h}^{\prime}\right)
+$$</p>
+<h3 id="对比损失contrastive-loss">对比损失（Contrastive loss）</h3>
+<p>和GraphCL一样，使用NT-Xent作为损失函数。具体来说，用$z_n$和$z_n^\prime$分别表示表示图$n$在$f(\cdot;\theta)$和$f(\cdot;\theta^\prime)$两个编码器下的输出， 用$z_n$和$z_{n^\prime}$表示一个batch中两个不同图$n$和图$n^\prime$在未扰动编码器$f(\cdot;\theta)$下的输出。在一个batch内，最大化同一个图的两个编码器（$f(\cdot;\theta)$和$f(\cdot;\theta^\prime)$）输出间的相似度，同时最小化不同图在未扰动编码器$f(\cdot;\theta)$下输出的相似度：
+$$
+\ell_{n}=-\log \frac{\left.\exp \left(\operatorname{sim}\left(z_{n}, z_{n}^{\prime}\right)\right) / \tau\right)}{\sum_{n^{\prime}=1, n^{\prime} \neq n}^{N} \exp \left(\operatorname{sim}\left(z_{n}, z_{n^{\prime}}\right) / \tau\right)}
+$$
+即同一个图的两个输出为positive pair, 不同图的$f(\cdot;\theta)$输出为negative pair.</p>
+<h2 id="why-can-simgrace-work-well">Why can SimGRACE work well?</h2>
+<p>[1] 提供了两个属性来衡量对比学习学到的representation的质量： <em>Alignment和Uniformity</em>。其中Alignment metric直接定义为positive pairs之间的距离：
+$$
+\ell_{\text {align }}(f ; \alpha) \triangleq \underset{(x, y) \sim p_{\text {pos }}}{\mathbb{E}}\left[||f(x)-f(y)||_{2}^{\alpha}\right], \quad \alpha&gt;0
+$$
+其中$p_{\text {pos }}$为positive pairs的分布，也就是positive pairs之间的距离越小，说明CL越好。 基于SimGRACE构造contrastive pairs的方式，alignment metric 可以定义为如下形式：
+$$
+\ell_{\text {align }}(f ; \alpha) \triangleq \underset{x \sim p_{\text {data }}}{\mathbb{E}}\left[\left|\left|f(x ; \theta)-f\left(x ; \theta^{\prime}\right)\right|\right|_{2}^{\alpha}\right], \quad \alpha&gt;0
+$$
+另一个衡量指标是Uniformity， 定义为成对高斯势函数（Gaussian Potential）：
+$$
+\ell_{\text {uniform }}(f ; \alpha) \triangleq \log \underset{x, y_{\sim}^{i . i . d .} p_{\text {data }}}{\mathbb{E}}\left[e^{-t||f(x ; \theta)-f(y ; \theta)||_{2}^{2}}\right] . \quad t&gt;0
+$$
+它要求随机样本的embedding应尽可能分散在hypersphere上， 即随机采样两个图在未扰动编码器输出的embedding距离要尽可能大。从下图可以看出，随着training epoch的增加，三种方法都呈现出正确的趋势。</p>
+<p><img loading="lazy" src="/posts/2022-04-12-SimGRACE/4.png#center" alt="图1"  />
+</p>
+<h2 id="at-simgrace">AT-SimGRACE</h2>
+<p>通过对抗训练（Adversarial Training， AT）来提升SimGRACE的鲁棒性。 对抗训练的优化问题定义如下：
+$$
+\min_{\theta} \mathcal{L}^{\prime}(\theta), \quad \text { where } \quad \mathcal{L}^{\prime}(\theta)=\frac{1}{n} \sum_{i=1}^{n} \max_{ | |\mathrm{x}_{i}^{\prime}-\mathrm{x}_{i} | |_{p} \leq \epsilon} \ell_{i}^{\prime}\left(f\left(\mathrm{x}_{i}^{\prime} ; \theta\right), y_{i}\right)
+$$
+其中$n$是训练样本数，$\mathrm{x}_{i}^{\prime}$是对抗样本， 其中对抗样本在训练样本的$\epsilon$-ball中，即$| |\mathrm{x}_{i}^{\prime}-\mathrm{x}_{i} | |_{p} \leq \epsilon$, 表示对抗样本和原样本的变化不能超过$\epsilon$。Adversarial Training: 优化$\theta$，使得$f$可以在$\mathrm{x}_{i}$的对抗样本$\mathrm{x}_{i}^{\prime}$上可以预测准确。其中$\ell^{\prime}(\cdot)$为监督分类损失，$\mathcal{L}^{\prime}(\theta)$为对抗损失。AT不能直接应用于CL上，因为（1）CL任务无标签，（2）对数据集中的每个样本扰动计算量太大。 为了解决这个问题，本文将AT loss中的损失函数部分换成NT-Xent对比学习损失，然后用对抗的方式来扰动encoder，从而无需对数据集中的所有样本扰动。</p>
+<p>假设$\Theta$为GNN的权重空间(weight space)， 对于任意$\mathbf{w}$任意正实数$\epsilon$, 为$\theta$定义半径为$\epsilon$,中心为$\mathbf{w}$的norm ball:
+$$
+\mathbf{R}(\mathbf{w} ; \epsilon):=\{\boldsymbol{\theta} \in \boldsymbol{\Theta}:||\boldsymbol{\theta}-\mathbf{w}|| \leq \epsilon\}
+$$
+$\theta \in \Theta$表示权重空间$\Theta$中任意一组可能的GNN权重$\theta$, $\mathbf{R}(\mathbf{w} ; \epsilon)$表示GNN所有与$\mathbf{w}$相似的权重，即所有与$\mathbf{w}$的差距小于$\epsilon$的权重。</p>
+<p>那么AT-SimGRACE的优化问题定义如下：
+$$
+\begin{gathered}
+\min_{\boldsymbol{\theta}} \mathcal{L}(\boldsymbol{\theta}+\Delta) \\
+\text { where } \mathcal{L}(\boldsymbol{\theta}+\Delta)=\frac{1}{M} \sum_{i=1}^{M} \max_{\Delta \in \mathrm{R}(0 ; \epsilon)} \ell_{i}\left(f\left(\mathcal{G}_{i} ; \boldsymbol{\theta}+\Delta\right), f\left(\mathcal{G}_{i} ; \boldsymbol{\theta}\right)\right)
+\end{gathered}
+$$
+这里$\mathrm{R}(0 ; \epsilon)=\{\Delta \in \Theta: ||\Delta|| \leq \epsilon\}$ ，$\mathcal{L}(\boldsymbol{\theta}+\Delta)$表示在对GNN参数施加扰动$\Delta$，使得GNN的效果最差，换句话说，找到一个扰动$\Delta$，使得GNN的参数在被$\Delta$扰动后（变为$\theta+\Delta$）两个图最不匹配（对比学习损失达到最大）。 $min_{\boldsymbol{\theta}} \mathcal{L}(\boldsymbol{\theta}+\Delta)$表示训练GNN参数，使得对比学习可以适应该扰动。算法如下：</p>
+<p><img loading="lazy" src="/posts/2022-04-12-SimGRACE/5.png#center" alt="图1"  />
+</p>
+<p>对抗训练：</p>
+<p>内层： 固定GNN参数，训练扰动参数$\Delta$，使得GNN的对比学习loss上升</p>
+<p>外层： 固定扰动参数$\Delta$， 训练GNN参数$\theta$， 使得$\theta$加上扰动$\Delta$后的对比学习loss最小化。</p>
+<h1 id="reference">Reference</h1>
+<p>[1] Understanding Contrastive Representation Learning through Alignment and Uniformity on the Hypersphere. ICML (2020)</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>NeurIPS2021 《Graph Neural Networks with Adaptive Residual》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/airgnn/</link>

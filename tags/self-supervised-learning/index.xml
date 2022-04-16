@@ -10,7 +10,146 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 12 Apr 2022 22:21:29 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/self-supervised-learning/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 14 Apr 2022 22:54:10 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/self-supervised-learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NeurIPS2021 《From Canonical Correlation Analysis to Self-supervised Graph Neural Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/cca-ssg/</link>
+      <pubDate>Thu, 14 Apr 2022 22:54:10 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/cca-ssg/</guid>
+      <description>NeurIPS2021 &amp;#34;From Canonical Correlation Analysis to Self-supervised Graph Neural Networks&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2106.12484">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>本文提出了一种新型的Graph Contrastive Learning构造Contrastive pairs的方式，即将跨图的同纬度特征作为positive pairs， 不同维度特征作为negative pairs。 和过去的GCL方法相比，本文无需互信息估计器（MI Estimator），映射头（Projector），不对称结构（asymmetric structures）。 并且理论证明了该方法可以看做Information Bottleneck 原则在自监督设置下的实例。</p>
+<p>具体来说，受典型相关分析（From Canonical Correlation Analysis）的启发，本文提出了一种简单有效的GCL框架，从而是模型避免复杂难以理解多模块设计。 和过去的方法<strong>相同</strong>的是，为输入图以随机增强的方式生成两个view， 目的是为两个view学习共享的 node representations 通过共享的GNN Encoder。<strong>不同</strong>在于，本文利用了典型相关分析（CCA），具体来说，新目标旨在最大化同一输入的两个增强views之间的相关性，同时对单个视图表示的不同（特征）维度进行去相关（避免不同维度捕获相同信息，即同一个view内的不同维度channel互为negative pairs）。 这么做的目的是 1）本质上追求的是丢弃增强后变化的信息，同时保留增强后不变的信息，以及 2）防止维度崩溃（即不同维度捕获相同的信息）。</p>
+<p><img loading="lazy" src="/posts/2022-04-15-CCA-SSG/1.png#center" alt=""  />
+</p>
+<p>和其他方法的对比如上图所示， 本文提出的CCA-SSG无需negative pairs， 参数化的互信息估计器， projection head或者不对称结构。对比对的数量仅为$O(D^2)$, 其中$D$为输出维度。</p>
+<h1 id="canonical-correlation-analysis">Canonical Correlation Analysis</h1>
+<p>CCA: Identify and Quantify the associations between  two sets of variables， 即CCA用来衡量两组随机变量的相关性，每组可能有很多Random Variables.</p>
+<p>从相关系数引入：</p>
+<p>Pearson 相关系数： 给定两组数据集$X$， $Y$。 其中$X \in \mathbb{R}^{N \times 1}$ 表示只有一个随机变量（属性），样本数为$N$。 $Y \in  \mathbb{R}^{M \times 1}$: 一个随机变量，样本量为$M$。那么Pearson 相关系数$\rho$定义为：
+$$
+\rho(X,Y)=  \frac{\mathrm{Cov}(X,Y)}{\sigma_X \sigma_Y}
+$$
+其中$\sigma_X$，$\sigma_Y$分别为$X$和$Y$的标准差。$\mathrm{Cov}(X,Y)$为$X$, $Y$的协方差。$\rho \in [-1,1]$。 $\rho$越接近1， $X$和$Y$的线性相关性越高。$\rho$越接近0，$X$和$Y$的线性相关性月底。</p>
+<p><strong>相关系数存在问题</strong>：相关系数不适用于高维数据。 如果$X$是2维的（2个属性，例如身高和体重）， $Y$也是2维的，属性为(跑步，跳远)， $X \in \mathbb{R}^{N \times 2}$, $Y \in  \mathbb{R}^{M \times 2}$。此时，相关系数$\rho$無法計算2維隨機變量的相關程度。</p>
+<h2 id="cca-基本思想">CCA 基本思想</h2>
+<p>$X$和$Y$ 为两个变量集合， 例如$X$中有两个随机变量（2维）， $Y$中也有两个随机变量。 要衡量变量间的相关性： 现将高维随机变量（即多个随机变量）降到一维（一个随机变量），再用相关系数计算相关性。</p>
+<p>令$X = \{\boldsymbol{x}_1,\boldsymbol{x}_2\} \in \mathbb{R}^{n_1\times m}$， 表示$n_1=2$个随机变量，$m$个样本。 $Y = \{\boldsymbol{y}_1,\boldsymbol{y}_2\} \in \mathbb{R}^{n_2\times m}$表示$n_2=2$个随机变量，$m$个样本。</p>
+<p>$U$为随机变量集合$X$的线性组合：
+$$
+U = a_1 \boldsymbol{x}_1 + a_2 \boldsymbol{x}_2 = [a_1, a_2]\begin{bmatrix} \boldsymbol{x}_1 \\ \boldsymbol{x}_2\end{bmatrix} = a^\top X
+$$
+$V$为随机变量集合$Y$的线性组合：
+$$
+V = b_1 \boldsymbol{y}_1 + b_2\boldsymbol{x}_2 = b^\top Y
+$$
+<strong>CCA</strong>的优化目标： 找到一组最优解$a$和$b$， 使得$\rho_{U,V}$最大：
+$$
+\arg \max_{a,b} \rho_{U,V} = \frac{\mathrm{Cov}(U,V)}{\sigma_U \sigma_V}
+$$
+得到的$a$, $b$是使得$X$与$Y$有最大关联的权重。</p>
+<h2 id="cca的表示与求解">CCA的表示与求解</h2>
+<p>输入：两个随机变量集合$X = \{\boldsymbol{x}_1 , \cdots, \boldsymbol{x}_n\}$, $Y= \{\boldsymbol{y}_1 , \cdots, \boldsymbol{y}_m\}$。 分别有$n$个和$m$个随机变量。</p>
+<p>$X$是一个$n \times L$的矩阵， 即有$L$个样本， $n$个属性（$n$个随机变量）。</p>
+<p>$Y$是一个$m \times L$的矩阵， $L$个样本， $m$个属性。</p>
+<p>$U = a^\top X \in \mathbb{R}^{1 \times L}$, $V= b^\top Y \in \mathbb{R}^{1\times L}$, 分别将组高维随机变量转为一维。 目标函数为
+$$
+\arg \max_{a,b} \rho_{U,V} =\arg \max_{a,b}  \frac{\mathrm{Cov}(U,V)}{\sigma_U \sigma_V}
+$$
+设 $\Sigma_{XX} = \mathrm{Cov}(X,X) = \mathrm{Var}(X)$， $\Sigma_{YY} = \mathrm{Cov}(Y,Y) = \mathrm{Var}(Y)$， $\Sigma_{XY} = \mathrm{Cov}(X,Y)$， $E[X] = \mu_X \in \mathbb{R}^{n \times 1}$ （样本均值）， $E[Y] = \mu_Y \in \mathbb{R}^{m \times 1}$。</p>
+<p>定义$X$ 为一个$n$个随机变量stack成的列向量：
+$$
+X= \begin{bmatrix} \boldsymbol{x}_1 \\ \cdots \\ \boldsymbol{x}_n\end{bmatrix} \in \mathbb{R}^{n \times L}
+$$
+$C$ 为$n$个scalars $c_1, \cdots, c_n$ stack成的列向量：
+$$
+C= \begin{bmatrix} \boldsymbol{c}_1 \\ \cdots \\ \boldsymbol{c}_n\end{bmatrix}
+$$
+$C^\top X$是这$n$个Random Variables的线性组合。 $C^\top X$的方差为：
+$$
+\mathrm{Var}(C^\top X) = C^\top \Sigma_{XX} C = C^\top \mathrm{Var}(X) C
+$$
+那么$\mathrm{Var}(U) = \mathrm{Var}(a^\top X) = a^\top \mathrm{Var}(X) a$。</p>
+<p>每个随机变量$\boldsymbol{x}_i$为数据的第$i$个特征，每列为一个样本$X \in \mathbb{R}^{n \times L}$。 有$L$个样本， 对特征维度做标准化，也就是对每个维度$\boldsymbol{x}_i$做标准化， 可得$E(\boldsymbol{x}_i) = 0$, $\mathrm{Var}(\boldsymbol{x}_i) = 1$。
+$$
+\begin{aligned}
+\mathrm{Var}(X) &amp;= E(X-E(X))^2 \\
+&amp;= E(\begin{bmatrix} \boldsymbol{x}_1 \\ \cdots \\ \boldsymbol{x}_n\end{bmatrix} -\begin{bmatrix} \boldsymbol{\mu}_1 \\ \cdots \\ \boldsymbol{\mu}_n\end{bmatrix} )^2   \\
+&amp;= E (\begin{bmatrix} \boldsymbol{x}_1 \\ \cdots \\ \boldsymbol{x}_n\end{bmatrix}^2) \\
+&amp;= E(XX^\top)
+\end{aligned}
+$$
+所以$\mathrm{Var}(U) = a^\top E(XX^\top) a$， 同理$\mathrm{Var}(V) = b^\top E(YY^\top) b$。另外：
+$$
+E(a^\top X) = E(a_1\boldsymbol{x}_1 + \cdots + a_n\boldsymbol{x}_n) = a_1E(\boldsymbol{x}_1) + \cdots + a_n E(\boldsymbol{x}_n) = 0
+$$
+那么：
+$$
+\begin{aligned}
+\mathrm{Cov}(U,V) &amp;= \mathrm{Cov}(a^\top X, b^\top Y) \\
+&amp;= E\left[ \langle a^\top X - E(a^\top X), b^\top Y- E(b^\top Y) \rangle  \right] \\
+&amp;= E[\langle a^\top X,  b^\top Y \rangle] \\
+&amp;= E[(a^\top X)(b^\top Y)^\top] \\
+&amp;= E[a^\top X Y^\top b] \\
+&amp;= a^\top E[XY^\top]b
+\end{aligned}
+$$</p>
+<p>$$
+\begin{aligned}
+\mathrm{Var}(X) &amp;= \mathrm{Cov}(X,X) = E[XX^\top] \\
+\mathrm{Var}(Y) &amp;= \mathrm{Cov}(Y,Y) = E[YY^\top] \\
+\mathrm{Cov}(X,Y) &amp;= E[\langle X-\mu_X, Y-\mu_Y \rangle] = E[XY^\top] = \Sigma_{XY}\\
+\mathrm{Cov}(Y,X) &amp;=E[YX^\top]
+\end{aligned}
+$$</p>
+<p>优化目标转化为：
+$$
+\begin{aligned}
+\arg \max_{a,b} \rho_{U,V} &amp;=\arg \max_{a,b}  \frac{\mathrm{Cov}(U,V)}{\sigma_U \sigma_V}  \\
+&amp;=\arg \max_{a,b} \frac{a^\top \Sigma_{XY}b}{\sqrt{a^\top \Sigma_{XX} a} \sqrt{b^\top \Sigma_{YY}b}}
+\end{aligned}
+$$
+若对$a$， $b$同时放缩， 即$a$放缩$k$倍， $b$放缩$l$倍， 公式的值不会改变：
+$$
+\frac{ka^\top \Sigma_{XY}lb}{\sqrt{ka^\top \Sigma_{XX} ka} \sqrt{lb^\top \Sigma_{YY}lb}} =  \frac{a^\top \Sigma_{XY}b}{\sqrt{a^\top \Sigma_{XX} a} \sqrt{b^\top \Sigma_{YY}b}}
+$$
+所以， 可以直接对$a$做放缩，使得$a^\top \Sigma_{XX} a=1$, 对$b$做放缩，使得$b^\top \Sigma_{YY}b=1$（类似于SVM）。 那么优化目标转化为：
+$$
+\begin{aligned}
+&amp;\max_{a, b} a^{\top} \Sigma_{X Y} b, \\ &amp;\text{ s.t. } a^{\top} \Sigma_{X X} a=b^{\top} \Sigma_{Y Y} b=1
+\end{aligned}
+$$
+对于两个向量集合$X_1$和$X_2$， CCA 寻求两组向量最大化它们的相关性，并受到它们彼此不相关的约束。 后来的研究通过用神经网络代替线性变换，将 CCA 应用于具有深度模型的多视图学习。 具体来说，假设 $X_1$和$X_2$作为输入数据的两个视图，CCA的优化目标为：
+$$
+\max_{\theta_{1}, \theta_{2}} \operatorname{Tr}\left(P_{\theta_{1}}^{\top}\left(X_{1}\right) P_{\theta_{2}}\left(X_{2}\right)\right) \quad \text { s.t. } P_{\theta_{1}}^{\top}\left(X_{1}\right) P_{\theta_{1}}\left(X_{1}\right)=P_{\theta_{2}}^{\top}\left(X_{2}\right) P_{\theta_{2}}\left(X_{2}\right)=I \text {. }  \tag{1}
+$$
+其中， $P_{\theta_{1}}$和$P_{\theta_{2}}$为两个Neural Network。尽管上式很精确，但这种计算确实很昂贵。Soft CCA 通过采用以下拉格朗日松弛, 消除了hard decorrelation constraint：
+$$
+\min_{\theta_{1}, \theta_{2}} \mathcal{L}_{\text {dist }}\left(P_{\theta_{1}}\left(X_{1}\right), P_{\theta_{2}}\left(X_{2}\right)\right)+\lambda\left(\mathcal{L}_{S D L}\left(P_{\theta_{1}}\left(X_{1}\right)\right)+\mathcal{L}_{S D L}\left(P_{\theta_{2}}\left(X_{2}\right)\right)\right)
+$$
+其中$\mathcal{L}_{\text {dist }}$用于衡量两个view的representations之间的相关性，$\mathcal{L}_{S D L}$ (stochastic decorrelation loss)计算$P_{\theta_{i}}\left(X_{i}\right)$和identity matrix之间的$L_1$距离。</p>
+<h1 id="approach">Approach</h1>
+<p><img loading="lazy" src="/posts/2022-04-15-CCA-SSG/2.png#center" alt=""  />
+</p>
+<p>模型包含3个模块 1. 随机图增强器$\mathcal{T}$，2. GNN encoder $f_\theta$, 3. 基于CCA的feature-level对比损失。</p>
+<h2 id="graph-augmentations">Graph Augmentations</h2>
+<p>本文利用 edge droping和 node feature masking两种graph corruption方式来对输入图做增强。 $\mathcal{T}$是所有可能的转换操作，$t \sim \mathcal{T}$表示图$G$的一种特定的转换。比如删除一条边的操作$t_r$就是$\mathcal{T}$中的一个变换。</p>
+<h2 id="training">Training</h2>
+<p>从$\mathcal{T}$随机采样两种图变换 $t_A$和$t_B$。 生成两个View: $\tilde{\mathbf{G}}_{A}=\left(\tilde{\mathbf{X}}_{A}, \tilde{\mathbf{A}}_{A}\right)$和$\tilde{\mathbf{G}}_{B}=\left(\tilde{\mathbf{X}}_{B}, \tilde{\mathbf{A}}_{B}\right)$，经过共享的GNN后，得到输出$\mathbf{Z}_{A}=f_{\theta}\left(\tilde{\mathbf{X}}_{A}, \tilde{\mathbf{A}}_{A}\right)$，$\mathbf{Z}_{B}=f_{\theta}\left(\tilde{\mathbf{X}}_{B}, \tilde{\mathbf{A}}_{B}\right)$。然后对feature dimensionzuo normalization (列标准化)， 是的每个特征维度均值为0， 标准差为$1 / \sqrt{N}$：</p>
+<p>$$
+\tilde{\mathbf{Z}}=\frac{\mathbf{Z}-\mu(\mathbf{Z})}{\sigma(\mathbf{Z}) * \sqrt{N}}
+$$</p>
+<h1 id="inference">Inference</h1>
+<p>基于公式（1）,使用公式(1)中的CCA目标函数，将向量集定义为输出$\tilde{\mathbf{Z}}$的列向量， 最终CCA-SSG的目标函数定义如下：
+$$
+\mathcal{L}=\underbrace{\left|\left|\tilde{\mathbf{Z}}_{A}-\tilde{\mathbf{Z}}_{B}\right|\right|_{F}^{2}}_{\text {invariance term }}+\lambda \underbrace{\left(\left|\left|\tilde{\mathbf{Z}}_{A}^{\top} \tilde{\mathbf{Z}}_{A}-\mathbf{I}\right|\right|_{F}^{2}+\left|\left|\tilde{\mathbf{Z}}_{B}^{\top} \tilde{\mathbf{Z}}_{B}-\mathbf{I}\right|\right|_{F}^{2}\right)}_{\text {decorrelation term }}
+$$
+第二项中，要求不同特征之间的相似度尽可能低， 从而使得不同特征不过不同的语义信息。</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>ICML2020 《Contrastive Multi-View Representation Learning on Graphs》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/mvgrl/</link>

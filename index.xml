@@ -146,7 +146,7 @@ $$</p>
 $$
 \mathcal{L}=\underbrace{\left|\left|\tilde{\mathbf{Z}}_{A}-\tilde{\mathbf{Z}}_{B}\right|\right|_{F}^{2}}_{\text {invariance term }}+\lambda \underbrace{\left(\left|\left|\tilde{\mathbf{Z}}_{A}^{\top} \tilde{\mathbf{Z}}_{A}-\mathbf{I}\right|\right|_{F}^{2}+\left|\left|\tilde{\mathbf{Z}}_{B}^{\top} \tilde{\mathbf{Z}}_{B}-\mathbf{I}\right|\right|_{F}^{2}\right)}_{\text {decorrelation term }}
 $$
-第二项中，要求不同特征之间的相似度尽可能低， 从而使得不同特征不过不同的语义信息。</p>
+第二项中，要求不同特征之间的相似度尽可能低， 从而使得不同特征捕获不同的语义信息。</p>
 ]]></content:encoded>
     </item>
     

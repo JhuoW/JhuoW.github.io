@@ -20,7 +20,7 @@
       <description>NeurIPS2021 &amp;#34;From Canonical Correlation Analysis to Self-supervised Graph Neural Networks&amp;#34; 阅读笔记</description>
       <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2106.12484">paper</a></p>
 <h1 id="introduction">Introduction</h1>
-<p>本文提出了一种新型的Graph Contrastive Learning构造Contrastive pairs的方式，即将跨图的同纬度特征作为positive pairs， 不同维度特征作为negative pairs。 和过去的GCL方法相比，本文无需互信息估计器（MI Estimator），映射头（Projector），不对称结构（asymmetric structures）。 并且理论证明了该方法可以看做Information Bottleneck 原则在自监督设置下的实例。</p>
+<p>本文提出了一种新型的Graph Contrastive Learning构造Contrastive pairs的方式，即将跨图的同维度特征作为positive pairs， 不同维度特征作为negative pairs。 和过去的GCL方法相比，本文无需互信息估计器（MI Estimator），映射头（Projector），不对称结构（asymmetric structures）。 并且理论证明了该方法可以看做Information Bottleneck 原则在自监督设置下的实例。</p>
 <p>具体来说，受典型相关分析（From Canonical Correlation Analysis）的启发，本文提出了一种简单有效的GCL框架，从而是模型避免复杂难以理解多模块设计。 和过去的方法<strong>相同</strong>的是，为输入图以随机增强的方式生成两个view， 目的是为两个view学习共享的 node representations 通过共享的GNN Encoder。<strong>不同</strong>在于，本文利用了典型相关分析（CCA），具体来说，新目标旨在最大化同一输入的两个增强views之间的相关性，同时对单个视图表示的不同（特征）维度进行去相关（避免不同维度捕获相同信息，即同一个view内的不同维度channel互为negative pairs）。 这么做的目的是 1）本质上追求的是丢弃增强后变化的信息，同时保留增强后不变的信息，以及 2）防止维度崩溃（即不同维度捕获相同的信息）。</p>
 <p><img loading="lazy" src="/posts/2022-04-15-CCA-SSG/1.png#center" alt=""  />
 </p>

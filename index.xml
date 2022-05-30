@@ -10,7 +10,91 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 21 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 27 May 2022 17:13:33 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NeurIPS2020 《Subgraph Neural Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/subgnn/</link>
+      <pubDate>Fri, 27 May 2022 17:13:33 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/subgnn/</guid>
+      <description>NeurIPS2020 &amp;#34;Subgraph Neural Networks&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2006.10538">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>GNN通常关注节点级任务和图级任务，缺少针对子图级预测任务的方法。针对这个问题，本文提出SubGNNs用于解耦子图在不同结构aspect的表示。为了学习准确的子图表示，SubGNN在子图的连通分量和随机采样的anchor patches之间进行消息传递，从而学习高准确度的子图表示。SubGNN指定了三个通道，每个通道捕获子图不同的拓扑结构属性。</p>
+<p><img loading="lazy" src="/posts/2022-05-29-SubGNN/1.png#center" alt="图1"  title="123"  />
+</p>
+<p>从拓扑的角度来看，子图是非常具有挑战性的结构，对子图的预测存在以下挑战：</p>
+<ul>
+<li>如要对更大且size不同的子图做联合预测，挑战在于<strong>如何表征含有多个分量，甚至分量间间隔较远的子图</strong>。</li>
+<li>子图包含了高阶连通模式（connectivity patterns），这些连通模式不仅存在于子图内节点之间，也存在与子图内节点与子图外部节点之间， 挑战在于<strong>如何将子图边界信息和子图外部信息注入GNN中</strong>。</li>
+<li>子图可能存在于图中的一个特定区域，也可能它的连通分量分布于多个局部邻域，挑战在于<strong>如何学习子图在图中的位置</strong>。</li>
+<li>子图间共享边（sharing edges）和非边（non-edges）存在相关性，挑战在于<strong>如何将这种子图间的依赖融合进模型中，同时任然能够将特征信息考虑在内进行辅助归纳推理</strong>。</li>
+</ul>
+<p>本文提出SubGNN以解决上述挑战， SubGNN的核心原则是子图级的消息传递，可以捕获子图位置、邻域、结构三种特征</p>
+<h1 id="formulating-subgraph-prediction">Formulating Subgraph Prediction</h1>
+<p>给定无向图$G=(V,E)$，它的一个子图表示为$S=\left(V^{\prime}, E^{\prime}\right)$，每个子图$S$有一个label $y_{S}$，并且子图$S$可能包含多个连通分量，连通分量表示为$S^{(C)}$。</p>
+<p><strong>Problem (Subgraph Representations and Property Prediction)</strong> 给定子图集合 $\mathcal{S} = \left\{S_{1}, S_{2}, \ldots, S_{n}\right\}$，SubGNN $E_S$为每个子图$S\in \mathcal{S}$生成一个$d_s$维的表示向量$\mathbf{Z}_S \in \mathbb{R}^{d_{s}}$， 然后用这些子图的表示向量学习一个子图分类器 $f: \mathcal{S} \rightarrow\{1,2, \ldots, C\}$，使得输入子图得到预测label: $f(S)=\hat{y}_{S}$。</p>
+<p>本文针对子图分类任务，所提出的模型为一个可学习的embedding函数$E_{S}: S \rightarrow \mathbb{R}^{d_{s}}$， 将每个子图映射为低维表示向量，这些表示向量可以捕获子图拓扑对预测重要的aspects。具体来说，对于一个子图，message再它的连通分量之间传递，这使得我们可以对多个连通分量的子图学习有意义的表示。</p>
+<h2 id="subgnn-properties-of-subgraph-topology">SUBGNN: Properties of subgraph topology</h2>
+<p>子图拥有独特的内部结构，边界连通性，邻域概念，以及和图其他部分的相对位置。直觉上，我们的目标是以最大的似然保存保存特定的图属性。本文设计模型以考虑<strong>6</strong>种特定的图结构属性：</p>
+<p><img loading="lazy" src="/posts/2022-05-29-SubGNN/2.png#center" alt="图1"  title="123"  />
+</p>
+<p>具体来说：</p>
+<p><strong>(1) Position.</strong></p>
+<p>Border Position: 该属性保留子图和图的其他部分之间的距离，通过这种距离关系，可以区分两个同构但处于不同位置的子图。</p>
+<p>Internal Position：子图自己连通分量之间的距离。</p>
+<p><strong>(2) Neighborhood.</strong></p>
+<p>Border Neighborhood：为子图的边界邻域，表示子图$S$中任意节点的$k$跳邻域中（不属于子图$S$）的节点集合。</p>
+<p>Internal Neighborhood：子图内每个连通分量的边界邻域，每个连通分量$S^{(c)}$中任意节点的$k$跳邻域中（不属于子图$S^{(c)}$）的节点集合。</p>
+<p><strong>(3) Structure.</strong></p>
+<p>Border Structure：子图内部节点和边界邻居之间的连通性。</p>
+<p>Internal Structure：每个连通分量的内部连通性。</p>
+<p>本文旨在将上述属性学习到子图表示向量中。</p>
+<h1 id="subgnn-subgraph-neural-network">SubGNN： Subgraph Neural Network</h1>
+<p><img loading="lazy" src="/posts/2022-05-29-SubGNN/3.png#center" alt="图1"  title="123"  />
+</p>
+<p>SubGNN以层次的方式学习子图表示，将神经消息从anchor patch传递到子图分量中，并将所有子图分量的表示聚合为最终的子图表示。如图2（a）所示，独立考虑子图的每个连通分量的每个属性，从anchor patch中获得相应的属性信息，对于每个分量，聚合它的所以属性表示，得到该分量的表示，然后聚合子图所有分量的表示，得到最后的子图表示。</p>
+<h2 id="property-aware-routing">Property-Aware Routing</h2>
+<p><img loading="lazy" src="/posts/2022-05-29-SubGNN/4.png#center" alt="图1"  title="123"  />
+</p>
+<p>通过anchor patch向子图分量传递消息，使得子图分量可以实现结构属性感知，如图2（b）所示，每个通道$\mathbf{z}_{i}$表示子图的第$i$个分量的输出表示，它由3部分构成，分别为该分量的位置属性（绿色），邻居属性（蓝色），结构属性（橙色）。将所有通道（分量）聚合，可以得到最终的子图表示。</p>
+<p>对于每个属性，我们定义一个anchor patch 采样函数$\phi_{\mathrm{X}}:\left(G, S^{(c)}\right) \rightarrow A_{\mathrm{X}}$，即对于子图$S$的一个连通分量$S^{(c)}$，$\phi_{\mathrm{X}}$为该子图分量输出属性$X$的anchor patch。</p>
+<h3 id="position">Position</h3>
+<p>为了捕获Internal Position, $\phi_{\mathrm{P}_{\mathrm{I}}}$返回anchor patch $A_{P_{I}}$，每个anchor patch为 子图内的单个节点，所有的针对Internal Position属性的anchor patch集合为$\mathcal{A}_{P_{I}} = \{A^{(1)}_{P_{I}},A^{(2)}_{P_{I}}, \cdots\}$， 为子图$S$内随机采样的节点集合，即$A^{(i)}_{P_{I}}$为一个子图内的节点。由于Internal Position的目的是捕获子图连通分量之间的距离，因此不同的连通分量共享anchor，通过共享的anchor和不同连通分量之间的相似度，来将anchor的信息聚合到不同的连通分量中，这将允许子图中不同连通分量相互定位。 例如$S$有两个连通分量，有一个anchor $A^{(i)}_{P_{I}}$存在于其中一个分量中，那么两个连通分量分别依据和anchor的相似度来聚合anchor的表示，那么如果有很多anchor的情况下，可以较为准确的为这两个分量区分相对位置。子图$S$的anchor patch集合$\mathcal{A}_{P_{I}}$对$S$的<strong>所有分量</strong>共享。</p>
+<p>为了捕获Border Position， 由于Border Position是子图整体和图的其他部分的距离，所以$\phi_{\mathrm{P}_{\mathrm{B}}}$采样的节点在所有<strong>子图</strong>间共享，anchor集$\mathcal{A}_{P_{B}} = \{A^{(1)}_{P_{B}},A^{(2)}_{P_{B}}, \cdots\}$中每个anchor patch $A^{(i)}_{P_{B}}$是随机采样的节点，并且集合$\mathcal{A}_{P_{B}}$所有子图都共享，即所有子图的所有分量都聚合来自$\mathcal{A}_{P_{B}}$的消息，例如子图$S_1$和$S_2$， $S_1$的所有分量依据和anchor的相似度聚合所有anchor的信息，同样$S_2$的所有分量依据和anchor的相似度聚合所有anchor的信息，那么如果anchor数量足够多，并且在子图间共享，所以为子图$S_1$和$S_2$学习到的emb可以分别反映两个子图和原图中其他部分的相似度，从而区分两个子图的position。</p>
+<p>综上所述，对于Internal Positon，anchor在子图中采样，且在同一个子图的不同分量间共享，从而捕获同一个子图不同分量间的位置距离。</p>
+<p>对于Border Position， anchor在整个图中采样，且在所有子图间共享，从而捕获不同子图在原图中的位置距离。</p>
+<h3 id="neighborhood">Neighborhood</h3>
+<p>为了捕获Internal Neighborhood，$\phi_{\mathrm{N}_{\mathrm{I}}}$是从子图分量$S^{(c)}$中采样anchor patch，对于每个子图分量，它的anchor patch来自自己内部节点，聚合来自自己内部节点的消息，从而捕获内部邻域信息。</p>
+<p>而$\phi_{\mathrm{N}_{\mathrm{B}}}$是从子图分量$S^{(c)}$的border neighborhood中采样anchor，即子图分量$S^{(c)}$中任意节点$k$-hop以内邻居（不在$S^{(c)}$）中的节点采样anchor，子图$S^{(c)}$聚合这些$k$-hop border neighborhood从而为每个子图分量捕获边界邻域信息。</p>
+<h3 id="structure">Structure</h3>
+<p>$\phi_{\mathrm{S}}$采样anchor patch用于捕获子图的内部结构信息和边界结构信息，针对内部结构信息采样的anchor集合$\mathcal{A}_{\mathrm{S}_{1}}$以及针对边界结构信息采样的anchor集合$\mathcal{A}_{\mathrm{S}_{B}}$对所有子图也是共享的，具体来说，$\phi_{\mathrm{S}}$返回的是根据三角随机游走从图中抽取的连通部分，通过计算与这些anchor<strong>图</strong>的相似度来聚合这些anchor图，从而区分不同子图在结构上的相似度。具体来说，每个子图根据与共享anchor图之间的相似度，聚合anchor图，那么不同子图如果与共享的anchor子图集相似度越高，那么这这些子图的结构相似度就越高。例如，$S_1$和$S_2$为$G$中的两个子图，要使两个子图的embedding可以反映两个子图结构上的相似性，那么给定一大堆anchor子图，$S_1$基于它和这些anchor的相似性聚合所有anchor，$S_2$同样基于它和anchor的相似性聚合所有anchor，anchor set相当于一个相似度中介，两个子图的embedding分别反映了两个子图和共享anchor set之间的相似度 $Sim_1$和$Sim_2$，那么如果，如果$Sim_1$和$Sim_2$的差别较大，那么说明两个子图与anchor set的相似度相差太大，所以两个子图的结构差别较大。</p>
+<h2 id="neural-encoding-of-anchor-patches">Neural Encoding of Anchor Patches</h2>
+<p>对提取出的anchor进行编码，对于Position anchor patches 和 Neighbor anchor patches，由于每个anchor patch是单一节点，所以节点特征就是anchor的representation。而对于 Structure属性的anchor patches，它是一个个子图，为了将他们编码，本文首先在每个anchor patch上进行长度为$w$参数为$\beta$的三角随机游走，得到节点序列$\left(u_{\pi_{w}(1)}, \ldots, u_{\pi_{w}(n)}\right)$，然后将节点序列输入双向LSTM中得到最终的patch 表示$\mathbf{a}_{S}$。</p>
+<h2 id="subgraph-level-message-passing">Subgraph-Level Message Passing</h2>
+<p>SubGNN的消息传递定义在<strong>子图分量级</strong>。首先为每个结构属性采样一对anchor patches：$\mathcal{A}_{\mathrm{X}}=\left\{A_{\mathrm{X}}^{(1)}, \ldots, A_{\mathrm{X}}^{\left(n_{A}\right)}\right\}$，每个属性的采样规则如Property-Aware Routing 中所示，即针对Position和Neighborhood属性，采样的anchor patch是节点，针对Structure，采样的anchor patch是子图。$\mathcal{A}_{\mathrm{P}}$、$\mathcal{A}_{\mathrm{N}}$和$\mathcal{A}_{\mathrm{S}}$分别为三个属性的anchor patch 集合。对于子图$S$的第$c$个分量$S^{(c)}$，定义从anchor patch $A_{\mathrm{X}}$到$S^{(c)}$的消息：
+$$
+\mathrm{MSG}_{\mathrm{X}}^{A \rightarrow S}=\gamma_{\mathrm{X}}\left(S^{(c)}, A_{\mathrm{X}}\right) \cdot \mathbf{a}_{\mathrm{X}}
+$$
+其中$X$是结构属性，$\gamma_{\mathrm{X}}$是该结构属性的相似度函数，用于衡量anchor patch 和子图embedding之间的相似度值。将一个属性下所有anchor patches的消息聚合，然后与子图分量$S^{(c)}$结合成该子图分量在$X$属性上的表示：
+$$
+\begin{aligned}
+&amp;\mathbf{g}_{\mathrm{X}, c}=\mathrm{AGG}_{M}\left(\left\{\mathrm{MSG}_{\mathrm{X}}^{A_{\mathrm{X}} \rightarrow S^{(c)}} \forall A_{\mathrm{X}} \in \mathcal{A}_{\mathrm{X}}\right\}\right) \\
+&amp;\mathbf{h}_{\mathrm{X}, c} \leftarrow \sigma\left(\mathbf{W}_{\mathrm{X}} \cdot\left[\mathbf{g}_{\mathrm{X}, c} ; \mathbf{h}_{\mathrm{X}, c}\right]\right),
+\end{aligned}
+$$
+<img loading="lazy" src="/posts/2022-05-29-SubGNN/5.png#center" alt="图1"  title="123"  />
+</p>
+<p>以上图为例，给定一个子图$S$的第一个连通分量$S^{(1)}$在Position属性下的输入embedding为$\mathbf{h}_{P,1}$， Position属性在Internal和Border方面一共有4个anchor patches，每个anchor patches将消息聚合到$S^{(1)}$中，得到4个Messages,即 $\mathbf{m}_{P,1,1}$，$\mathbf{m}_{P,1,2}$，$\mathbf{m}_{P,1,3}$，$\mathbf{m}_{P,1,4}$，分别表示4个Position属性的anchor patch聚合到子图$S$第1个连通分量的消息。</p>
+<p>$\mathbf{h}_{\mathrm{X}, c}$的顺序不变性是层到层消息传递的重要属性，但是它会限制捕捉子图结构和位置的能力。因此这里构造了property-aware的输出表征$\mathbf{Z}_{X, c}$，通过将属性$X$在分量$c$上的所有anchor message拼接，得到anchor-set message 矩阵$\mathbf{M}_{\mathrm{X}}$， 如图二所示，$\mathbf{M}_{\mathrm{X}}$的每行都是anchor-set message （集合消息），然后传递给非线性激活函数（如算法1所示）。输出的表示向量的每一维都编码了anchor patch 的结构信息和位置信息，对于邻域通道，设定$\mathbf{Z}_{\mathrm{N}, c}=\mathbf{h}_{\mathrm{N}, c}$。最后SubGNN为连通分量拼接每个属性的消息，得到分量表示$\mathbf{z}_c$。最后所有的分量表示通过$\mathrm{READOUT}$聚合成最后的子图表示$\mathbf{z}_{S}$。</p>
+<p>概括来说，先得到子图每个分量$S^{(c)}$在属性$X$上的表示$\mathbf{z}_{X,c}$，然后1）对于每层SubGNN，将分量$S^{(c)}$的所有属性表示向量聚合，得到该层$c$分量的表示。2）将所有层的$S^{(c)}$分量的表示向量聚合，得到子图分量$S^{(c)}$的最终表示$\mathbf{z}_c$。3）子图$S$所有分量的表示聚合，得到最终的子图表示$\mathbf{z}_S$。</p>
+<p><img loading="lazy" src="/posts/2022-05-29-SubGNN/6.png#center" alt="图1"  title="123"  />
+</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>有点复杂~</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>NeurIPS2021 《Decoupling the Depth and Scope of Graph Neural Networks》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/decouplinggcn/</link>
@@ -2270,6 +2354,10 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <tr>
 <td><a href="https://github.com/chaitjo/awesome-efficient-gnn">https://github.com/chaitjo/awesome-efficient-gnn</a></td>
 <td>Efficient Graph Neural Networks - a curated list of papers and projects</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs">https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs</a></td>
+<td>Awesome Resources on Trustworthy Graph Neural Networks</td>
 </tr>
 </tbody>
 </table>

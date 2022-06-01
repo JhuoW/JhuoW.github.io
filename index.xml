@@ -71,6 +71,8 @@
 <p>$\phi_{\mathrm{S}}$采样anchor patch用于捕获子图的内部结构信息和边界结构信息，针对内部结构信息采样的anchor集合$\mathcal{A}_{\mathrm{S}_{1}}$以及针对边界结构信息采样的anchor集合$\mathcal{A}_{\mathrm{S}_{B}}$对所有子图也是共享的，具体来说，$\phi_{\mathrm{S}}$返回的是根据三角随机游走从图中抽取的连通部分，通过计算与这些anchor<strong>图</strong>的相似度来聚合这些anchor图，从而区分不同子图在结构上的相似度。具体来说，每个子图根据与共享anchor图之间的相似度，聚合anchor图，那么不同子图如果与共享的anchor子图集相似度越高，那么这这些子图的结构相似度就越高。例如，$S_1$和$S_2$为$G$中的两个子图，要使两个子图的embedding可以反映两个子图结构上的相似性，那么给定一大堆anchor子图，$S_1$基于它和这些anchor的相似性聚合所有anchor，$S_2$同样基于它和anchor的相似性聚合所有anchor，anchor set相当于一个相似度中介，两个子图的embedding分别反映了两个子图和共享anchor set之间的相似度 $Sim_1$和$Sim_2$，那么如果，如果$Sim_1$和$Sim_2$的差别较大，那么说明两个子图与anchor set的相似度相差太大，所以两个子图的结构差别较大。</p>
 <h2 id="neural-encoding-of-anchor-patches">Neural Encoding of Anchor Patches</h2>
 <p>对提取出的anchor进行编码，对于Position anchor patches 和 Neighbor anchor patches，由于每个anchor patch是单一节点，所以节点特征就是anchor的representation。而对于 Structure属性的anchor patches，它是一个个子图，为了将他们编码，本文首先在每个anchor patch上进行长度为$w$参数为$\beta$的三角随机游走，得到节点序列$\left(u_{\pi_{w}(1)}, \ldots, u_{\pi_{w}(n)}\right)$，然后将节点序列输入双向LSTM中得到最终的patch 表示$\mathbf{a}_{S}$。</p>
+<p><img loading="lazy" src="/posts/2022-05-29-SubGNN/7.png#center" alt="图1"  title="123"  />
+</p>
 <h2 id="subgraph-level-message-passing">Subgraph-Level Message Passing</h2>
 <p>SubGNN的消息传递定义在<strong>子图分量级</strong>。首先为每个结构属性采样一对anchor patches：$\mathcal{A}_{\mathrm{X}}=\left\{A_{\mathrm{X}}^{(1)}, \ldots, A_{\mathrm{X}}^{\left(n_{A}\right)}\right\}$，每个属性的采样规则如Property-Aware Routing 中所示，即针对Position和Neighborhood属性，采样的anchor patch是节点，针对Structure，采样的anchor patch是子图。$\mathcal{A}_{\mathrm{P}}$、$\mathcal{A}_{\mathrm{N}}$和$\mathcal{A}_{\mathrm{S}}$分别为三个属性的anchor patch 集合。对于子图$S$的第$c$个分量$S^{(c)}$，定义从anchor patch $A_{\mathrm{X}}$到$S^{(c)}$的消息：
 $$

@@ -175,7 +175,7 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 </tr>
 </tbody>
 </table>
-<h1 id="survey">Survey</h1>
+<h1 id="awesome-awesomes">Awesome-Awesomes</h1>
 <table>
 <thead>
 <tr>
@@ -311,6 +311,10 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <tr>
 <td><a href="https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs">https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs</a></td>
 <td>Awesome Resources on Trustworthy Graph Neural Networks</td>
+</tr>
+<tr>
+<td><a href="https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders">https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders</a></td>
+<td>A collection of literature after or concurrent with Masked Autoencoder (MAE) (Kaiming He el al.).</td>
 </tr>
 </tbody>
 </table>

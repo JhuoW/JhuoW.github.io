@@ -71,6 +71,7 @@ $$
 $$
 \theta^{(t+1)}=\arg \max_\theta \mathbb{E}_{P(z|X,\theta^{(t)})} \left[\log P(X,z | \theta)\right]     \quad \text{期望最大化}  \tag{9}
 $$</p>
+<p>其中$P(z|X,\theta^{(t)})$为后验分布posterior。</p>
 <h1 id="em算法收敛性证明">EM算法收敛性证明</h1>
 <p>因为EM算法通过迭代的方式优化模型参数$\theta$，使得对数似然$\log P(X|\theta)$最大。通过公式(7)，可以保证在$\theta^{(t+1)}$参数下的模型比$\theta^{(t)}$参数下的模型更拟合数据分布。通过公式(7)迭代更新参数$\theta^{(t)} \to \theta^{(t+1)}$，可以使得$\log P(X|\theta)$变大。收敛性即证明：
 $$

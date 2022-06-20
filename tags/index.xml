@@ -10,7 +10,27 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 09 Jun 2022 23:01:07 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Jun 2022 19:45:48 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>EM</title>
+      <link>https://JhuoW.github.io/tags/em/</link>
+      <pubDate>Mon, 20 Jun 2022 19:45:48 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/em/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Variational Inference</title>
+      <link>https://JhuoW.github.io/tags/variational-inference/</link>
+      <pubDate>Mon, 20 Jun 2022 19:45:48 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/variational-inference/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
     <item>
       <title>GNN</title>
       <link>https://JhuoW.github.io/tags/gnn/</link>
@@ -87,26 +107,6 @@
       <pubDate>Wed, 30 Mar 2022 10:37:41 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/transformer/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>EM</title>
-      <link>https://JhuoW.github.io/tags/em/</link>
-      <pubDate>Tue, 29 Mar 2022 19:45:48 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/em/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>Variational Inference</title>
-      <link>https://JhuoW.github.io/tags/variational-inference/</link>
-      <pubDate>Tue, 29 Mar 2022 19:45:48 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/variational-inference/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

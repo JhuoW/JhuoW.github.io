@@ -3,31 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://JhuoW.github.io/categories/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/em/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/posts/em/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/notebook/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/posts/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/variational-inference/</loc>
-    <lastmod>2022-06-20T19:45:48+08:00</lastmod>
+    <lastmod>2022-06-09T23:01:07+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/gnn/</loc>
     <lastmod>2022-06-09T23:01:07+08:00</lastmod>
@@ -38,10 +14,19 @@
     <loc>https://JhuoW.github.io/posts/glass/</loc>
     <lastmod>2022-06-09T23:01:07+08:00</lastmod>
   </url><url>
+    <loc>https://JhuoW.github.io/</loc>
+    <lastmod>2022-06-09T23:01:07+08:00</lastmod>
+  </url><url>
     <loc>https://JhuoW.github.io/categories/paper/</loc>
     <lastmod>2022-06-09T23:01:07+08:00</lastmod>
   </url><url>
+    <loc>https://JhuoW.github.io/posts/</loc>
+    <lastmod>2022-06-09T23:01:07+08:00</lastmod>
+  </url><url>
     <loc>https://JhuoW.github.io/tags/subgraph/</loc>
+    <lastmod>2022-06-09T23:01:07+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/</loc>
     <lastmod>2022-06-09T23:01:07+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/subgnn/</loc>
@@ -68,6 +53,12 @@
     <loc>https://JhuoW.github.io/posts/2020-04-03-ssgcns/</loc>
     <lastmod>2022-04-08T14:04:49+08:00</lastmod>
   </url><url>
+    <loc>https://JhuoW.github.io/categories/machine-learning/</loc>
+    <lastmod>2022-04-04T16:41:42+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/notebook/</loc>
+    <lastmod>2022-04-04T16:41:42+08:00</lastmod>
+  </url><url>
     <loc>https://JhuoW.github.io/tags/optimizer/</loc>
     <lastmod>2022-04-04T16:41:42+08:00</lastmod>
   </url><url>
@@ -85,6 +76,15 @@
   </url><url>
     <loc>https://JhuoW.github.io/posts/2022-04-02-tinl/</loc>
     <lastmod>2022-04-02T10:34:01+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/em/</loc>
+    <lastmod>2022-04-01T19:45:48+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/em/</loc>
+    <lastmod>2022-04-01T19:45:48+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/variational-inference/</loc>
+    <lastmod>2022-04-01T19:45:48+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/neuralsparse/</loc>
     <lastmod>2022-04-01T10:55:44+08:00</lastmod>

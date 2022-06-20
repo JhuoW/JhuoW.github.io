@@ -10,27 +10,7 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Jun 2022 19:45:48 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Machine Learning</title>
-      <link>https://JhuoW.github.io/categories/machine-learning/</link>
-      <pubDate>Mon, 20 Jun 2022 19:45:48 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/categories/machine-learning/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>Notebook</title>
-      <link>https://JhuoW.github.io/categories/notebook/</link>
-      <pubDate>Mon, 20 Jun 2022 19:45:48 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/categories/notebook/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
+    <lastBuildDate>Thu, 09 Jun 2022 23:01:07 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GNN</title>
       <link>https://JhuoW.github.io/categories/gnn/</link>
@@ -47,6 +27,26 @@
       <pubDate>Thu, 09 Jun 2022 23:01:07 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/categories/paper/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>https://JhuoW.github.io/categories/machine-learning/</link>
+      <pubDate>Mon, 04 Apr 2022 16:41:42 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/machine-learning/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Notebook</title>
+      <link>https://JhuoW.github.io/categories/notebook/</link>
+      <pubDate>Mon, 04 Apr 2022 16:41:42 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/categories/notebook/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

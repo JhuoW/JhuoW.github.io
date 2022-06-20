@@ -10,11 +10,11 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Jun 2022 19:45:48 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/em/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Apr 2022 19:45:48 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/em/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Expectation Maximization</title>
       <link>https://JhuoW.github.io/posts/em/</link>
-      <pubDate>Mon, 20 Jun 2022 19:45:48 +0800</pubDate>
+      <pubDate>Fri, 01 Apr 2022 19:45:48 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/em/</guid>
       <description>EM算法笔记</description>

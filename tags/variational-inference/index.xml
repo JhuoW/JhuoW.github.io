@@ -13,10 +13,10 @@
     <lastBuildDate>Fri, 01 Apr 2022 19:45:48 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/variational-inference/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Expectation Maximization</title>
-      <link>https://JhuoW.github.io/posts/em/</link>
+      <link>https://JhuoW.github.io/posts/em-algo/</link>
       <pubDate>Fri, 01 Apr 2022 19:45:48 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/posts/em/</guid>
+      <guid>https://JhuoW.github.io/posts/em-algo/</guid>
       <description>EM算法笔记</description>
       <content:encoded><![CDATA[<h1 id="最大似然估计mle">最大似然估计MLE</h1>
 <p>数据 $X = \{x_1, \cdots x_N\}$, 模型参数为$\theta$，Likelihood 定义为 $P(X | \theta)$：当参数为$\theta$时，观测到给定数据$X$的概率。
@@ -120,7 +120,7 @@ $$
 <blockquote>
 <p>Jensen Inequality：</p>
 <p>If $g(x)$ is a convex function on $R_X$, and $\mathbb{E}[g(x)]$ and $g(\mathbb{E}[X])$ are finite, then $\mathbb{E}[g(x)] \geq g(\mathbb{E}[X])$。</p>
-<p><img loading="lazy" src="/posts/EM/Convex_b.png" alt=""  />
+<p><img loading="lazy" src="/posts/EM_Algo/Convex_b.png" alt=""  />
 </p>
 <p>显然$\log$是concave，所以$\mathbb{E}[\log(\cdot)]\leq \log(\mathbb{E}[\cdot])$。同理$-\log$是convex，所以$\mathbb{E}[-\log(\cdot)]\geq -\log(\mathbb{E}[\cdot])$。</p>
 </blockquote>
@@ -204,7 +204,7 @@ $$</p>
 &amp;= \text{公式(7)}
 \end{aligned} \tag{28}
 $$</p>
-<p>我把本文整理成了<a href="/posts/EM/EM.pdf">PDF</a></p>
+<p>我把本文整理成了<a href="/posts/EM_Algo/EM.pdf">PDF</a></p>
 <h1 id="参考">参考</h1>
 <p><a href="https://youtube.com/playlist?list=PLOxMGJ_8X74bhcPbpiX642NIfPlkpD1BC">https://youtube.com/playlist?list=PLOxMGJ_8X74bhcPbpiX642NIfPlkpD1BC</a></p>
 <p><a href="https://zhuanlan.zhihu.com/p/78311644">https://zhuanlan.zhihu.com/p/78311644</a></p>

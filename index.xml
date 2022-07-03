@@ -2747,6 +2747,14 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <td><a href="https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders">https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders</a></td>
 <td>A collection of literature after or concurrent with Masked Autoencoder (MAE) (Kaiming He el al.).</td>
 </tr>
+<tr>
+<td><a href="https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection">https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection</a></td>
+<td>Awesome graph anomaly detection techniques built based on deep learning frameworks.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mengliu1998/awesome-expressive-gnn">https://github.com/mengliu1998/awesome-expressive-gnn</a></td>
+<td>A collection of papers studying/improving the expressiveness of graph neural networks (GNNs)</td>
+</tr>
 </tbody>
 </table>
 <h1 id="useful-repotools">Useful Repo/Tools</h1>
@@ -4796,7 +4804,8 @@ $$\theta_{new} = \theta - \frac{\eta}{\sqrt{s+\varepsilon}} \odot \nabla J(\thet
 本站搭建于Github
 联系方式：   e-mail: jhuow@proton.me
   QQ/Wechat: 暂不公开，发邮件给我我告诉你
-  其他 🏀休斯顿火箭，⚽巴萨
+  Publication 累计于NeurIPS，ICML，ICLR等顶级会议期刊发表论文0篇。
+其他 🏀休斯顿火箭，⚽巴萨
 📷摄影爱好者
 🌜严重失眠患者 （顺便求助睡眠方法）
 May The Force Be With You </description>
@@ -4813,6 +4822,8 @@ May The Force Be With You </description>
 <p>QQ/Wechat: 暂不公开，发邮件给我我告诉你</p>
 </li>
 </ul>
+<h3 id="publication">Publication</h3>
+<p>累计于NeurIPS，ICML，ICLR等顶级会议期刊发表论文0篇。</p>
 <h3 id="其他">其他</h3>
 <p>🏀休斯顿火箭，⚽巴萨</p>
 <p>📷摄影爱好者</p>

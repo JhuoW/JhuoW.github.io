@@ -1452,6 +1452,14 @@ Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Brons
 <td><a href="https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders">https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders</a></td>
 <td>A collection of literature after or concurrent with Masked Autoencoder (MAE) (Kaiming He el al.).</td>
 </tr>
+<tr>
+<td><a href="https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection">https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection</a></td>
+<td>Awesome graph anomaly detection techniques built based on deep learning frameworks.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mengliu1998/awesome-expressive-gnn">https://github.com/mengliu1998/awesome-expressive-gnn</a></td>
+<td>A collection of papers studying/improving the expressiveness of graph neural networks (GNNs)</td>
+</tr>
 </tbody>
 </table>
 <h1 id="useful-repotools">Useful Repo/Tools</h1>

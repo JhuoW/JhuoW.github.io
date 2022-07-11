@@ -10,7 +10,99 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 09 Jun 2022 23:01:07 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 11 Jul 2022 09:42:15 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ICLR2021 《Combining Label Propagation and Simple Models Out-performs Graph Neural Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/c_and_s/</link>
+      <pubDate>Mon, 11 Jul 2022 09:42:15 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/c_and_s/</guid>
+      <description>ICLR2021 &amp;#34;Combining Label Propagation and Simple Models Out-performs Graph Neural Networks&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://openreview.net/pdf?id=8E1-f3VhX1o">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>本文研究了结合更简单的模型来处理transductive node classification任务。 主要包括1个预测模块和两个后处理（post-processing）模块：</p>
+<ul>
+<li>Base predictor：忽略图结构，用简单模型（如MLP或线性模型）使用节点特征预测label</li>
+<li>Error correction：校正步骤，将训练数据中的不确定性（误差）传播到图上，来校正Base predictor的预测</li>
+<li>Smoothing：在图上平滑预测</li>
+</ul>
+<p>其中只有第一步base predictor的参数是可学习的，即涉及图结构的操作（Correction和Smoothing）无需参数学习，这种简单的模型使得参数数量减少了几个数量级，训练时间也减少了几个数量级，并且可以轻松扩展到大规模图。</p>
+<p>相比于过去的GNN+LP的方法，C&amp;S更加高效：1）C&amp;S首先只使用节点特征进行低成本的base prediction；2）然后再使用标签传播对基础预测进行校正 ；3）最后对最终预测进行平滑。 第一步是预测操作，后两部是后处理操作，也就是第一步为一个独立的端到端模型，后两部基于一个inductive bias来调整节点的表示。即homophily假设：相连节点的误差和label是相似的（正相关）。训练节点的误差和它相连节点的误差应相似，那么就用训练节点的误差来校正邻居节点。</p>
+<p>因此，将标签更加直接的整合到GNN的学习算法中是本文性能的关键，并且发现LP与node features是相互互补的信号。实验表明，在OGB-Products上，参数量比GNN少了2个数量级，训练时间也减少2个数量级。</p>
+<h1 id="correct-and-smooth-cs-model">Correct and Smooth (C&amp;S) Model</h1>
+<p>给定无向图$G=(V,E)$，$A$为邻接矩阵，$S=D^{-1 / 2} A D^{-1 / 2}$为归一化邻接矩阵。节点集划分为labeled nodes $V_L$和unlabeled nodes $V_U$，其中$V = V_L \cup V_U$。进一步，labeled nodes可以分为训练节点集$V_{L_t}$和验证节点集$V_{L_v}$。训练集和验证集的label分别为$Y_{L_t:}$和$Y_{L_v:}$， 每行为label的one-hot向量。</p>
+<p><img loading="lazy" src="/posts/2022-07-11-CS/1.png#center" alt=""  />
+</p>
+<h2 id="simple-base-predictor">Simple Base Predictor</h2>
+<p>$$
+\min \sum_{i \in L_{t}} \ell\left(f\left(x_{i}\right), y_{i}\right)
+$$</p>
+<p>$f(\cdot)$为简单的训练模型+softmax，如浅层MLP， $\ell$为cross-entropy loss。 基于训练节点$V_{L_t}$特征的模型$f$可以得到输出预测$Z \in \mathbb{R}^{n\times c}$， 其中$Z$的每行是softmax得到的分类概率分布。Simple Base Predictor是一个独立训练的端到端模型。</p>
+<h2 id="correcting-base-prediction-with-error-correlation-使用邻居误差关联来纠正基础预测">Correcting Base Prediction with Error Correlation (使用邻居误差关联来纠正基础预测）</h2>
+<p>通过融合标签信息来提高base prediction $Z$的准确率。 本文期望base prediction中的误差沿着图中的边正相关，即节点$i$出的预测误差在它的邻居处也会出现相似的误差。为了实现这个目的，首先定义一个误差矩阵$E \in \mathbb{R}^{n \times c}$用来保存每个节点的预测误差，其中误差为训练数据集上的残差（只有训练节点由误差）其他没有训练过程中不知道label的节点误差设为0：
+$$
+E_{L_{t},:}=Y_{L_{t},:}-Z_{L_{t},:}  \quad 为训练集节点 V_{L_t}的误差
+$$</p>
+<p>$$
+E_{L_{v},:}=0, \quad E_{U,:}=0  \quad 验证集和测试集节点的误差设为0
+$$</p>
+<p>若base predictor做出perfect prediction时，$E$将是一个全0矩阵。</p>
+<p>然后要在$E$中填补图中其他节点（验证集和测试集节点）的误差。依据homophily假设，相邻接节点的误差相似，因此使用标签扩散技术来平滑误差，即优化一下函数：
+$$
+\hat{E}=\underset{W \in \mathbb{R}^{n \times c}}{\arg \min } \operatorname{trace}\left(W^{T}(I-S) W\right)+\mu||W-E||_{F}^{2}
+$$
+实际上就是Laplacian Smoothing，$W \in \mathbb{R}^{n \times c}$表示$c$个信号，最小化第一项用来保证$W$每一列在图上平滑，即相邻的节点的误差向量$W_i \in \mathbb{R}^c$相似。第二项要求$W$要尽量接近$E$。最优的$W$表示为$\hat{E}$，上式可以通过：
+$$
+E^{(t+1)}=(1-\alpha) E+\alpha S E^{(t)}
+$$
+迭代求解，其中$\alpha = 1/(1+\mu)$。得到的$\hat{E}$称为smoothed errors。Base predictor中得到的$E_{L_{t},:}$只包含训练节点的误差，而通过在图上的误差平滑后，基于homophily 假设可以得到图中所有的误差（平滑误差）。已知图中所有节点在base predictor中的预测为$Z$，它的误差矩阵为$\hat{E}$，然后用误差矩阵来校正预测结果：
+$$
+Z^{(r)} = Z + \hat{E}
+$$
+通过这种方式对图中所有节点的误差做校正会存在一个问题，已知训练集的总误差为$||E||_2$， 通过迭代计算得到的总误差为$||E^{(t)}||_2$，且$||S||_2 = 1$, 所以下式成立：
+$$
+||E^{(t+1)}||_2 = ||(1-\alpha)E + \alpha S E^{(t)}||_2 \leq (1-\alpha)||E||_2+\alpha ||S||_2||E^{(t)}||_2 = (1-\alpha)||E||_2+\alpha ||E^{(t)}||_2
+$$
+因为 $||E^{(1)}||_2 \leq (1-\alpha)||E||_2 + \alpha ||E||_2 = ||E||_2$， 可以推出$||E^{(2)}||_2\leq (1-\alpha)||E||_2 + \alpha ||E^{(1)}||_2 \leq (1-\alpha)||E||_2 + \alpha ||E||_2 = ||E||_2$。因此，可以得到：
+$$
+||E^{(t)}||_2 \leq ||E||_2
+$$
+可以看出，传播之后的总error小了，因此不能完全纠正所有节点上的error。并且实验发现，对残差做放缩可以取得实质上的帮助。因此，本文提出两种方式对误差（残差）做放缩。</p>
+<ul>
+<li>
+<p><strong>Autoscale.</strong> 希望平滑后的总误差$\hat{E}$可以放缩到和训练集误差$E$差不多大小。 由于我们只知道训练节点上的真实误差，所以用训练集节点上的平均误差来缩放。形式上，令$e^T_j \in \mathbb{R}^c$表示$E$的第$j$行，即节点$j$的误差，用$\hat{e}^T_j \in \mathbb{R}^c$表示平滑之后的节点$j$误差，即$\hat{E}$的第$j$行。 定义：
+$$
+\sigma=\frac{1}{\left|L_{t}\right|} \sum_{j \in L_{t}}\left|\left|e_{j}\right|\right|_{1}
+$$
+$\sigma$为训练集节点的平均误差，对于每个unlabeled node $i \in  V_U$，它的校正prediction为：
+$$
+Z_{i,:}^{(r)}=Z_{i,:}+\frac{\sigma}{\left|\left|\hat{e}_{i}\right|\right|_{1}} \cdot \hat{e}_{i}^{T}
+$$
+其中校正误差为 $\frac{\hat{e}_{i}^{T}}{\left|\left|\hat{e}_{i}\right|\right|_{1}} \cdot \sigma$， 表示对校正的误差做放缩，使得unlabeled node每个节点的校正误差为训练集节点的平均校正误差。</p>
+</li>
+<li>
+<p><strong>Scaled Fixed Diffusion (FDiff-scale).</strong> 每次传播完，把training node的误差设为真实误差再进行下一次传播。另外，本文发现用超参数来放缩误差校正也是有效的：$Z^{(r)}=Z+s \hat{E}$。</p>
+</li>
+</ul>
+<h2 id="smoothing-final-predictions-with-prediction-correlation">Smoothing Final Predictions with Prediction Correlation</h2>
+<p>在用$\hat{E}$校正base prediction $Z$后得到校正预测矩阵$Z^{(r)}$。为了得到最后的预测，本文进一步对校正预测做平滑处理。 动机是：图中相邻的顶点可能具有相似的标签，即homophily假设。而在对base prediction做校正后，仅是的相邻的节点具有相似的误差（误差正相关），为了使其进一步满足homophily假设（即标签正相关），本文通过另一个LP来使得label在图上是平滑的：定义一个预测矩阵$H \in \mathbb{R}^{n \times c}$, 将训练集ground-truth label赋值给对应位置：
+$$
+H_{L_{t},:}=Y_{L_{t},:}
+$$
+然后将验证集和测试集节点的位置赋值为校正预测 （平滑误差后的预测）：
+$$
+H_{L_{v} \cup U,:}=Z_{L_{v} \cup U,:}^{(r)}
+$$
+然后对矩阵$H$做LP:
+$$
+H^{(t+1)}=(1-\alpha) H+\alpha S H^{(t)}
+$$
+其中 $H^{(0)} = H$，直到收敛，即收敛的$H^{(T)}$会尽可能保持平滑，并且和$H^{(0)}$接近，即最优$H$会依据训练集label使得相邻节点的label尽可能一样的同时，对图中节点做校正。</p>
+<h3 id="与appnp的关系">与APPNP的关系</h3>
+<p>APPNP也可以视为先特征变换，再平滑的过程，但APPNP是端到端的过程，label信息没有被加入平滑过程中。</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>ICLR2022 《GLASS：GNN with Labeling Tricks for Subgraph Representation Learning》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/glass/</link>

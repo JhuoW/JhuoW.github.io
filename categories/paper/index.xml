@@ -10,7 +10,121 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 11 Jul 2022 09:42:15 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/paper/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 27 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/paper/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MLP and GNNs</title>
+      <link>https://JhuoW.github.io/posts/glnn/</link>
+      <pubDate>Sat, 27 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/glnn/</guid>
+      <description>Scalable GNN with MLP 相关论文总结</description>
+      <content:encoded><![CDATA[<p>最近一些工作通过解耦Message-Passing 和 Feature Learning的方式来提升GNN的可拓展性，这里对一小部分相关工作做一个小总结。</p>
+<h1 id="1-combining-label-propagation-and-simple-models-out-performs-graph-neural-networks-iclr2021">1. Combining Label Propagation and Simple Models Out-performs Graph Neural Networks （ICLR2021）</h1>
+<p><img loading="lazy" src="/posts/2022-07-13/C_S.png#center" alt=""  />
+</p>
+<p>模型首先忽略图结构，用简单模型（MLP），只使用节点特征预测label：</p>
+<p>$$
+\min \sum_{i \in L_{t}} \ell\left(f\left(x_{i}\right), y_{i}\right)
+$$
+考虑一个inductive bias：预测误差与邻近度关系强相关，对图中所有节点的误差做校正。</p>
+<p>具体来说，首先计算一个初始的误差矩阵$E$，其中训练集误差如下
+$$
+E_{L_{t},:}=Y_{L_{t},:}-Z_{L_{t},:}
+$$
+其他节点的误差未知：$E_{L_{v},:}=0, \quad E_{U,:}=0$。然后通过Label Propagation将误差矩阵在图上做平滑，使得相邻节点的误差相似：</p>
+<p>$$
+\hat{E}=\underset{W \in \mathbb{R}^{n \times c}}{\arg \min } \operatorname{trace}\left(W^{T}(I-S) W\right)+\mu||W-E||_{F}^{2}
+$$
+由此得到所有节点的误差矩阵$\hat{E}$。然后用$\hat{E}$对基础MLP预测做校正，这个post-processing过程不涉及训练参数，校正后的预测为：
+$$
+Z^{(r)} = Z + \hat{E}
+$$
+考虑homophily：校正的预测label要满足相邻节点label相似。 注意，这里不直接对$Z^{(r)}$做Label Propagation，而是构造了一个label矩阵$H \in \mathbb{R}^{n \times c}$，其中将训练集真实label和验证+测试集校正label加入$H$中，然后对$H$做label propagation：
+$$
+\begin{aligned}
+H_{L_{t},:}&amp;=Y_{L_{t},:} \\
+H_{L_{v} \cup U,:}&amp;=Z_{L_{v} \cup U,:}^{(r)}
+\end{aligned}
+$$
+Label Prop:
+$$
+H^{(t+1)}=(1-\alpha) H+\alpha S H^{(t)}
+$$
+最后直接用收敛的$H$做预测，即$\hat{Y} = H^{\infty}$，node $i$ 的预测class为：
+$$
+y_i = \arg \max _{j \in\{1, \ldots, c\}} \hat{Y}_{i j}
+$$</p>
+<h1 id="2-graph-less-neural-networks-teaching-old-mlps-new-tricks-via-distillation-iclr2022">2. Graph-less Neural Networks: Teaching Old MLPs New Tricks Via Distillation (ICLR2022)</h1>
+<p>MLPs相对于GNN更易于部署，并且避开了在线预测过程中的<strong>冷启动问题</strong>，即在线预测时，新节点的加入，它的邻居可能不能立即获得，MLP无需依赖于图结构，相比于GNN，MLP的延迟低。而GNN依赖于节点上下文，准确性更高。如何融合GNN和MLP的有点是本文解决的挑战。</p>
+<p>本文的核心发现为：可以在不显著损失性能的情况下将知识从 GNN 提取到 MLP，从而大大减少节点分类的<strong>推理时间</strong>。 知识蒸馏（Knowledge Distillation, KD）可以离线完成，并且与模型训练相耦合，即<strong>将推理阶段的耗时迁移到训练阶段，因为训练阶段可以容忍高耗时，而推理通常需要较大的时间减少。</strong>  也就是 训练阶段不仅要训练GNN模型，还要将模型的知识迁移到MLP上，而推理阶段直接用MLP做预测。</p>
+<p><strong>Motivation：</strong> GNN虽然可以取得较好的性能，但是由于它依赖于图结构，所以有较大的推理延迟。 每增加一层GNN，就要为每个节点多捕获一跳邻居。对于一个平均度为$R$的图，在用$L$层GNN预测一个节点时，需要先获取的邻居数量为$\mathcal{O}(R^L)$。 同时，由于层是sequential，所以要逐层获取邻居，总的延迟会随层数加深而增大，每层需要融合的邻居数也成指数上升趋势，是的层数越深，预测延迟越高。</p>
+<p>相反，MLP不利用图结构，使得推理时间远小于GNN，但是损害了节点分类的预测性能，因此 如何同时兼顾GNN和MLP的优势，是的模型以获得高精度和低延迟是一个待解决问题，因此本文提出了GNN和MLP的跨模型Knowledge Distillation。</p>
+<p><img loading="lazy" src="/posts/2022-07-13/GLNN.png#center" alt=""  />
+</p>
+<p>本文提出了GLNN，如上图所示，训练一个“Boosted” MLP，他的Knowledge来自于一个Teacher GNN。如上图所示，首先训练好一个GNN模型（这里用GraphSAGE+GCN Aggregation）作为Teacher，GNN的为节点集$v \in V$的预测输出为$\boldsymbol{z}_{v}$。 然后训练一个student MLP，predictions为$\hat{\boldsymbol{y}}_{v}$。loss由两部分组成，第一部分直接用MLP做半监督预测的损失；第二部分为KD，使得MLP对所有节点的预测与GNN的预测接近：
+$$
+\mathcal{L}=\lambda \Sigma_{v \in \mathcal{V}^{L}} \mathcal{L}_{\text {label }}\left(\hat{\boldsymbol{y}}_{v}, \boldsymbol{y}_{v}\right)+(1-\lambda) \Sigma_{v \in \mathcal{V}} \mathcal{L}_{\text {teacher }}\left(\hat{\boldsymbol{y}}_{v}, \boldsymbol{z}_{v}\right)
+$$
+其中$\mathcal{L}_{\text {label }}$为cross-entropy loss， $\mathcal{L}_{\text {teacher }}$为KL-divergence。在推理阶段直接使用MLP来预测测试集节点label，无需依赖图结构。预测阶段，直接用MLP做预测。实做中直接去掉了第一部分，只保留KD部分。</p>
+<h1 id="3-node-dependent-local-smoothing-for-scalable-graph-learning-neurips2021">3. Node Dependent Local Smoothing for Scalable Graph Learning （NeurIPS2021）</h1>
+<p>以往的工作已经证明了，简单的MLP+Label Smoothing的性能可以超过vanilla GCN。但是如何控制模型的平滑程度（extent of smoothness）依然是个问题。 太少的平滑迭代会造成欠平滑（under-smoothing）问题，而太多的迭代会造成过平滑（oversmoothing）问题。另外，不同节点应有特定的平滑程度。大多数现有的GNN使用一个统一的迭代次数$k$，即每个节点都聚合它的$k$阶邻居。 这种统一的聚合方式存在问题，因为迭代次数应与每个节点的度和局部结构相关。如下图所示，两个红色节点有完全不同的局部结构。 左边的红色节点位于Dense region中，因此它的传播速度更快，即很少的step就可以扩散到很多节点，因此，对于这类节点，需要较少次的propagation，因为小的iteration足以聚合足够多的节点。而右边红色节点需要更多次的propagation来聚合足够的信息。</p>
+<p><img loading="lazy" src="/posts/2022-07-13/NDLS_1.png#center" alt=""  />
+</p>
+<p>本文提出了Node-dependent Local Smoothing (NDLS)， 计算每个节点的特定迭代次数（LSI），使得节点只会聚合它特定LSI以内的节点。</p>
+<p><strong>Over-Smoothing issue:</strong> <em>The convolution matrix is defined as $\widetilde{\mathbf{D}}^{r-1} \tilde{\mathbf{A}} \widetilde{\mathbf{D}}^{-r}$.  By continually smoothing the node feature with infinite number of propagation in SGC, the final smoothed feature $\mathbf{X}^{(\infty)}$ is：</em>
+$$
+\mathbf{X}^{(\infty)}=\hat{\mathbf{A}}^{\infty} \mathbf{X}, \quad \hat{\mathbf{A}}_{i, j}^{\infty}=\frac{\left(d_{i}+1\right)^{r}\left(d_{j}+1\right)^{1-r}}{2 m+n}
+$$
+可以看到，无限多层的SGC，卷积矩阵$\hat{\mathbf{A}}_{i, j}^{\infty}$每个元素只和两个节点的度，节点数$n$以及边数$m$有关，即$\hat{\mathbf{A}}^{\infty} \mathbf{X}$表示节点聚合图中所有节点，聚合权重只与两个节点的度有关，与节点位置，距离根节点距离无关。因此度越大的节点被赋予更大的聚合权重，无论两个节点的相对位置如何。</p>
+<p><strong>Local Smoothing Iteration (LSI)：</strong> 对于SGC，第$k$次迭代为$\mathbf{X}^{(k)}=\hat{\mathbf{A}}^{k} \mathbf{X}$。对于第$h$个feature，定义Influence matrix $I_{h}(k)$：
+$$
+I_{h}(k)_{i j}=\frac{\partial \hat{\mathbf{X}}_{i h}^{(k)}}{\partial \hat{\mathbf{X}}_{j h}^{(0)}}
+$$
+$I_{h}(k)_{i j}$ 表示在第$h$个feature处，节点$j$的变化对于<strong>节点$i$第$k$层输出的影响</strong>。因为$\mathbf{X}^{(k)}_{ih}=\hat{\mathbf{A}}^{k}_i \mathbf{X}_{:,h}$， 所以$\frac{\partial \hat{\mathbf{X}}_{i h}^{(k)}}{\partial \hat{\mathbf{X}}_{j h}^{(0)}} = \hat{\mathbf{A}}^{k}_{ij}$， 与特征$h$无关，因此节点$j$的输入特征对于节点$i$的第$k$层表示的影响为$\hat{\mathbf{A}}^{k}_{ij}$。那么第$k$次迭代的影响力矩阵可以写为：
+$$
+I(k)=\hat{\mathbf{A}}^{k}
+$$</p>
+<p>$$
+\tilde{I} = I(\infty)=\hat{\mathbf{A}}^{\infty}
+$$</p>
+<p>影响力矩阵$I(\infty)$收敛于稳态分布，即无限多层GNN时，节点$j$对$i$的representation的影响只与两个节点的度有关，与他们之间的结构关系无关。</p>
+<p>$\tilde{I}_i$为节点$v_i$的over-smoothing stationarity，LSI衡量了其他节点对$v_i$的影响力到达over-smoothing所需最少的迭代次数：
+$$
+K(i, \epsilon)=\min \left\{k:\left|\left|\tilde{I}_{i}-I(k)_{i}\right|\right|_{2}&lt;\epsilon\right\}
+$$
+上式可以通过迭代次数来控制节点$v_i$的平滑程度，是node-specific的。</p>
+<p><strong>NDLS Pipeline</strong> 1). 节点依赖的局部平滑 （NDLS-F） 2). 基于平滑特征的base prediction 3). 节点依赖的标签平滑（NDLS-L）。其中，第一步为pre-processing，第三部为post-processing。图结构仅用于第一部和第三部，参数的训练过程不涉及图结构，因此更加scalable。</p>
+<p>LSI和参数$\epsilon$ 使得每个节点可以与oversmoothing保持一个合适的距离。NDLS-F和NDLS-L利用label smoothing和node smoothing, 具体如下:</p>
+<ul>
+<li>
+<p>NDLS-F</p>
+<p>对于节点$i$， 计算它的LSI$K(i,\epsilon)$，对节点$i$做$K(i,\epsilon)$次propagation，然后做multi-scale features residual connection:
+$$
+\widetilde{\mathbf{X}}_{i}(\epsilon)=\frac{1}{K(i, \epsilon)+1} \sum_{k=0}^{K(i, \epsilon)} \mathbf{X}_{i}^{(k)}
+$$
+上式的矩阵形式可写为：
+$$
+\tilde{\mathbf{X}}(\epsilon)=\sum_{k=0}^{\max_{i} K(i, \epsilon)} \mathbf{M}^{(k)} \mathbf{X}^{(k)}, \quad \mathbf{M}^{(\mathbf{k})}{ }_{i j}=\left\{\begin{array}{l}
+\frac{1}{K(i, \epsilon)+1}, \quad i=j \quad \text { and } \quad k \leq K(i, \epsilon) \\
+0, \quad \text { otherwise }
+\end{array}\right.
+$$</p>
+</li>
+<li>
+<p>Base Prediction</p>
+<p>基于NDLS-F的得到的smoothed features $\tilde{\mathbf{X}}$训练一个base predictor，$\hat{\mathbf{Y}}=f(\widetilde{\mathbf{X}})$。 $\hat{\mathbf{Y}}$ 为模型预测的soft label (softmax output)。</p>
+</li>
+<li>
+<p>NDLS-L</p>
+<p>将预测的soft label $\hat{\mathbf{Y}}$ 再做Label Propagation，得到最终的预测结果。依然先计算在做Label Prop时，每个节点的LSI。 $\hat{\mathbf{Y}}^{(k)}=\hat{\mathbf{A}}^{k} \hat{\mathbf{Y}}$， 同理，影响力矩阵为$J_h(k) = I_h(k)$，LP for node $i$：
+$$
+\tilde{\mathbf{Y}}_{i}(\epsilon)=\frac{1}{K(i, \epsilon)+1} \sum_{k=0}^{K(i, \epsilon)} \hat{\mathbf{Y}}_{i}^{(k)}
+$$</p>
+</li>
+</ul>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>ICLR2021 《Combining Label Propagation and Simple Models Out-performs Graph Neural Networks》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/c_and_s/</link>

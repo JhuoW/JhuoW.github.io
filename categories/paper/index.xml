@@ -10,7 +10,64 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/paper/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 01 Sep 2022 10:47:21 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/paper/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ICLR2022 《Graph Condensation for Graph Neural Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/gcond/</link>
+      <pubDate>Thu, 01 Sep 2022 10:47:21 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/gcond/</guid>
+      <description>ICLR2022 &amp;#34;Graph Condensation for Graph Neural Networks&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://openreview.net/forum?id=WLEx3Jo4QaB">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>本文提出图浓缩技术（Graph Condensation），旨在将大图浓缩为一个小图，使得在小图上训练的GNN可以得到和大图相当的效果。通过优化<strong>gradient matching loss</strong>来模拟GNN在原图上的<strong>训练轨迹</strong>，从而解决图浓缩问题。</p>
+<p>通常有两个策略来简化图：Graph Sparsification(图稀疏化)和Graph Coarsening(图粗化)。图稀疏化通过减少边数来近似一个图； 图粗化旨在减少节点数量。（1）当节点具有属性特征时，由于稀疏化不会减少节点数量，因此属性量不会减少。 （2）图粗化的目的是保存一些图属性比如主特征值，这可能对下游任务不是最优的保存属性。</p>
+<p>本文提出图浓缩，来学习生成图的结构和节点属性，从这两方面同时进行浓缩。对于Reddit数据集，GCond可以将节点数浓缩至0.1%，并且在浓缩图上可以得到和原图相当的效果。如下图所示：</p>
+<p><img loading="lazy" src="/posts/2022-09-01-GCond/1.png#center" alt=""  />
+</p>
+<p>本文解决了图浓缩面临的两个挑战：1. 构建目标函数， 2. 参数化可学习的节点特征和图结构。为了解决上述挑战，本文使用gradient matching loss来匹配每一个training step上原图与浓缩图的GNN参数梯度，使得GNN在浓缩图上的训练趋势与原图相匹配。为了参数化节点特征和图结构，本文将浓缩图的Feature Matrix设为自由参数矩阵，<strong>将浓缩图结构设为关于Feature matrix 的 函数</strong>（基于结构与特征相关联假设），使得计算开销降低。</p>
+<h1 id="methodology">Methodology</h1>
+<p>A graph $\mathcal{T}=\{\mathbf{A}, \mathbf{X}, \mathbf{Y}\}$，其中$\mathbf{X} \in \mathbb{R}^{N \times d}$是$d$维节点特征，$\mathbf{Y} \in\{0, \ldots, C-1\}^N$ 表示$N$个节点的labels，共有$C$个class。图浓缩旨在学习一个小的生成图$\mathcal{S}=\left\{\mathbf{A}^{\prime}, \mathbf{X}^{\prime}, \mathbf{Y}^{\prime}\right\}$，其中$\mathbf{A}^{\prime} \in \mathbb{R}^{N^{\prime} \times N^{\prime}}$是浓缩图的邻接矩阵，$\mathbf{X}^{\prime} \in \mathbb{R}^{N^{\prime} \times D}$是浓缩图的特征矩阵，$\mathbf{Y}^{\prime} \in\{0, \ldots, C-1\}^{N^{\prime}}$是浓缩图的node labels 其中$N^{\prime} \ll N$，特征维度从$d$变为$D$。图浓缩的目标是基于原图训练过程<strong>学习浓缩图$\mathcal{S}$</strong>，使得在$\mathcal{S}$上训练的GNN应用在原图上的loss最小：
+$$
+\min_{\mathcal{S}} \mathcal{L}\left(\mathrm{GNN}_{\boldsymbol{\theta}_{\mathcal{S}}}(\mathbf{A}, \mathbf{X}), \mathbf{Y}\right) \quad \text { s.t } \quad \boldsymbol{\theta}_{\mathcal{S}}=\underset{\boldsymbol{\theta}}{\arg \min } \mathcal{L}\left(\mathrm{GNN}_{\boldsymbol{\theta}}\left(\mathbf{A}^{\prime}, \mathbf{X}^{\prime}\right), \mathbf{Y}^{\prime}\right),
+$$
+Outer：固定GNN参数，优化小图。 Inner: 固定小图，在小图上训练GNN参数。</p>
+<p>由于如果就用一个固定的初始化参数来初始化GNN，小图的训练参数${\boldsymbol{\theta}_{\mathcal{S}}}$可能会过拟合一个特定初始化的GNN。 因此为了使得浓缩data可以泛化到随机初始化的GNN $P_{\boldsymbol{\theta}_0}$，上面的目标函数可以改写为：
+$$
+\min_{\mathcal{S}} \mathrm{E}_{\boldsymbol{\theta}_0 \sim P_{\theta_0}}\left[\mathcal{L}\left(\mathrm{GNN}_{\boldsymbol{\theta}_{\mathcal{S}}}(\mathbf{A}, \mathbf{X}), \mathbf{Y}\right)\right] \quad \text { s.t. } \quad \boldsymbol{\theta}_{\mathcal{S}}=\underset{\boldsymbol{\theta}}{\arg \min } \mathcal{L}\left(\mathrm{GNN}_{\boldsymbol{\theta}\left(\boldsymbol{\theta}_0\right)}\left(\mathbf{A}^{\prime}, \mathbf{X}^{\prime}\right), \mathbf{Y}^{\prime}\right)
+$$
+具体实现就是在用一个GNN训练${\boldsymbol{\theta}_{\mathcal{S}}}$后，初始化GNN继续训练${\boldsymbol{\theta}_{\mathcal{S}}}$（${\boldsymbol{\theta}_{\mathcal{S}}}$不用初始化）。也就是在不同的初始化GNN情况下训练${\boldsymbol{\theta}_{\mathcal{S}}}$。</p>
+<h2 id="graph-condensation-via-gradient-matching">Graph Condensation via Gradient Matching</h2>
+<p>通过优化bi-level问题来求解参数过于困难，因此使用gradient matching方法来匹配在不同数据上每次迭代的参数梯度。通过这种方式，模型在浓缩图$\mathcal{S}$上的训练轨迹可以用来模拟原图$\mathcal{T}$上的训练轨迹。模型的参数匹配可以表示为：
+$$
+\begin{gathered}
+\min_{\mathcal{S}} \mathrm{E}_{\boldsymbol{\theta}_0 \sim P_{\boldsymbol{\theta}_0}}\left[\sum_{t=0}^{T-1} D\left(\boldsymbol{\theta}_t^{\mathcal{S}}, \boldsymbol{\theta}_t^{\mathcal{T}}\right)\right] \quad \text { with } \\
+\boldsymbol{\theta}_{t+1}^{\mathcal{S}}=\operatorname{opt}_{\boldsymbol{\theta}}\left(\mathcal{L}\left(\operatorname{GNN}_{\boldsymbol{\theta}_t^{\mathcal{S}}}\left(\mathbf{A}^{\prime}, \mathbf{X}^{\prime}\right), \mathbf{Y}^{\prime}\right)\right) \text { and } \boldsymbol{\theta}_{t+1}^{\mathcal{T}}=\operatorname{opt}_{\boldsymbol{\theta}}\left(\mathcal{L}\left(\operatorname{GNN}_{\boldsymbol{\theta}_t^{\mathcal{T}}}(\mathbf{A}, \mathbf{X}), \mathbf{Y}\right)\right)
+\end{gathered}
+$$
+表示第$t$次迭代时，原图上训练的GNN参数$\boldsymbol{\theta}_t^{\mathcal{T}}$和小图上训练的GNN参数$\boldsymbol{\theta}_t^{\mathcal{S}}$要接近。由于两个GNN初始化参数一致，如果将同一个GNN应用于两个图，要使他们的每一步训练轨迹一致，那么他们每一步的参数梯度应该一致，对于$\mathrm{GNN}_{\theta_t}$，所有$T$步的梯度匹配可以写为：
+$$
+\min_{\mathcal{S}}\mathrm{E}_{\boldsymbol{\theta}_0 \sim P_{\theta_0}}\left [\sum_{t=0}^{T-1} D\left(\nabla_{\boldsymbol{\theta}} \mathcal{L}\left(\mathrm{GNN}_{\boldsymbol{\theta}_t}\left(\mathbf{A}^{\prime}, \mathbf{X}^{\prime}\right), \mathbf{Y}^{\prime}\right), \nabla_{\boldsymbol{\theta}} \mathcal{L}\left(\mathrm{GNN}_{\boldsymbol{\theta}_t}(\mathbf{A}, \mathbf{X}), \mathbf{Y}\right)\right)\right]
+$$
+其中$D$为参数梯度矩阵之间的距离，若$\mathbf{G}^{\mathcal{S}}, \mathbf{G}^{\mathcal{T}} \in \mathbb{R}^{d_1 \times d_2}$， 那么梯度矩阵的差异定义为：
+$$
+\operatorname{dis}\left(\mathbf{G}^{\mathcal{S}}, \mathbf{G}^{\mathcal{T}}\right)=\sum_{i=1}^{d_2}\left(1-\frac{\mathbf{G}_{\mathbf{i}}^{\mathcal{S}} \cdot \mathbf{G}_{\mathbf{i}}^{\mathcal{T}}}{\left|\left|\mathbf{G}_{\mathbf{i}}^{\mathcal{S}}\right|\right|\left|\left|\mathbf{G}_{\mathbf{i}}^{\mathcal{T}}\right|\right|}\right)
+$$</p>
+<h2 id="modeling-condensed-graph-data">Modeling Condensed Graph Data</h2>
+<p>要使得浓缩图可学习，直接参数化三个矩阵$\mathbf{A}^{\prime}, \mathbf{X}^{\prime}, \mathbf{Y}^{\prime}$并优化是很困难的。 因此本文先确定浓缩图的label矩阵$\mathbf{Y}^{\prime}$，具体来说，对于每个class的<strong>训练节点</strong>，选取特定比例的节点。例如训练集有3个类，每个类选取一定比例的训练节点，这些节点label作为浓缩图的node labels，features作为浓缩图的初始化node features $\mathbf{X}^{\prime}$。注意，这里$\mathbf{X}^{\prime}$是自由可训练参数。 由于在社交网络中，结构通常与节点特征相关，因此将结构$\mathbf{A}^{\prime}$设置成关于特征$\mathbf{X}^{\prime}$的函数，这样减少了参数量：
+$$
+\mathbf{A}^{\prime}=g_{\Phi}\left(\mathbf{X}^{\prime}\right), \quad \text { with } \mathbf{A}_{i j}^{\prime}=\operatorname{Sigmoid}\left(\frac{\operatorname{MLP}_{\Phi}\left(\left[\mathbf{x}_i^{\prime} ; \mathbf{x}_j^{\prime}\right]\right)+\operatorname{MLP}_{\Phi}\left(\left[\mathbf{x}_j^{\prime} ; \mathbf{x}_i^{\prime}\right]\right)}{2}\right)
+$$
+带入gradient matching loss中：
+$$
+\min_{\mathbf{X}^{\prime}, \Phi} \mathrm{E}_{\boldsymbol{\theta}_0 \sim P_{\theta_0}}\left[\sum_{t=0}^{T-1} D\left(\nabla_{\boldsymbol{\theta}} \mathcal{L}\left(\mathrm{GNN}_{\boldsymbol{\theta}_t}\left(g_{\Phi}\left(\mathbf{X}^{\prime}\right), \mathbf{X}^{\prime}\right), \mathbf{Y}^{\prime}\right), \nabla_{\boldsymbol{\theta}} \mathcal{L}\left(\mathrm{GNN}_{\boldsymbol{\theta}_t}(\mathbf{A}, \mathbf{X}), \mathbf{Y}\right)\right)\right]
+$$
+其中：GNN的参数会重复初始化，增强$\theta_\mathcal{S}$的泛化效果。</p>
+<p><img loading="lazy" src="/posts/2022-09-01-GCond/2.png#center" alt=""  />
+</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>MLP and GNNs</title>
       <link>https://JhuoW.github.io/posts/glnn/</link>

@@ -10,7 +10,24 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Sep 2022 10:47:21 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 28 Sep 2022 11:50:38 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>WWW2022 《EDITS：Modeling and Mitigating Data Bias for Graph Neural Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/edits/</link>
+      <pubDate>Wed, 28 Sep 2022 11:50:38 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/edits/</guid>
+      <description>WWW2022 &amp;#34;EDITS：Modeling and Mitigating Data Bias for Graph Neural Networks&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2108.05233">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>在一些高风险决策任务，例如fraud detection(网络欺诈检测)中，GNN会对某些人群做出偏向性的预测，从而导致歧视判断，即网络节点的一些敏感属性可能会对GNN的预测结果产生影响，从而导致预测结果出现歧视。 例如网络节点包含性别、政治意识形态等<strong>敏感属性</strong>，这些敏感属性会影响到GNN的输出结果，比如GNN判断一个节点是否是欺诈者会一定程度上取决于节点的性别，这就带来了不可避免的歧视问题。 因此，对于易引发歧视的敏感属性（如性别），要是GNN的结果尽可能不受敏感属性的影响，从而使得GNN对于节点的预测任务更加<strong>公平</strong>。</p>
+<p>现有的GNN fairness方法大多是为特定的GNN模型量身定制，然而针对某个特定GNN 去偏向（debiasing）方法再到其他GNN模型上微调代价过高。已有研究表明，带有敏感属性偏向的数据集会导致在该数据集上训练的模型带有偏向性，因此本文从数据集出发，设计了一个model-agnostic model，在数据预处理节点为输入网络去偏向。</p>
+<p>三个挑战：（1）Data Bias Modeling：什么是偏向，如何定义数据集的偏向，以及为偏向建模。 （2）Multi-Modality Debiasing：属性网络包含结构特征和属性特征，敏感属性的偏向可能存在于node feature和structure层面。（3）Model-Agnostic Debiasing：数据集debiasing方法应与GNN模型无关。目标是GNN的结果不会表现出歧视。</p>
+<h1 id="preliminary-analysis">Preliminary Analysis</h1>
+<p>为了表现属性和结构两个模态上的bias对于GNN预测的影响，本文设计了一个empirical experiment。首先将敏感属性设置为性别，</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>ICLR2022 《Graph Condensation for Graph Neural Networks》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/gcond/</link>

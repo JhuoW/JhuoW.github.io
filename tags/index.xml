@@ -10,13 +10,13 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Sep 2022 10:47:21 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 28 Sep 2022 11:50:38 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Condensation</title>
-      <link>https://JhuoW.github.io/tags/condensation/</link>
-      <pubDate>Thu, 01 Sep 2022 10:47:21 +0800</pubDate>
+      <title>Fairness</title>
+      <link>https://JhuoW.github.io/tags/fairness/</link>
+      <pubDate>Wed, 28 Sep 2022 11:50:38 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/tags/condensation/</guid>
+      <guid>https://JhuoW.github.io/tags/fairness/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -24,9 +24,19 @@
     <item>
       <title>GNN</title>
       <link>https://JhuoW.github.io/tags/gnn/</link>
-      <pubDate>Thu, 01 Sep 2022 10:47:21 +0800</pubDate>
+      <pubDate>Wed, 28 Sep 2022 11:50:38 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/gnn/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Condensation</title>
+      <link>https://JhuoW.github.io/tags/condensation/</link>
+      <pubDate>Thu, 01 Sep 2022 10:47:21 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/condensation/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

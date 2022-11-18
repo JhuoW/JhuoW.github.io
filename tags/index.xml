@@ -10,23 +10,33 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 28 Sep 2022 11:50:38 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 17 Nov 2022 01:33:20 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Fairness</title>
-      <link>https://JhuoW.github.io/tags/fairness/</link>
-      <pubDate>Wed, 28 Sep 2022 11:50:38 +0800</pubDate>
+      <title>GNN</title>
+      <link>https://JhuoW.github.io/tags/gnn/</link>
+      <pubDate>Thu, 17 Nov 2022 01:33:20 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/tags/fairness/</guid>
+      <guid>https://JhuoW.github.io/tags/gnn/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
     <item>
-      <title>GNN</title>
-      <link>https://JhuoW.github.io/tags/gnn/</link>
-      <pubDate>Wed, 28 Sep 2022 11:50:38 +0800</pubDate>
+      <title>Self-Supervised Learning</title>
+      <link>https://JhuoW.github.io/tags/self-supervised-learning/</link>
+      <pubDate>Thu, 17 Nov 2022 01:33:20 +0800</pubDate>
       
-      <guid>https://JhuoW.github.io/tags/gnn/</guid>
+      <guid>https://JhuoW.github.io/tags/self-supervised-learning/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Variational Inference</title>
+      <link>https://JhuoW.github.io/tags/variational-inference/</link>
+      <pubDate>Thu, 17 Nov 2022 01:33:20 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/variational-inference/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -72,16 +82,6 @@
     </item>
     
     <item>
-      <title>Self-Supervised Learning</title>
-      <link>https://JhuoW.github.io/tags/self-supervised-learning/</link>
-      <pubDate>Thu, 14 Apr 2022 22:54:10 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/self-supervised-learning/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
       <title>Optimizer</title>
       <link>https://JhuoW.github.io/tags/optimizer/</link>
       <pubDate>Mon, 04 Apr 2022 16:41:42 +0800</pubDate>
@@ -117,16 +117,6 @@
       <pubDate>Fri, 01 Apr 2022 19:45:48 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/em/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>Variational Inference</title>
-      <link>https://JhuoW.github.io/tags/variational-inference/</link>
-      <pubDate>Fri, 01 Apr 2022 19:45:48 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/variational-inference/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

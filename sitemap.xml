@@ -3,31 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://JhuoW.github.io/categories/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/fairness/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/gnn/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/gnn/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/paper/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/self-supervised-learning/</loc>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/posts/edits/</loc>
-    <lastmod>2022-09-28T11:50:38+08:00</lastmod>
+    <loc>https://JhuoW.github.io/tags/variational-inference/</loc>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/clusterscl/</loc>
+    <lastmod>2022-11-17T01:33:20+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/condensation/</loc>
     <lastmod>2022-09-01T10:47:21+08:00</lastmod>
@@ -60,9 +63,6 @@
     <lastmod>2022-05-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/cca-ssg/</loc>
-    <lastmod>2022-04-14T22:54:10+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/self-supervised-learning/</loc>
     <lastmod>2022-04-14T22:54:10+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/mvgrl/</loc>
@@ -105,9 +105,6 @@
     <lastmod>2022-04-01T19:45:48+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/em-algo/</loc>
-    <lastmod>2022-04-01T19:45:48+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/variational-inference/</loc>
     <lastmod>2022-04-01T19:45:48+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/neuralsparse/</loc>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Data Augmentation on JhuoW‘s Notes</title>
+    <link>https://JhuoW.github.io/tags/data-augmentation/</link>
+    <description>Recent content in Data Augmentation on JhuoW‘s Notes</description>
+    <image>
+      <url>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 25 Jan 2023 21:19:40 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/data-augmentation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ICML2022 《Local Augmentation for Graph Neural Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/lagcn/</link>
+      <pubDate>Wed, 25 Jan 2023 21:19:40 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/lagcn/</guid>
+      <description>ICML2022 &amp;#34;Local Augmentation for Graph Neural Networks&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2109.03856">paper</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>在GNN的neighborhood aggregation中，对于拥有很少邻居的节点，在聚合过程中是否充分从邻居中获得了信息是一个问题。为解决该问题， 本文提出为每个节点做局部增强，即以中心节点为条件，学习邻居节点表示的分布。为了在局部邻域中生成一些样本来提升中心节点的neighborhood aggregation，本文提出一种数据增强框架：LA-GNNs， 以局部结构和中心节点特征为条件，生成neighborhood features。具体来说，在pre-training 阶段，通过一个生成模型，以中心节点的特征为条件来学习邻居特征的条件概率分布。然后利用这个邻居特征分布来生成中心节点的增强邻居特征。另外，通过pre-training来学习邻居增强特征生成器的过程是与下游任务无关的，所以该生成器生成的增强特征可以应用于其他GNN模型。</p>
+<p><img loading="lazy" src="/posts/2023-01-28-LAGCN/1.png#center" alt=""  />
+</p>
+<h1 id="local-augmentation-for-graph-neural-networks-lagnn">Local Augmentation for Graph Neural Networks (LAGNN)</h1>
+<h2 id="motivation">Motivation</h2>
+<p>GNN在message passing的过程利用局部信息聚合来得到node representations。 但是对于邻居数量较少的节点，从邻居中得到的信息可能会不足。为了为节点$v$的邻域中$\mathcal{N}_v$生成更多样本，就需要知道邻居表示的分布。 由于一个节点邻居分布是与中心节点相关，所以我们要以中心节点$v$的representation为条件，学习它的邻居表示分布。</p>
+<h2 id="approach">Approach</h2>
+<p>本文利用Conditional Variational Auto-Encoder (CVAE) 来学习<strong>给定中心节点$v$，邻居$u \in \mathcal{N}_v$的节点特征的条件分布</strong>。给定中心节点特征$\boldsymbol{X}_v$，关于中心节点的邻居分布为$p_\theta(\boldsymbol{X}_u | \boldsymbol{X}_v)$。定义隐变量$\mathbf{z}$，则先验可以定义为$p_\theta(\mathbf{z}|\boldsymbol{X}_v)$。结合隐变量$\mathbf{z}$，邻居特征$\boldsymbol{X}_u$的分布可以改写为如下形式：
+$$
+\begin{aligned}
+\log p_\theta(\boldsymbol{X}_u | \boldsymbol{X}_v) &amp;= \log \frac{p_\theta(\boldsymbol{X}_u , \boldsymbol{X}_v)}{p_\theta( \boldsymbol{X}_v)}= \frac{p_\theta(\boldsymbol{X}_u , \boldsymbol{X}_v)p_\theta(\mathbf{z}|\boldsymbol{X}_u , \boldsymbol{X}_v)}{p_\theta( \boldsymbol{X}_v)p_\theta(\mathbf{z}|\boldsymbol{X}_u , \boldsymbol{X}_v)} \\
+&amp;=\log \frac{p_\theta(\boldsymbol{X}_u , \boldsymbol{X}_v, \mathbf{z})}{p_\theta( \boldsymbol{X}_v)p_\theta(\mathbf{z}|\boldsymbol{X}_u , \boldsymbol{X}_v)} \\
+&amp;= \log \frac{p_\theta(\boldsymbol{X}_u , \mathbf{z}| \boldsymbol{X}_v)}{p_\theta(\mathbf{z}|\boldsymbol{X}_u , \boldsymbol{X}_v)}\\
+\end{aligned}
+$$
+假设隐变量$\mathbf{z}$的分布为$q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)$， 左右两边对分布$q_\phi$计算期望，左边：
+$$
+\int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log p_\theta(\boldsymbol{X}_u | \boldsymbol{X}_v) dz = \log p_\theta(\boldsymbol{X}_u | \boldsymbol{X}_v)
+$$
+右边：
+$$
+\begin{aligned}
+&amp;\int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)  \log \frac{p_\theta(\boldsymbol{X}_u , \mathbf{z}| \boldsymbol{X}_v)}{p_\theta(\mathbf{z}|\boldsymbol{X}_u , \boldsymbol{X}_v)} dz \\
+=&amp; \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log \left(\frac{p_\theta(\boldsymbol{X}_u , \mathbf{z}| \boldsymbol{X}_v)}{ q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)} \cdot \frac{ q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)}{p_\theta(\mathbf{z}|\boldsymbol{X}_u , \boldsymbol{X}_v)}\right) dz \\
+=&amp; \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log \frac{p_\theta(\boldsymbol{X}_u , \mathbf{z}| \boldsymbol{X}_v)}{ q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)} dz +  \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \frac{ q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)}{p_\theta(\mathbf{z}|\boldsymbol{X}_u , \boldsymbol{X}_v)}dz \\
+=&amp; \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log \frac{p_\theta(\boldsymbol{X}_u , \mathbf{z}| \boldsymbol{X}_v)}{ q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)} dz + K L\left(q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) || p_\theta\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)\right) \\
+\geq&amp; \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log \frac{p_\theta\left(\boldsymbol{X}_u, \mathbf{z} \mid \boldsymbol{X}_v\right)}{q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)} \mathrm{d} \mathbf{z} = ELBO
+\end{aligned}
+$$
+Evidence Lower Bound (ELBO) 可以写为
+$$
+\begin{aligned}
+L_{ELBO} &amp;= \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log \frac{p_\theta\left(\boldsymbol{X}_u, \mathbf{z} \mid \boldsymbol{X}_v\right)}{q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)} \mathrm{d} \mathbf{z} \\
+&amp;= \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log \frac{p_\theta\left(\boldsymbol{X}_u, \boldsymbol{X}_v, \mathbf{z}\right)}{q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) p_\theta\left(\boldsymbol{X}_v\right)} \mathrm{d} \mathbf{z} \\
+&amp;= \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log \frac{p_\theta\left(\boldsymbol{X}_u \mid \boldsymbol{X}_v, \mathbf{z}\right) p_\theta\left(\boldsymbol{X}_v, \mathbf{z}\right)}{q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) p_\theta\left(\boldsymbol{X}_v\right)} \mathrm{d} \mathbf{z} \\
+&amp;= \int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log \frac{p_\theta\left(\boldsymbol{X}_u \mid \boldsymbol{X}_v, \mathbf{z}\right) p_\theta\left(\mathbf{z} \mid \boldsymbol{X}_v\right)}{q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)} \mathrm{d} \mathbf{z} \\
+&amp;= -K L\left(q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) || p_\theta\left(\mathbf{z} \mid \boldsymbol{X}_v\right)\right)+\int_z q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) \log p_\theta\left(\boldsymbol{X}_u \mid \boldsymbol{X}_v, \mathbf{z}\right) \mathrm{d} \mathbf{z} \\
+&amp;=  -K L\left(\underbrace{q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right)}_{Encoder} || \underbrace{ p_\theta\left(\mathbf{z} \mid \boldsymbol{X}_v\right)}_{\text{Normal Distribution}}\right) + \mathbb{E}_{\mathbf{z} \sim q_\phi\left(\mathbf{z} \mid \boldsymbol{X}_u, \boldsymbol{X}_v\right) }\log p_\theta\left(\boldsymbol{X}_u \mid \boldsymbol{X}_v, \mathbf{z}\right)
+\end{aligned}
+$$
+在CVAE pre-training的过程中，第一项KL中CVAE Encoder 的一对邻接节点对，对于该节点对，输出一组分布参数均值$\mu$和方差$\sigma$，作为隐变量$z$的分布参数，第一项的优化目标使得编码器输出的分布接近Normal Distribution。然后利用reparameterization trick可微的从生成的$\mathbf{z}$分布中采样一个encoding:</p>
+<pre tabindex="0"><code>def reparameterize(means, log_var):
+    std = torch.exp(0.5 * log_var)
+    eps = torch.randn_like(std)
+    return means + eps * std   // z
+</code></pre><p>若当前输入节点对为$(\boldsymbol{X}_v, \boldsymbol{X}_u)$，从输出的分布中采样一个encoding $\mathbf{z}$然后将$\mathbf{z}$输入decoding中，使得用$\mathbf{z}$和中心节点$\boldsymbol{X}_v$可以重构邻接节点$\boldsymbol{X}_u$。用所有邻接节点对训练encoder参数$\phi$和generator参数$\phi$。 这样在下游预测任务前，直接从Normal Distribution 随机采样$\mathbf{z}$，拼接中心节点$\boldsymbol{X}_v$输入generator中就可以为节点$v$生成增强邻居。过程如下图所示：</p>
+<p><img loading="lazy" src="/posts/2023-01-28-LAGCN/2.png#center" alt=""  />
+</p>
+]]></content:encoded>
+    </item>
+    
+  </channel>
+</rss>

@@ -10,13 +10,33 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 08 Jan 2023 22:28:43 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 25 Jan 2023 21:19:40 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Data Augmentation</title>
+      <link>https://JhuoW.github.io/tags/data-augmentation/</link>
+      <pubDate>Wed, 25 Jan 2023 21:19:40 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/data-augmentation/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
     <item>
       <title>GNN</title>
       <link>https://JhuoW.github.io/tags/gnn/</link>
-      <pubDate>Sun, 08 Jan 2023 22:28:43 +0800</pubDate>
+      <pubDate>Wed, 25 Jan 2023 21:19:40 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/gnn/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Variational Inference</title>
+      <link>https://JhuoW.github.io/tags/variational-inference/</link>
+      <pubDate>Wed, 25 Jan 2023 21:19:40 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/variational-inference/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -27,16 +47,6 @@
       <pubDate>Sun, 08 Jan 2023 22:28:43 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/self-supervised-learning/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>Variational Inference</title>
-      <link>https://JhuoW.github.io/tags/variational-inference/</link>
-      <pubDate>Thu, 17 Nov 2022 01:33:20 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/variational-inference/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

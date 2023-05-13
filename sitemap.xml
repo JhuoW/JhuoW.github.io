@@ -3,30 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://JhuoW.github.io/categories/</loc>
-    <lastmod>2023-01-25T21:19:40+08:00</lastmod>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/fraud-detection/</loc>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/fd/</loc>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/gnn/</loc>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/gnn/</loc>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/</loc>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/categories/paper/</loc>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/</loc>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/</loc>
+    <lastmod>2023-05-13T16:14:56+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/data-augmentation/</loc>
     <lastmod>2023-01-25T21:19:40+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/gnn/</loc>
-    <lastmod>2023-01-25T21:19:40+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/gnn/</loc>
-    <lastmod>2023-01-25T21:19:40+08:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/posts/lagcn/</loc>
-    <lastmod>2023-01-25T21:19:40+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/</loc>
-    <lastmod>2023-01-25T21:19:40+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/categories/paper/</loc>
-    <lastmod>2023-01-25T21:19:40+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/posts/</loc>
-    <lastmod>2023-01-25T21:19:40+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/</loc>
     <lastmod>2023-01-25T21:19:40+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/variational-inference/</loc>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Fraud Detection on JhuoW‘s Notes</title>
+    <link>https://JhuoW.github.io/tags/fraud-detection/</link>
+    <description>Recent content in Fraud Detection on JhuoW‘s Notes</description>
+    <image>
+      <url>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 13 May 2023 16:14:56 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/fraud-detection/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fraud Detection based on Graph Neural Networks</title>
+      <link>https://JhuoW.github.io/posts/fd/</link>
+      <pubDate>Sat, 13 May 2023 16:14:56 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/fd/</guid>
+      <description>基于图神经网络的异常检测</description>
+      <content:encoded><![CDATA[<h1 id="1-label-information-enhanced-fraud-detection-against-low-homophily-in-graphs-www-23">1. Label Information Enhanced Fraud Detection against Low Homophily in Graphs (WWW &lsquo;23)</h1>
+<h2 id="introduction">Introduction</h2>
+<p>GNN4FD存在问题： 大多数基于GNN的欺诈检测器难以泛化到low homophily网络中，除此之外，如何充分利用label信息也是Fraud detection的重要因素。即如果一个Fraud node的邻居都是benign nodes，那么这样的图就是heterophily or low homophily graph，由于GNN的neighborhood aggregation机制，target node的表示会和它的邻居相似，无论他们的label是否不同，这样会使得GNN难以区分位于异质邻域内的Fraud nodes。另外， 现有的GNN4FD方法利用label信息的能力有限，这些方法仅在训练阶段使用label信息作为监督信号，但是在设计message passing 机制的过程中并没有使用label信息。</p>
+<p>为了解决上述2个挑战，本文提出GAGA: 基于分组聚合的Transformer。 GAGA首先提出了一种预处理策略Group Aggregation (GA, 分组聚合)，然后每个节点的原始邻居特特征被分组为序列数据。 然后提出一种科学系的编码方式来编码structural，relational 和label信息 （全局），即整个图的relational encoding，group encoding 和 hop encoding （图中又几个relation就有几个relational embedding，取几个hop就又几个hop embedding..）。 最后用多头attention为每个节点聚合embedding sequence.</p>
+<h2 id="preliminaries">Preliminaries</h2>
+<p><strong>Multi-relational fraud graph construction</strong>  Multi-relational fraud graph $\mathcal{G}(\mathcal{V}, \mathcal{E}, \mathcal{X}, \mathcal{Y})$, 其中节点集$\mathcal{V}=\left\{v_1, v_2, \ldots, v_N\right\}(N=|\mathcal{V}|)$，$R$ 个邻接矩阵$\mathcal{E}=\left\{\mathbf{A}_1, \mathbf{A}_2, \ldots, \mathbf{A}_R\right\}(R=|\mathcal{E}|)$的多关系图 （$R$个关系）。节点feature vectors $X=\left\{\mathbf{x}_1, \mathrm{x}_2, \ldots, \mathrm{x}_N\right\}$以及节点的label集合$\mathcal{Y}$。 对于一个relation的邻接矩阵$\mathbf{A}_r$，如果$\mathbf{A}_1[u,v]=1$，那么在关系$r$下节点$u$和$v$被连接。每个节点$v \in \mathcal{V}$ 有一个$d$维feature vector $\mathbf{x}_v \in \mathbb{R}^d$。 在基于Graph的fraud detection中，我们考虑半监督场景，其中一小部分节点 $\hat{\mathcal{V}} \supset \mathcal{V}$是有label的 （$y=1$表示该节点为fraud node，$y=0$表示该节点为benign node）所以对于fraud graph，节点class数为2。</p>
+<h2 id="gaga">GAGA</h2>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/1.png#center" alt=""  />
+</p>
+<p>上图为GAGA的框架。第一步为Group Aggregation，为预处理过程，为每个节点计算多条邻居信息，并且每跳内的信息分组表示（一跳内 label=0，label=1，label=None的节点分别聚合）。这样会为每个节点生成一系列embeddings。第二步中，定义三种类型可学习的embeddings：hop embeddings, relation embeddings,group embeddings，即如果每个节点有$K$-hop邻居参与聚合，那么hop embeddings 是一个$K \times d_H$ 矩阵，每个hop（结构特征）用一个$d_H$维向量表示。 同理relational embedding是一个$R \times d_H$矩阵，每个relation 用一个$d_H$维向量表示。一共存在3种group（$y=1$的group， $y=0$的group， 无标签邻居的group），所以group embeddings是一个$3 \times d_H$的矩阵，每种group 表示为一个$1 \times d_H$的向量。</p>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/2.png#center" alt=""  />
+</p>
+<p>对于第一步得到的某一个节点$v$在relation 0的邻接矩阵$\mathbf{A}_0$下的第<strong>2</strong>跳邻居的fraud neighbors ($y=1$)的group embedding $g_v (r=0, h=2, y=1)$，为这个embedding融合hop信息 + relation信息+ group 信息得到 $x_v = g_v (r=0, h=2, y=1) + E_h(1) + E_r(0) + E_g(1)$    关于节点$v$的某个group的融合结构，关系特征的表示向量。最后一步将一个节点的所有多关系多hop的group向量用transformer合并然后输入MLP种来预测节点label。</p>
+<p>即一个节点会生成 $\#relation (\#hop * (\#class+1) + 1)$个group 向量，每个group向量属于某个relation下的某个hop，这个group向量属于那个relation就加上这个relation的一维encoding，属于那是个hop就加上这个hop的1维encoding，这个group是0/1/None group就再加上对应group的encoding，从而得到这个group的最终encoding。</p>
+<h3 id="group-aggregation">Group Aggregation</h3>
+<p>对于Fraud detection任务，每个节点的label有3种情况，分别为 benign node $y=0$, Fraud node $y=1$, unlabeled node $y = None$，所以对于每个节点，它的第$k$hop邻居可以被分为3个group，每个group的节点做聚合：
+$$
+\mathbf{H}_g^{(k)}=\left[\mathbf{h}^{-}, \mathbf{h}^{+}, \mathbf{h}^*\right]^{(k)} \text { given } \hat{\mathcal{N}}_k(v)
+$$
+表示节点$k$ hop内的3个group表示向量 （由每个group节点取平均得到）。那么对于关系$r$下的所有$K$个hop内的group embedding可以表示为：
+$$
+\mathbf{H}_r=||_{k=1}^K \mathbf{H}_g^{(k)},
+$$
+那么对于所有$R$个关系，所涉及的group embedding sequence表示为：
+$$
+\mathbf{H}_s=||_{r=1}^R \mathbf{H}_{v, r} .
+$$
+关于每个节点，共有$S=R \times(P \times K+1)$个group embeddings。其中$R$为relation数， $K$为hop数，$K = \#class +1$ 为label数+1 （有多少种group）。</p>
+<h3 id="learnable-encoding-for-graph-transformer">Learnable Encoding for Graph Transformer</h3>
+<p>先将每个节点的所有$S$个group embeddings过一下MLP得到$\mathbf{X}_s \in \mathbb{R}^ {S\times d_H}$。用nn.Embedding来定义一个$K \times d_H$的可训练的Hop encoding 矩阵$E_h(\cdot)$，每行表示一种hop的embedding。 对于节点的$S$个group 向量，每个group向量都属于一个hop种，那么这个group embedding 就+对应hop的embedding，从而融合结构特征。 比如$X_s[3]$是hop 2的 group embedding，那么这个group embedding 就要加上 $E_h(1)$ 来保留hop结构特征。所有$S$个group embedding 都要融合各自的hop特征，他们的hop 特征为：
+$$
+\begin{gathered}
+\mathbf{X}_h=[\underbrace{\mathbf{E}_h(0), \overbrace{\mathbf{E}_h(1), \mathrm{E}_h(1), \mathrm{E}_h(1)}^{1 \text { st hop }}, \ldots, \overbrace{\mathrm{E}_h(K), \mathrm{E}_h(K), \mathbf{E}_h(K)}^{K-\text { th hop }}}_{1 \text { st relation }}, \\
+\ldots, \underbrace{\mathbf{E}_h(0), \mathrm{E}_h(1), \mathrm{E}_h(1), \mathrm{E}_h(1), \ldots, \mathrm{E}_h(K), \mathrm{E}_h(K), \mathrm{E}_h(K)}_{R \text {-th relation }}]
+\end{gathered}
+$$
+$S$中1-st到R-th relation的所有1hop group embedding都要加上hop 1 的encoding $E_h(1)$，对于其他hop的group embedding 同理。</p>
+<p>每个节点的每个group embedding 都要融合它所在的hop 特征，所在的relation特征和所在的label特征（group 特征）然后用transformer将一个节点所有$S$个融合丰富特征的group embedding 做聚合，从而得到这个节点的最终embedding，用这个最终embedding来计算binary classification loss。</p>
+]]></content:encoded>
+    </item>
+    
+  </channel>
+</rss>

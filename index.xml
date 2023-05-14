@@ -54,8 +54,55 @@ $$
 \ldots, \underbrace{\mathbf{E}_h(0), \mathrm{E}_h(1), \mathrm{E}_h(1), \mathrm{E}_h(1), \ldots, \mathrm{E}_h(K), \mathrm{E}_h(K), \mathrm{E}_h(K)}_{R \text {-th relation }}]
 \end{gathered}
 $$
-$S$中1-st到R-th relation的所有1hop group embedding都要加上hop 1 的encoding $E_h(1)$，对于其他hop的group embedding 同理。</p>
-<p>每个节点的每个group embedding 都要融合它所在的hop 特征，所在的relation特征和所在的label特征（group 特征）然后用transformer将一个节点所有$S$个融合丰富特征的group embedding 做聚合，从而得到这个节点的最终embedding，用这个最终embedding来计算binary classification loss。</p>
+$S$中1-st到R-th relation的所有1hop group embedding都要加上hop 1 的encoding $E_h(1)$，对于其他hop的group embedding 同理。$\mathbf{X}_s$ 表示一个节点的所有$S$个group embedding，每个group embedding 要加上它所在的relation encoding $E_r(\text{relation of group})$，hop encoding $E_h(\text{hop of group})$ 以及它属于那个group $E_g (\text{label of group})$:
+$$
+\mathrm{X}_{i n}=\mathrm{X}_s+\mathrm{X}_h+\mathrm{X}_r+\mathrm{X}_g
+$$
+$\mathbf{X}_in$为一个节点新的group embeddings。每个节点的每个group embedding 都要融合它所在的hop 特征，所在的relation特征和所在的label特征（group 特征）然后用transformer将一个节点所有$S$个融合丰富特征的group embedding 做聚合，从而得到这个节点的最终embedding，用这个最终embedding来计算binary classification loss。</p>
+<h1 id="gccad-graph-contrastive-coding-for-anomaly-detection-tkde">GCCAD: Graph Contrastive Coding for Anomaly Detection （TKDE）</h1>
+<p>本文的目标：拉近normal nodes和global embedding的距离，拉远fraud nodes和global embedding的距离。inference阶段通过计算testing node和global embedding的距离来判断节点是否为fraud node。</p>
+<h2 id="preliminary-observations">Preliminary Observations</h2>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/3.png#center" alt=""  />
+</p>
+<p>上图中N-N表示Normal nodes之间的相似度，AB-AB表示Abnormal nodes之间的相似度，N-AB表示Normal nodes和Abnormal nodes之间的相似度，从图（a）中可以发现N-N节点原始之间的相似度差别很大，即normal nodes之间的相似度差别很大，相似度范围在$[0.2,0.8]$， 而abnormal nodes之间的相似度差别也很大。从图(a)中还可以看出，normal nodes (N)和abnormal nodes （AB）原始特征之间有很大一部分是相似的。从图(b)中可以看出，当使用GCN学习到新的节点feature vectors后，normal nodes之间的相似度(N-N)得到了提升，即从$[0.2,0.8]$改善到$[0.4,1.0]$，但是N-N，AB-AB内部的相似度依然变化较大，并且依然存在大量高相似度的N-AB。</p>
+<p>从图（c）可以看出normal nodes的原始特征和global embedding （N-GL）之间相似度较高，并且相似度变化范围小。而Abnormal nodes和global embedding (AB-GL)之间的相似度较低，并且N-GL相似度和AB-GL相似度更好区分。所以通过与global embedding之间的相似度来区分normal nodes和abnormal nodes可能更加有效。而本文提出的GCCAD会进一步提升normal nodes和global emb之间的相似度，并且更加容易区分N-GL相似度与AB-GL相似度。</p>
+<h2 id="gccad-model">GCCAD Model</h2>
+<p>GCCAD基于监督对比学习来优化node embeddings和global embeddings，目标函数如下：
+$$
+\mathcal{L}_{\text {con }}=\underset{\substack{i: y_i=0 \\ j: y_j=1}}{\mathbb{E}}\left[-\log \frac{\exp \left(\mathbf{q}^{\top} \boldsymbol{h}_i / \tau\right)}{\sum_j \exp \left(\boldsymbol{q}^{\top} \boldsymbol{h}_j / \tau\right)+\exp \left(\boldsymbol{q}^{\top} \boldsymbol{h}_i / \tau\right)}\right]
+$$
+其中$\boldsymbol{q}$为global embedding，$\boldsymbol{h}_i$为normal node $v_i$的embedding。基于上述supervised contrastive loss，训练目标为增大训练集中normal nodes和global embedding的相似度，减少abnormal nodes和global embedding的相似度。即使得global embedding尽可能不受abnormal nodes的影响。</p>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/4.png#center" alt=""  />
+</p>
+<p>另外 本文不直接在原图上训练contrastive loss，而是先优化图结构，然后在优化的图结构上训练contrastive loss。由于message passing过程中会使得节点特征局部平滑，而abnormal node通常和位于normal node中，所以MPNN无论如何都会使得abnormal node和周围的normal node变得相似。所以在MPNN前先使用<strong>Edge Update</strong>模块对图更新，移除潜在的可以links，使得abnormal nodes尽可能少的接受到normal node的信息。本文提出Context-Aware Link Predictor来衡量原图中两个节点的边的保留概率：
+$$
+\begin{array}{r}
+p_{i j}^{(l)}=\operatorname{MLP}\left(\left(\boldsymbol{h}_i^{(l-1)}-\boldsymbol{h}_j^{(l-1)}\right) \oplus\left(\boldsymbol{h}_i^{(l-1)}-\boldsymbol{q}^{(l-1)}\right)\right.
+\left.\oplus\left(\boldsymbol{h}_j^{(l-1)}-\boldsymbol{q}^{(l-1)}\right)\right)
+\end{array}
+$$
+两个节点间边的保留概率和两个节点间的embedding相似度有关（第1项），也和节点与global emb相似度有关。然后用训练集中标注好的normal nodes和abnormal nodes来训练$p_{i j}^{(l)}$：
+$$
+\mathcal{L}_{\text {link }}=\mathbb{E}\left[\sum_{i, j: y_i=y_j=0}-\log p_{i j}^{(l)}-\sum_{i, j: y_i \neq y_j=0}\left(1-\log p_{i j}^{(l)}\right)\right]
+$$
+通过这种方式，来将潜在的与abnormal nodes连接的边移除，从而使得abnormal node在message passing过程减少收到normal node的影响。基于每条边的保留概率，基于Bernoulli 分布来采样edges从而得到边mask 矩阵 $I^{(l)}$。新的图结构定义为：
+$$
+A_{i j}^{(l)}=\left(\alpha A_{i j}^{(l-1)}+(1-\alpha) p_{i j}^{(l)}\right) \odot I_{i j}^{(l)}
+$$
+反向传播时$I$视为常量，梯度从$p_{ij}$走。得到新的图结构后用GNN学习图的node embeddings。最后基于得到的node embeddings计算每个node embedding 和global embedding $\boldsymbol{q}$ 的相似度 （$\boldsymbol{q}$初始化为所有节点初始feature的均值）：
+$$
+s_i^{(l)}=\operatorname{cosine}\left(\boldsymbol{h}_i^{(l)}, \boldsymbol{m}\right)
+$$
+然后基于每个节点和global emb之间的相似度来计算聚合权重：
+$$
+\alpha_i^{(l)}=\frac{\exp \left(s_i^{(l)}\right)}{\sum_{j=1}^N \exp \left(s_j^{(l)}\right)}
+$$
+聚合node emb得到global emb:
+$$
+\boldsymbol{q}^{(l)}=\sum_{i=1}^N \alpha_i^{(l)} \cdot \boldsymbol{h}_i^{(l)}
+$$
+<strong>Training and Inference</strong></p>
+<p>每个epoch 基于得到的global emb $\boldsymbol{q}$以及node embeddings $\boldsymbol{h}$ 来计算supervised contrastive loss，从而同时优化node embs和global embs。测试阶段，将测试节点的emb计算和global emb之间的相似度，相似度越低，测试节点是abnormal nodes的可能性越大。</p>
 ]]></content:encoded>
     </item>
     

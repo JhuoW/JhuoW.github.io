@@ -59,7 +59,7 @@ $$
 \mathrm{X}_{i n}=\mathrm{X}_s+\mathrm{X}_h+\mathrm{X}_r+\mathrm{X}_g
 $$
 $\mathbf{X}_in$为一个节点新的group embeddings。每个节点的每个group embedding 都要融合它所在的hop 特征，所在的relation特征和所在的label特征（group 特征）然后用transformer将一个节点所有$S$个融合丰富特征的group embedding 做聚合，从而得到这个节点的最终embedding，用这个最终embedding来计算binary classification loss。</p>
-<h1 id="gccad-graph-contrastive-coding-for-anomaly-detection-tkde">GCCAD: Graph Contrastive Coding for Anomaly Detection （TKDE）</h1>
+<h1 id="2-gccad-graph-contrastive-coding-for-anomaly-detection-tkde">2. GCCAD: Graph Contrastive Coding for Anomaly Detection （TKDE）</h1>
 <p>本文的目标：拉近normal nodes和global embedding的距离，拉远fraud nodes和global embedding的距离。inference阶段通过计算testing node和global embedding的距离来判断节点是否为fraud node。</p>
 <h2 id="preliminary-observations">Preliminary Observations</h2>
 <p><img loading="lazy" src="/posts/2023-05-13-FD/3.png#center" alt=""  />

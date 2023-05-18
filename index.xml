@@ -5494,6 +5494,7 @@ $$\theta_{new} = \theta - \frac{\eta}{\sqrt{s+\varepsilon}} \odot \nabla J(\thet
 👋如果本blog有幸被大佬看到，求带飞 😊
 联系方式：  e-mail: jhuow@proton.me  Publication 2022 [1] ZHUO W, et at. Efficient Graph Similarity Learning with Alignment Regularization (NeurIPS 2022) [paper] [code] [poster]
 [2] ZHUO W, et at. Proximity Enhanced Graph Neural Networks with Channel Contrast (IJCAI 2022) [paper] [code]
+[3] ZHUO W, et at. Graph Contrastive Learning with Adaptive Proximity-based Graph Augmentation (IEEE Trans on NNLS)
 其他 🏀休斯顿火箭，⚽巴萨
 📷摄影爱好者
 🌜严重失眠患者 （顺便求助睡眠方法）
@@ -5508,6 +5509,7 @@ May The Force Be With You </description>
 <h3 id="publication-2022">Publication 2022</h3>
 <p>[1] <strong>ZHUO W</strong>, et at. Efficient Graph Similarity Learning with Alignment Regularization (<em><strong>NeurIPS 2022</strong></em>)  <a href="https://neurips.cc/virtual/2022/poster/53268">[paper]</a> <a href="">[code]</a> <a href="">[poster]</a></p>
 <p>[2] <strong>ZHUO W</strong>, et at. Proximity Enhanced Graph Neural Networks with Channel Contrast (<em><strong>IJCAI 2022</strong></em>) <a href="https://www.ijcai.org/proceedings/2022/0340.pdf">[paper]</a> <a href="https://github.com/JhuoW/PE-GCL">[code]</a></p>
+<p>[3] <strong>ZHUO W</strong>, et at. Graph Contrastive Learning with Adaptive Proximity-based Graph Augmentation (<em><strong>IEEE Trans on NNLS</strong></em>)</p>
 <h3 id="其他">其他</h3>
 <p>🏀休斯顿火箭，⚽巴萨</p>
 <p>📷摄影爱好者</p>

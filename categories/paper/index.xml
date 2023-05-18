@@ -103,6 +103,88 @@ $$
 $$
 <strong>Training and Inference</strong></p>
 <p>每个epoch 基于得到的global emb $\boldsymbol{q}$以及node embeddings $\boldsymbol{h}$ 来计算supervised contrastive loss，从而同时优化node embs和global embs。测试阶段，将测试节点的emb计算和global emb之间的相似度，相似度越低，测试节点是abnormal nodes的可能性越大。</p>
+<h1 id="3-h2-fdetector-a-gnn-based-fraud-detector-with-homophilic-and-heterophilic-connections-www-22">3. H2-FDetector: A GNN-based Fraud Detector with Homophilic and Heterophilic Connections (WWW &lsquo;22)</h1>
+<h2 id="introduction-1">Introduction</h2>
+<p>Fraud graph通常包含2种类型的实体关联：1. homophilic connections: 相同label的节点被连接。 2. heterophilic connections: 不同label的节点被连接（fraudster 和 benign）。对于同时存在homophily 和heterophily的fraud graph，存在以下挑战：（1）如何学习一个边判别器，来判断图中的边是homophilic （两端都是benign 或 fraud） 还是 heterophilic (边一端是fraud一端是benign)。（2）如何为同时包含homophilic和heterophilic connections的fraud graph设计GNN。 (3) 如何利用整个类别的特征来判别新的fraud node? 即fraud node除了捕获与其邻居中benign nodes不相似的信息，还要捕获其他fraudster的信息，所以本方法让每个节点的表示和它所在类别的category feature相似，来捕获其他fraud 节点的特征。</p>
+<h2 id="methodology">Methodology</h2>
+<h3 id="h2-connection-identification">H$^2$-connection Identification</h3>
+<p>训练一个边判别器来预测图中任意一条边是homophilic edge还是heterophilic edge，基于训练集中的节点label。对于第$l$层的node embedding $H^{(l-1)}=\left\{h_1^{(l-1)}, h_2^{(l-1)}, \ldots, h_N^{(l-1)}\right\}$。对于图中的每条边 $e_{uv}$，定义一个可训练的判别器来判断该边是homophilic还是heterophilic。 首先：
+$$
+\begin{aligned}
+&amp; \bar{h}_u^{(l)}=\sigma\left(W_t^{(l)} h_u^{(l-1)}\right) \\
+&amp; \bar{h}_v^{(l)}=\sigma\left(W_t^{(l)} h_v^{(l-1)}\right)
+\end{aligned}
+$$
+其中$W_t^{(l)} \in \mathbb{R}^{d_l \times d_{l-1}}$是边判别器的可学习参数。然后基于$\bar{h}_u^{(l)}$和$\bar{h}_v^{(l)}$来计算边$e_{uv}$的homophilic分数。边的homophilic分数通过对两个节点的拼接 以及两个节点的不同来计算，$W_c^{(l)}$也是边判别器的参数，用于输出边分数：
+$$
+m_{u v}^{(l)}=\tanh \left(W_c^{(l)}\left[\bar{h}_u^{(l)}||\bar{h}_v^{(l)}||\left(\bar{h}_u^{(l)}-\bar{h}_v^{(l)}\right)\right]\right)
+$$
+其中 $\mathrm{tanh}(\cdot) \in (-1,1)$。根据$m_{u v}^{(l)}$的符号来判断$e_{uv}$是homo还是hetero：
+$$
+c_{u v}^{(l)}=\operatorname{SIGN}\left(m_{u v}^{(l)}\right)
+$$
+基于第$l$层的embedding输入边判别器中，可以得到所有边是homophilic还是heterophilic：
+$$
+C^{(l)}=\left\{c_{u v}^{(l)}\right\}_{e_{u v} \in \mathcal{E}}
+$$
+因为边判别器的输出是$\{-1,1\}$，所以对于训练集中的homophilic边，$y_{uv}=1$，那么$m_{u v}^{(l)}$要逼近1。同理对于heterophilic边，$y_{uv}=-1$，那么$m_{u v}^{(l)}$要逼近-1。即最小化以下目标：
+$$
+\mathcal{L}_{H I}^{(l)}=\frac{1}{\mathcal{E}_t} \sum_{e_{u v}}^{\mathcal{E}_t} \max \left(0,1-y_{u v} m_{u v}^{(l)}\right)
+$$</p>
+<h3 id="h2-connection-aggregation">H$^2$-connection Aggregation</h3>
+<p>对于第$r$个relation下的图$\mathcal{G}_r=\left\{\mathcal{V}, X,\left\{\mathcal{E}_r\right\}, Y\right\}$，$\mathcal{N}_r(v)$表示关系$r$下节点$v$的邻居，$u \in \mathcal{N}_r(v)$。计算$u$对中心节点$v$重要性分数时考虑他们之间的边是homo边还是hetero边，所以在计算边$e_{vu}$间的重要性系数时考虑$c_{uv}^{(l)}$:
+$$
+e_{u v}^{(l), r}=a^{(l), r}\left[W_r^{{l}} h_v^{(l-1)} || c_{u v}^{(l)} W_r^{(l)} h_u^{(l-1)}\right]
+$$
+其中 attention mechanism权重向量$a^{(l), r} \in \mathbb{R}^{1 \times 2d_l}$。类似于GAT，邻居聚合的attention系数如下：
+$$
+\alpha_{u, v}^{(l), r}=\frac{\exp \left\{\operatorname{LeakyReLU}\left(e_{u v}^{(l), r}\right)\right\}}{\sum_{k \in \mathcal{N}_r(v)} \exp \left\{\operatorname{LeakyReLU}\left(e_{k v}^{(l), r}\right)\right\}}
+$$
+考虑多头attention，并且在邻居聚合的时候考虑边类型：
+$$
+h_v^{(l), r}=||_{k=1}^K \sigma\left(\sum_{u \in \mathcal{N}_r(v)} \alpha_{u, v}^{(l), r, k} c_{u v}^{(l)} W_r^{(l), k} h_u^{(l-1)}\right)
+$$
+对于$R$个relation，将每个节点每层输出$h_v^{(l), r}$的所有$R$个关系拼接后做特征变换，得到融合多关系的节点embedding：
+$$
+\begin{aligned}
+&amp; h_v^{(l), \text { all }}=||_{r=1}^R h_v^{(l), r} \\
+&amp; h_v^{(l)}=W_d^{(l)} h_v^{(l), \text { all }}
+\end{aligned}
+$$
+其中$W_d^{(l)} \in \mathbb{R}^{d_l \times R d_l}$。最后一层输出维度为2，并做softmax：
+$$
+p_v=\operatorname{softmax}\left(h_v^{(L)}\right)
+$$
+用cross-entropy 训练GNN：
+$$
+\mathcal{L}_o=-\sum_{v \in \mathcal{V}_t}\left[y_v \log \left(p_v\right)+\left(1-y_v\right) \log \left(1-p_v\right)\right]
+$$</p>
+<h3 id="prototype-extraction">Prototype Extraction</h3>
+<p>除了训练边类型判别器H$^2$-connection Identification $\mathcal{L}_{H I}$，节点embedding类型判别器$\mathcal{L}_o$外，节点的每层embedding要和该节点所属的类embedding（prototype embedding）相似。类的prototype embedding:
+$$
+\begin{aligned}
+\operatorname{prototype}_{\text {fraud }}^{(l)} &amp; =\frac{1}{\left|\mathcal{V}_f\right|} \sum_{v \in \mathcal{V}_f} h_v^{(l)} \\
+\operatorname{prototype}_{\text {benign }}^{(l)} &amp; =\frac{1}{\left|\mathcal{V}_b\right|} \sum_{v \in \mathcal{V}_b} h_v^{(l)}
+\end{aligned}
+$$
+distance between node $v$ and two prototype:
+$$
+\begin{aligned}
+&amp; \mathcal{D}_f^{{l}}(v)=|| h_v^{(l)}-\text { prototype }_{f r a u d}^{(l)} ||_2 \\
+&amp; \mathcal{D}_b^{{l}}(v)=|| h_v^{(l)}-\text { prototype }_{\text {benign }}^{(l)} ||_2
+\end{aligned}
+$$
+$v$到两个prototype 的距离可以用softmax来输出一个2维概率向量，用来匹配他的ground truth one-hot label:
+$$
+\begin{gathered}
+\mathcal{L}_{P E}^{(l)}=-\sum_{v \in \mathcal{V}_t}\left[y_v \log \left(q_v^{(l)}\right)+\left(1-y_v\right) \log \left(1-q_v^{(l)}\right)\right] \\
+q_v^{(l)}=\operatorname{softmax}\left(-\mathcal{D}_{C(v)}^{(l)}(v)\right)
+\end{gathered}
+$$
+最终的训练目标为：
+$$
+\mathcal{L}=\mathcal{L}_o+\gamma_1 \sum_{l-1}^L \mathcal{L}_{H I}^{(l)}+\gamma_2 \sum_{l=1}^L \mathcal{L}_{P E}^{(l)}
+$$</p>
 ]]></content:encoded>
     </item>
     

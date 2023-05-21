@@ -185,6 +185,46 @@ $$
 $$
 \mathcal{L}=\mathcal{L}_o+\gamma_1 \sum_{l-1}^L \mathcal{L}_{H I}^{(l)}+\gamma_2 \sum_{l=1}^L \mathcal{L}_{P E}^{(l)}
 $$</p>
+<h1 id="4-care-gnn-enhancing-graph-neural-network-based-fraud-detectors-against-camouflaged-fraudsters-cikm-20">4. Care-GNN: Enhancing Graph Neural Network-based Fraud Detectors against Camouflaged Fraudsters (CIKM &lsquo;20)</h1>
+<p>Fraud nodes 在图中有2中类型的伪装（Camouflage）。（1）Feature Camouflage：通过添加一些特殊属性，从而骗过基于特征的一场检测器。（2）Relation Camouflage：Fraud nodes 隐藏在benign nodes中。为了解决两种伪装问题，对于<strong>特征伪装</strong>，提出一种标签感知的节点相似度衡量指标（label-aware similarity measure）用来为节点找到在特征层面和它最相似的邻居，节点特征基于它的label训练得到。（2）相似度感知的邻居提取器。基于强化学习，在GNN训练过程中自适应的寻找和他最相似的邻居。</p>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/4.png#center" alt=""  />
+</p>
+<h2 id="label-aware-similarity-measure">Label-aware Similarity Measure</h2>
+<p>在关系$r$下，中心节点$v$在第$l$层的表示为$\mathbf{h}_v^{(l-1)}$，对于该关系下的关于$v$的边$\left(v, v^{\prime}\right) \in \mathcal{E}_r^{(l-1)}$，他们在该层embeddings之间的$l_1$-distance为：
+$$
+\mathcal{D}^{(l)}\left(v, v^{\prime}\right)=||\sigma\left(M L P^{(l)}\left(\mathbf{h}_v^{(l-1)}\right)\right)-\sigma\left(M L P^{(l)}\left(\mathbf{h}_{v^{\prime}}^{(l-1)}\right)\right)||_1
+$$
+基于距离可以直接得到相似度：
+$$
+S^{(l)}\left(v, v^{\prime}\right)=1-\mathcal{D}^{(l)}\left(v, v^{\prime}\right)
+$$
+其中MLP输出的是一个scalar，然后输出到一个激活函数$\sigma = \tanh \in [-1,1]$中，通过衡量两个节点1维实数表示的距离来评价$v$和它邻居$v^{\prime}$的相似度。其中$M L P^{(l)}$是相似度评价器的参数，目标是基于node label $\{-1,1\}$来训练scalar embedding：
+$$
+\mathcal{L}_{\mathrm{Simi}}^{(l)}=\sum_{v \in \mathcal{V}}-\log \left(y_v \cdot \sigma\left(M L P^{(l)}\left(\mathbf{h}_v^{(l)}\right)\right)\right)
+$$
+$MLP$要使得训练集节点可以正确分类，在这种情况下计算两个节点的相似度。</p>
+<h2 id="similarity-aware-neighbor-selector">Similarity-aware Neighbor Selector</h2>
+<p>对于第$r$个relation，设置第$l$层的邻居采样阈值$p_r^{(l)} \in[0,1]$，表示当前epoch，在关系$r$下第$l$层每个fraud node仅采样和他相似度最高的前$p_r^{(l)}$比例个数的邻居参与聚合。这样可以尽可能为fraud node提取出和他相连的fraud nodes。注意，本文只针对fraud node计算$p_r^{(l)}$，但是该$p_r^{(l)}$会应用到关系$r$第$l$层的所有节点上。因为benign周围的同类型节点占比有绝对优势，所以对$p_r^{(l)}$的大小不敏感，$p_r^{(l)}$不管很大还是很小，都能为它聚合到同类的节点，所以基于fraud node计算的$p_r^{(l)}$来通用在所有节点上。</p>
+<p>那么如何设置$p_r^{(l)}$，使得fraud node可以聚合到和它最相似的邻居，从而尽可能过滤掉和它不同类的邻居？由于在训练过程中$p_r^{(l)}$是一个采样概率，采样出的邻居参与聚合，所以$p_r^{(l)}$没有梯度，无法在端到端的训练过程中基于梯度优化。所以为了优化$p_r^{(l)}$，CARE-GNN采用一种基于强化学习的方式，在每个epoch中优化$p_r^{(l)}$。具体来说，代码中只设置了一层GNN，对于一个3relation的图，每个relation下有一个采样概率，$[p_1 ,p_2, p_3]$，初始化为$[0.5, 0.5, 0.5]$，reward初始话为$[0,0,0]$。对于关系$i$下的采样概率$p_i$，第一个epoch先基于初始化概率采样邻居，然后聚合采样出的邻居：
+$$
+\mathbf{h}_{v, r}^{(l)}=\operatorname{ReLU}\left(\mathrm{AGG}_r^{(l)}\left(\left\{\mathbf{h}_{v^{\prime}}^{(l-1)}:\left(v, v^{\prime}\right) \in \mathcal{E}_r^{(l)}\right\}\right)\right)
+$$
+然后用当前不同relation下的概率$[p_1 ,p_2, p_3]$加权聚合节点$v$在3个relation下的邻居embedding，然后和节点$v$的self-feature聚合，得到每个节点$v$在当前epoch的输出embedding：
+$$
+\mathbf{h}_v^{(l)}=\operatorname{ReLU}\left(\mathrm{AGG}_{a l l}^{(l)}\left(\left.\mathbf{h}_v^{(l-1)} \oplus\left\{p_r^{(l)} \cdot \mathbf{h}_{v, r}^{(l)}\right\}\right|_{r=1} ^R\right)\right)
+$$
+因为只有一层，所以$\mathbf{h}_v^{(l)} = z_v$。基于$z_v$构造cross-entropy loss来预测node label，其中$z_v$过MLP+softmax：
+$$
+\mathcal{L}_{\mathrm{GNN}}=\sum_{v \in \mathcal{V}}-\log \left(y_v \cdot \sigma\left(M L P\left(\mathbf{z}_v\right)\right)\right) .
+$$
+now current epoch end，当前epoch中，training fraud node 和采样出的邻居平均相似度为：
+$$
+G\left(\mathcal{D}_r^{(l)}\right)^{(e)}=\frac{\sum_{v \in \mathcal{V}_{\text {train }}} \mathcal{D}_r^{(l)}\left(v, v^{\prime}\right)^{(e)}}{\left|\mathcal{V}_{\text {train }}\right|}
+$$
+第一个epoch后 reward 变为$[1,1,1]$，因为当前的$p_i$使得fraud node采样出了更相似的邻居，那么下一个epoch中就要扩大$p_i$来探索更多相似的邻居，如果下一个epoch在扩大$p_i$后采样到的邻居与中心节点的平均相似度降低，那么reward为-1，下一个epoch要用小一些的$p_i$。通过这种方式，基于每个epoch中中心节点和邻居的相似度，来优化采样概率$p_i$。这个过程和GNN的训练以及Label-aware Similarity Measure的参数训练同时进行，最终的loss func为：
+$$
+\mathcal{L}_{\mathrm{CARE}}=\mathcal{L}_{\mathrm{GNN}}+\lambda_1 \mathcal{L}_{\mathrm{Simi}}^{(1)}+\lambda_2||\Theta||_2
+$$</p>
 ]]></content:encoded>
     </item>
     

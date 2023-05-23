@@ -225,6 +225,33 @@ $$
 $$
 \mathcal{L}_{\mathrm{CARE}}=\mathcal{L}_{\mathrm{GNN}}+\lambda_1 \mathcal{L}_{\mathrm{Simi}}^{(1)}+\lambda_2||\Theta||_2
 $$</p>
+<h1 id="5-rethinking-graph-neural-networks-for-anomaly-detection">5. Rethinking Graph Neural Networks for Anomaly Detection</h1>
+<p>由于GNN的neighborhood aggregation机制，位于benign nodes中的anomalies会变得难以区分。现有面向Anomaly Detection的GNN分发可以大概分为3类 （1）采用Attention机制从多个视图聚合不同的邻居；（2）对节点邻居重新采样；（3）设置额外的辅助loss来增强GNN在Fraud graph上的训练能力。但这些方法都是spatial methods，很少从spectral的角度设计模型。然而，选择定制的频谱滤波器是GNN设计的关键组成部分，因为频谱滤波器决定了GNN的表达能力。</p>
+<p>因此本文研究如何为图上的异常检测任务设计谱图滤波器。本文首先分析了lens of the graph spectrum (图信号经过图傅里叶变换后的谱域表示)，即图信号在每个频率（特征值）上的响应强度。</p>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/5.png#center" alt=""  />
+</p>
+<p>图1中（a）（c）：异常节点数量不变，异常节点和正常节点的差别增加，导致图的异常程度增加。（b）（d）：异常节点和正常节点的差别增加，异常节点的数量不变，导致图的异常程度增加。仅关注蓝色柱，表示图的异常程度很低，可以看出图信号在低频部分的energy高，而在高频部分的energy较低，即图信号在低频上的响应更多，在高频上的响应更少。随着异常程度的增加，关注红色柱，可以看出图上信号在低频上的响应降低，高频部分响应增加。可以看出<strong>异常数据会导致频谱能量的 “右移”</strong>。</p>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/6.png#center" alt=""  />
+</p>
+<p>上图在一个fraud graph amazon上，对比原图，随机删除节点，删除异常节点 三种情况下在普通频率上的能量，可以看出，删除异常节点后低频能量上升，而高频能量（$\lambda = 1.0\sim1.2$）下降。所以信号的高频部分可能carry异常节点的性质，考虑高频部分可以帮助模型区分出异常节点。而保留信号的低频部分可以使得正常节点间平滑。因此设计图上的band-pass filter对于fraud graph很重要。<strong>现有的图神经网络大多属于低通滤波器或者自适应滤波器，它们无法保证带通性质。其中自适应滤波器虽然具有拟合任意函数的能力，但在异常检测中同样可能退化为低通滤波器。这是因为在整个数据集中，异常数据对应的高频信息占比较小（类不平衡），而大部分频谱能量仍然集中在低频。</strong></p>
+<p>为了保留图上信号的从低频到高频的部分，本文选择使用Beta distribution作为graph kernel function $g(\Lambda)$。Beta distribution的概率密度函数为：
+$$
+\beta_{p, q}(w)= \begin{cases}\frac{1}{B(p+1, q+1)} w^p(1-w)^q &amp; \text { if } w \in[0,1] \\ 0 &amp; \text { otherwise }\end{cases}
+$$
+其中$p, q \in \mathbb{R}^{+}$，$B(p+1, q+1)=p ! q ! /(p+q+1) !$是一个常数。由于normalized graph Laplacian $L$ 的特征值$\lambda \in[0,2]$，所以convolution kernel function（用来给不同频率basis加权的函数）定义为$\beta_{p, q}^*(w)=\frac{1}{2} \beta_{p, q}\left(\frac{w}{2}\right)$使得$\beta_{p, q}^*(\lambda)$可解。将$\beta_{p, q}^*(\Lambda)$ 其中$\Lambda$是$L$的特征值对角阵作为convolution kernel function：
+$$
+\mathcal{W}_{p, q}=\boldsymbol{U} \beta_{p, q}^*(\boldsymbol{\Lambda}) \boldsymbol{U}^T=\beta_{p, q}^*(\boldsymbol{L})=\frac{\left(\frac{L}{2}\right)^p\left(I-\frac{L}{2}\right)^q}{2 B(p+1, q+1)}
+$$
+在不同的$p,q$设置下，$\mathcal{W}_{p, q}$可以倾向于不同的频率， 如下图所示，在$p=0,q=4$时，$\boldsymbol{U} \beta_{0, 4}^*(\boldsymbol{\Lambda}) \boldsymbol{U}^T$是一个low-pass filter，graph convolution kernel function $\beta_{p, q}^*(\boldsymbol{\Lambda})$为低频部分赋予更高权重。当$p=1, q=3$，以及$p=2, q=2$时，中频部分被赋予更高的权重，当$p=3,q=1$时，高频部分被赋予更高的权重。</p>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/7.png#center" alt=""  />
+</p>
+<p>将不同$p,q$取值的graph filter结合起来可以得到一个band pass graph filter，然后将不同filter下提取的信号分量做拼接：
+$$
+\begin{aligned}
+\boldsymbol{Z}_i &amp; =\mathcal{W}_{i, C-i}(\operatorname{MLP}(\boldsymbol{X})) \\
+\boldsymbol{H} &amp; =\operatorname{AGG}\left(\left[\boldsymbol{Z}_0, \boldsymbol{Z}_1, \cdots, \boldsymbol{Z}_C\right]\right)
+\end{aligned}
+$$</p>
 ]]></content:encoded>
     </item>
     

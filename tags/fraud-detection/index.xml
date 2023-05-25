@@ -225,7 +225,7 @@ $$
 $$
 \mathcal{L}_{\mathrm{CARE}}=\mathcal{L}_{\mathrm{GNN}}+\lambda_1 \mathcal{L}_{\mathrm{Simi}}^{(1)}+\lambda_2||\Theta||_2
 $$</p>
-<h1 id="5-rethinking-graph-neural-networks-for-anomaly-detection">5. Rethinking Graph Neural Networks for Anomaly Detection</h1>
+<h1 id="5-rethinking-graph-neural-networks-for-anomaly-detection-icml-22">5. Rethinking Graph Neural Networks for Anomaly Detection (ICML &lsquo;22)</h1>
 <p>由于GNN的neighborhood aggregation机制，位于benign nodes中的anomalies会变得难以区分。现有面向Anomaly Detection的GNN分发可以大概分为3类 （1）采用Attention机制从多个视图聚合不同的邻居；（2）对节点邻居重新采样；（3）设置额外的辅助loss来增强GNN在Fraud graph上的训练能力。但这些方法都是spatial methods，很少从spectral的角度设计模型。然而，选择定制的频谱滤波器是GNN设计的关键组成部分，因为频谱滤波器决定了GNN的表达能力。</p>
 <p>因此本文研究如何为图上的异常检测任务设计谱图滤波器。本文首先分析了lens of the graph spectrum (图信号经过图傅里叶变换后的谱域表示)，即图信号在每个频率（特征值）上的响应强度。</p>
 <p><img loading="lazy" src="/posts/2023-05-13-FD/5.png#center" alt=""  />
@@ -251,6 +251,55 @@ $$
 \boldsymbol{Z}_i &amp; =\mathcal{W}_{i, C-i}(\operatorname{MLP}(\boldsymbol{X})) \\
 \boldsymbol{H} &amp; =\operatorname{AGG}\left(\left[\boldsymbol{Z}_0, \boldsymbol{Z}_1, \cdots, \boldsymbol{Z}_C\right]\right)
 \end{aligned}
+$$</p>
+<h1 id="6-pick-and-choose-a-gnn-based-imbalanced-learning-approach-for-fraud-detection-www-21">6. Pick and Choose: A GNN-based imbalanced learning approach for fraud detection (WWW &lsquo;21)</h1>
+<p><img loading="lazy" src="/posts/2023-05-13-FD/8.png#center" alt=""  />
+</p>
+<h2 id="pick-label-balanced-sampler">Pick: Label-balanced Sampler</h2>
+<p>该方法类似于CAER-GNN。CAER-GNN中每个batch抽取的节点为所有fraud training nodes和一半的benign training nodes，然后每个batch node聚合他们相似度高的一阶邻居。和CARE-GNN固定一个batch中不同类节点数量不同的是，PC-GNN为每个training node 设置采样概率，小类（fraud node）更容易被采样到，大类节点被采样的概率较小，每个训练集节点$v$被采样的概率为：
+$$
+P(v) \propto \frac{||\hat{A}(:, v)||^2}{\operatorname{LF}(C(v))}
+$$
+其中$\operatorname{LF}(C(v))$为节点$v$所在类的训练节点数，小类的训练节点更容易被采样。分母为节点的度，表示越重要的节点越容易被采样到，这样一个batch中的训练节点可以避免原图中的类不平衡。</p>
+<h2 id="choose-neighborhood-sampler">Choose: Neighborhood Sampler</h2>
+<p>第二步为图中的choose过程，为每个节点采样要聚合的邻居。对于每个batch node $v$，它的predicted label probabiity embedding 为 $\mathrm{D}_r^{(\ell)}\left(\mathbf{h}_{v, r}^{(\ell)}\right)=\sigma\left(\mathbf{U}_r^{(\ell)} \mathbf{h}_{v, r}^{(\ell)}\right)$，$v$和它的邻居$u$相似度定义为他们之间的embedding的$\ell_1$距离：
+$$
+\mathcal{D}_r^{(\ell)}(v, u)=||\mathrm{D}_r^{(\ell)}\left(\mathbf{h}_{v, r}^{(\ell)}\right)-\mathrm{D}_r^{(\ell)}\left(\mathbf{h}_{u, r}^{(\ell)}\right)||_1
+$$
+对于batch node中的benign node，采样与其label probability embedding相似度最相似的一定数量的邻居来聚合，benign node $v$的采样聚合邻居为：
+$$
+\underline{\mathcal{N}_r^{(\ell)}}(v)=\{u \in \mathcal{V} \mid A_r(v, u)&gt;0 \text { and } \mathcal{D}_r^{(\ell)}(v, u)&lt;\rho_{-}\}
+$$
+对于batch中的fraud node，除了聚合上述一阶邻居外，还要将batch中其他和它相似度较高的fraud nodes加入它的邻居集合中：
+$$
+\overline{\mathcal{N}_r^{(\ell)}}(v)=\{u \in \mathcal{V} \mid C(u)=C(v) \text { and } \mathcal{D}_r^{(\ell)}(v, u)&lt;\rho_{+}\}
+$$
+所以对于fraud node $v$，他的聚合邻居集合为：$\mathcal{N}_r^{(\ell)}(v)=\underline{\mathcal{N}_r^{(\ell)}}(v) \cup \overline{\mathcal{N}_r^{(\ell)}}(v)$。计算节点何其邻居的距离是基于节点的label probability embeddings，基于cross-entropy loss来优化：
+$$
+\begin{gathered}
+\mathcal{L}_{\text {dist }}=-\sum_{\ell=1}^L \sum_{r=1}^R \sum_{v \in \mathcal{V}}\left[y_v \log p_{v, r}^{(\ell)}+\left(1-y_v\right) \log \left(1-p_{v, r}^{(\ell)}\right)\right] \\
+p_{v, r}^{(\ell)}=\mathrm{D}_r^{(\ell)}\left(\mathbf{h}_{v, r}^{(\ell)}\right)
+\end{gathered}
+$$</p>
+<h2 id="aggregate-message-passing-architecture">Aggregate: Message Passing Architecture</h2>
+<p>每个节点$v$ concat采样出的邻居：
+$$
+\mathbf{h}_{v, r}^{(\ell)}=\operatorname{ReLU}\left(W_r^{(\ell)}\left(\mathbf{h}_{v, r}^{(\ell-1)} \oplus \mathrm{AGG}_r^{(\ell)}\left\{\mathbf{h}_{u, r}^{(\ell-1)}, u \in \mathcal{N}_r^{(\ell)}(v)\right\}\right)\right)
+$$
+每个relation各自计算node embedding，然后拼接MLP后得到节点的embedding:
+$$
+\mathbf{h}_v^{(\ell)}=\operatorname{ReLU}\left(W^{(\ell)}\left(\mathbf{h}_v^{(\ell-1)} \oplus \mathbf{h}_{v, 1}^{(\ell)} \oplus \cdots \oplus \mathbf{h}_{v, R}^{(\ell)}\right)\right)
+$$
+GNN的loss为最后一层的输出变换为logits，然后计算cross-entropy：
+$$
+\begin{gathered}
+\mathcal{L}_{\mathrm{gnn}}=-\sum_{v \in \mathcal{V}}\left[y_v \log p_v+\left(1-y_v\right) \log \left(1-p_v\right)\right] \\
+p_v=\operatorname{MLP}\left(\mathbf{h}_v^{(L)}\right)
+\end{gathered}
+$$
+模型的loss为：
+$$
+\mathcal{L}=\mathcal{L}_{\mathrm{gnn}}+\alpha \mathcal{L}_{\mathrm{dist}}
 $$</p>
 ]]></content:encoded>
     </item>

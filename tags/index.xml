@@ -10,23 +10,33 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 13 May 2023 16:14:56 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 15 Jul 2023 15:43:09 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GNN</title>
+      <link>https://JhuoW.github.io/tags/gnn/</link>
+      <pubDate>Sat, 15 Jul 2023 15:43:09 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/gnn/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Self-Supervised Learning</title>
+      <link>https://JhuoW.github.io/tags/self-supervised-learning/</link>
+      <pubDate>Sat, 15 Jul 2023 15:43:09 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/self-supervised-learning/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
     <item>
       <title>Fraud Detection</title>
       <link>https://JhuoW.github.io/tags/fraud-detection/</link>
       <pubDate>Sat, 13 May 2023 16:14:56 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/fraud-detection/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>GNN</title>
-      <link>https://JhuoW.github.io/tags/gnn/</link>
-      <pubDate>Sat, 13 May 2023 16:14:56 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/gnn/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
@@ -47,16 +57,6 @@
       <pubDate>Wed, 25 Jan 2023 21:19:40 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/variational-inference/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>Self-Supervised Learning</title>
-      <link>https://JhuoW.github.io/tags/self-supervised-learning/</link>
-      <pubDate>Sun, 08 Jan 2023 22:28:43 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/self-supervised-learning/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

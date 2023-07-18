@@ -3,30 +3,30 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://JhuoW.github.io/categories/</loc>
-    <lastmod>2023-07-15T15:43:09+08:00</lastmod>
+    <lastmod>2023-07-16T17:47:14+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/gnn/</loc>
-    <lastmod>2023-07-15T15:43:09+08:00</lastmod>
+    <lastmod>2023-07-16T17:47:14+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/gnn/</loc>
-    <lastmod>2023-07-15T15:43:09+08:00</lastmod>
+    <lastmod>2023-07-16T17:47:14+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/posts/mlpinit/</loc>
-    <lastmod>2023-07-15T15:43:09+08:00</lastmod>
+    <loc>https://JhuoW.github.io/posts/orderedgnn/</loc>
+    <lastmod>2023-07-16T17:47:14+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/</loc>
-    <lastmod>2023-07-15T15:43:09+08:00</lastmod>
+    <lastmod>2023-07-16T17:47:14+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/categories/paper/</loc>
-    <lastmod>2023-07-15T15:43:09+08:00</lastmod>
+    <lastmod>2023-07-16T17:47:14+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/</loc>
-    <lastmod>2023-07-15T15:43:09+08:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/self-supervised-learning/</loc>
-    <lastmod>2023-07-15T15:43:09+08:00</lastmod>
+    <lastmod>2023-07-16T17:47:14+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/</loc>
+    <lastmod>2023-07-16T17:47:14+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/mlpinit/</loc>
     <lastmod>2023-07-15T15:43:09+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/fraud-detection/</loc>
@@ -45,6 +45,9 @@
     <lastmod>2023-01-25T21:19:40+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/progcl/</loc>
+    <lastmod>2023-01-08T22:28:43+08:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/self-supervised-learning/</loc>
     <lastmod>2023-01-08T22:28:43+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/clusterscl/</loc>

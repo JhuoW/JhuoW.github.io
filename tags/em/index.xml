@@ -28,8 +28,7 @@ $$
 \theta_{\mathrm{MLE}} = \arg \max_\theta  P(X|\theta)  \tag{2}
 $$</p>
 <blockquote>
-<p>最大似然估计：给定一组样本$X$，模型的参数$\theta$是研究对象。若能找到参数$\theta_{\mathrm{MLE}}$，使得样本发生的可能性最大，则此估计值$\theta_{\mathrm{MLE}}$为参数$\theta$的最大似然估计。</p>
-</blockquote>
+<p>最大似然估计：给定一组样本$X$，模型的参数$\theta$是研究对象。若能找到参数$\theta_{\mathrm{MLE}}$，使得样本发生的可能性最大，则此估计值$\theta_{\mathrm{MLE}}$为参数$\theta$的最大似然估计。</p></blockquote>
 <p>举例来说，如果模型是单个Gaussian Distribution下，参数为Gaussian Distribution的参数（均值$\mu$, 标准差$\Sigma$， $\theta = {\mu, \Sigma}$）.
 给定一组数据$X$, 要计算$X$来自什么样的Gaussian，即：$P(\cdot | \theta) = f_\theta(\cdot) = \mathcal{N}(\cdot | \mu,\Sigma)$是一个Gaussian Distribution函数，目标为：
 $$
@@ -107,8 +106,7 @@ $$
 \log P(X|\theta^{(t+1)}) &amp;= Q(\theta^{(t+1)},\theta^{(t)}) - H(\theta^{(t+1)},\theta^{(t)}) \\
 \log P(X|\theta^{(t)}) &amp;= Q(\theta^{(t)},\theta^{(t)}) - H(\theta^{(t)},\theta^{(t)})
 \end{aligned}  \tag{15}
-$$</p>
-</blockquote>
+$$</p></blockquote>
 <p>首先，根据EM的迭代求解公式，$\theta^{(t+1)}$由
 $$
 \theta^{(t+1)} = \arg \max_\theta Q(\theta,\theta^{(t)})  \tag{16}
@@ -123,8 +121,7 @@ $$
 <p>If $g(x)$ is a convex function on $R_X$, and $\mathbb{E}[g(x)]$ and $g(\mathbb{E}[X])$ are finite, then $\mathbb{E}[g(x)] \geq g(\mathbb{E}[X])$。</p>
 <p><img loading="lazy" src="/posts/EM_Algo/Convex_b.png" alt=""  />
 </p>
-<p>显然$\log$是concave，所以$\mathbb{E}[\log(\cdot)]\leq \log(\mathbb{E}[\cdot])$。同理$-\log$是convex，所以$\mathbb{E}[-\log(\cdot)]\geq -\log(\mathbb{E}[\cdot])$。</p>
-</blockquote>
+<p>显然$\log$是concave，所以$\mathbb{E}[\log(\cdot)]\leq \log(\mathbb{E}[\cdot])$。同理$-\log$是convex，所以$\mathbb{E}[-\log(\cdot)]\geq -\log(\mathbb{E}[\cdot])$。</p></blockquote>
 <p>下面，计算$H(\theta^{(t)},\theta^{(t)})-H(\theta,\theta^{(t)})$：
 $$
 \begin{aligned}

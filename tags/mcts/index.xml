@@ -17,21 +17,38 @@
       <pubDate>Fri, 25 Mar 2022 18:09:58 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/monte-carlo-tree-search/</guid>
-      <description>单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits） 单一状态$s$, $k$种action（$k$个摇臂）。
-在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?
-多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。
-  利用（Exploitation）： 保证在过去决策中得到最佳回报
-  探索（Exploration）：寄希望在未来能够得到更大的汇报
-  例如， $s$摇动10次赌博机，其中第5次获得最大回报，那么下一次摇动赌博机可能选第5个赌博机，即“利用”（根据过去的最佳回报来施展下一次行为），第11次摇动的action为$a_5$。
-但是摇动10次后，可能有的赌博机尚未摇动，未摇动的赌博机可能会有更大回报，即“探索”。
-悔值函数 如果有$k$个赌博机， 这$k$个赌博机产生的操作序列为$X_{i,1}, X_{i,2}, \cdots (i = 1,\cdots, k)$。 在时刻$t=1,2,\cdots$, 选择第$I_t$个赌博机后，可得到的奖励为$X_{I_t,t}$, 则在$n$次操作$I_1,\cdots,I_n$后，可如下定义悔值函数： $$ R_n = \max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}-\sum^n_{t=1}X_{I_t, t} $$ $i$: 第$i$个赌博机
-$I_t$: $t$时刻选择的赌博机
-$\max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}$: 最理想（大）的奖励
-$X_{I_t, t}$: $t$时刻选择赌博机$I_t$的reward
-$\sum^n_{t=1}X_{I_t, t}$: $n$次选择的总奖励。
-$R_n$越大，就代表$n$次决策的结果越差。
-上置信区间（Upper Confidence Bound, UCB） UCB旨在探索和利用间去的平衡
-在UCB方法中，使$X_{i, T_{i}(t-1)}$ 来记录第$i$个赌博机在过去$t-1$时刻内的平均奖励，则在第$t$时刻，选择使如下具有最佳上限置信区间的赌博机： $$ I_{t}=\max_{i \in{1, \ldots, k}}\left\{\overline{X_{i, T_{i}(t-1)}}+C_{t-1, T_{i}(t-1)} \right\}.</description>
+      <description>&lt;h1 id=&#34;单一状态monte-carlo规划多臂赌博机multi-armed-bandits&#34;&gt;单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits）&lt;/h1&gt;
+&lt;p&gt;单一状态$s$, $k$种action（$k$个摇臂）。&lt;/p&gt;
+&lt;p&gt;在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?&lt;/p&gt;
+&lt;p&gt;多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;利用（Exploitation）： 保证在过去决策中得到最佳回报&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;探索（Exploration）：寄希望在未来能够得到更大的汇报&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;例如， $s$摇动10次赌博机，其中第5次获得最大回报，那么下一次摇动赌博机可能选第5个赌博机，即“利用”（根据过去的最佳回报来施展下一次行为），第11次摇动的action为$a_5$。&lt;/p&gt;
+&lt;p&gt;但是摇动10次后，可能有的赌博机尚未摇动，未摇动的赌博机可能会有更大回报，即“探索”。&lt;/p&gt;
+&lt;h2 id=&#34;悔值函数&#34;&gt;悔值函数&lt;/h2&gt;
+&lt;p&gt;如果有$k$个赌博机， 这$k$个赌博机产生的操作序列为$X_{i,1}, X_{i,2}, \cdots (i = 1,\cdots, k)$。 在时刻$t=1,2,\cdots$, 选择第$I_t$个赌博机后，可得到的奖励为$X_{I_t,t}$, 则在$n$次操作$I_1,\cdots,I_n$后，可如下定义悔值函数：
+$$
+R_n = \max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}-\sum^n_{t=1}X_{I_t, t}
+$$
+$i$: 第$i$个赌博机&lt;/p&gt;
+&lt;p&gt;$I_t$: $t$时刻选择的赌博机&lt;/p&gt;
+&lt;p&gt;$\max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}$: 最理想（大）的奖励&lt;/p&gt;
+&lt;p&gt;$X_{I_t, t}$: $t$时刻选择赌博机$I_t$的reward&lt;/p&gt;
+&lt;p&gt;$\sum^n_{t=1}X_{I_t, t}$: $n$次选择的总奖励。&lt;/p&gt;
+&lt;p&gt;$R_n$越大，就代表$n$次决策的结果越差。&lt;/p&gt;
+&lt;h2 id=&#34;上置信区间upper-confidence-bound-ucb&#34;&gt;上置信区间（Upper Confidence Bound, UCB）&lt;/h2&gt;
+&lt;p&gt;UCB旨在探索和利用间去的平衡&lt;/p&gt;
+&lt;p&gt;在UCB方法中，使$X_{i, T_{i}(t-1)}$ 来记录第$i$个赌博机在过去$t-1$时刻内的平均奖励，则在第$t$时刻，选择使如下具有最佳上限置信区间的赌博机：
+$$
+I_{t}=\max_{i \in{1, \ldots, k}}\left\{\overline{X_{i, T_{i}(t-1)}}+C_{t-1, T_{i}(t-1)} \right\}.
+$$
+其中$I_{t}$为$t$时刻要摇的赌博机，&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h1 id="单一状态monte-carlo规划多臂赌博机multi-armed-bandits">单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits）</h1>
 <p>单一状态$s$, $k$种action（$k$个摇臂）。</p>
 <p>在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?</p>

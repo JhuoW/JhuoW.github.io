@@ -152,7 +152,7 @@
     </item>
     
     <item>
-      <title>Link prediction</title>
+      <title>Link Prediction</title>
       <link>https://JhuoW.github.io/tags/link-prediction/</link>
       <pubDate>Wed, 30 Mar 2022 13:51:57 +0800</pubDate>
       
@@ -172,7 +172,7 @@
     </item>
     
     <item>
-      <title>papers</title>
+      <title>Papers</title>
       <link>https://JhuoW.github.io/tags/papers/</link>
       <pubDate>Tue, 29 Mar 2022 11:03:50 +0000</pubDate>
       
@@ -212,7 +212,7 @@
     </item>
     
     <item>
-      <title>Graph pooling</title>
+      <title>Graph Pooling</title>
       <link>https://JhuoW.github.io/tags/graph-pooling/</link>
       <pubDate>Thu, 19 Dec 2019 19:32:36 +0000</pubDate>
       
@@ -222,7 +222,7 @@
     </item>
     
     <item>
-      <title>algorithm</title>
+      <title>Algorithm</title>
       <link>https://JhuoW.github.io/tags/algorithm/</link>
       <pubDate>Sat, 07 Sep 2019 09:11:09 +0000</pubDate>
       
@@ -332,6 +332,26 @@
     </item>
     
     <item>
+      <title>Attention</title>
+      <link>https://JhuoW.github.io/tags/attention/</link>
+      <pubDate>Sun, 17 Feb 2019 22:01:15 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/attention/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Hawkes Process</title>
+      <link>https://JhuoW.github.io/tags/hawkes-process/</link>
+      <pubDate>Sun, 17 Feb 2019 22:01:15 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/hawkes-process/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
       <title>GAN</title>
       <link>https://JhuoW.github.io/tags/gan/</link>
       <pubDate>Tue, 22 Jan 2019 16:57:05 +0000</pubDate>
@@ -352,26 +372,6 @@
     </item>
     
     <item>
-      <title>attention</title>
-      <link>https://JhuoW.github.io/tags/attention/</link>
-      <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/attention/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>Hawkes process</title>
-      <link>https://JhuoW.github.io/tags/hawkes-process/</link>
-      <pubDate>Tue, 22 Jan 2019 11:02:29 +0000</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/hawkes-process/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
-    <item>
       <title>Heterogeneous Information Networks</title>
       <link>https://JhuoW.github.io/tags/heterogeneous-information-networks/</link>
       <pubDate>Fri, 29 Jun 2018 16:29:18 +0000</pubDate>
@@ -382,7 +382,7 @@
     </item>
     
     <item>
-      <title>Meta-path</title>
+      <title>Meta-Path</title>
       <link>https://JhuoW.github.io/tags/meta-path/</link>
       <pubDate>Fri, 29 Jun 2018 16:29:18 +0000</pubDate>
       

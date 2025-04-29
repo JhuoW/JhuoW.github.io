@@ -183,6 +183,53 @@ $$
 $$
 P[\text { NOI belongs to class } i]=\sigma\left(\operatorname{MLP}\left(h_{c_i}\right)\right)
 $$</p>
+<h1 id="4-talk-like-a-graph-encoding-graphs-for-large-language-models">4. Talk like a Graph: Encoding Graphs for Large Language Models</h1>
+<p>prompt engineering的目的是找到一个合适的方式使LLM $f$可以解析问题$Q$，并且得到他的Answer $\mathcal{A}$，即$\mathcal{A} = f(Q)$。本工作的目标是为LLM$f$提供图$G$，使得LLM可以对图做推理QA，即$\mathcal{A} = f(G,Q)$。在该工作中，固定LLM $f$的参数不变，并引入一个图编码函数（graph encoding function）$g(G): G \to W$用于将图结构数据编码成text，以及一个问题重解析函数$q(Q): W \to W$。训练数据$D$有图$G$，问题$Q$和回答$S$组成，即每个训练数据$(G,Q,S) \in D$。训练目标是固定大语言模型$f$不变，找到最佳的图编码函数$g$和问题重解析函数$q$，使得给定训练$G$和$Q$，得到回答$S$的分数最高：
+$$
+\max _{g, q} \mathbb{E}_{G, Q, S \in D} \operatorname{score}_f(g(G), q(Q), S)
+$$</p>
+<h3 id="graph-encoding-function-gg">Graph encoding function $g(G)$</h3>
+<p>$g(G)$用于将$G$映射为LLM可以处理的token：首先，encode图中的节点，然后encode图中的边。具体编码技术如下图所示：</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/encoding_graph.png#center" alt="NOI"  />
+</p>
+<p><strong>Encoding Nodes</strong>:</p>
+<ol>
+<li>
+<p>整型节点编码：$G$ describes a graph among nodes 0,1,2,3,4,5,6,7</p>
+</li>
+<li>
+<p>使用well-known English first names：$G$ describes a friendship among James, Robert, Michael, Mary.</p>
+</li>
+<li>
+<p>使用电视剧《权力的游戏》和《南方公园》中流行的角色名字。</p>
+</li>
+<li>
+<p>包括美国政治家的名字。</p>
+</li>
+<li>
+<p>用字母表示的。</p>
+</li>
+</ol>
+<p><strong>Representing Edges</strong>:</p>
+<ol>
+<li>用括号表示边：The edge in $G$ given as (0,1), (0,2), &hellip;, (6,7), (7,8)</li>
+<li>Friendship: source node and target node are friends. 如 We have the following edges in $G$: James and Robert are friends, &hellip; Jennifer and Linda are friends。对应于上面的well-known English first name表示节点</li>
+<li>Coauthorship: 比如 James and Robert wrote a paper together 来表示一条边</li>
+<li>Social network: James and Robert are connected来表示一条边</li>
+<li>Arrows: A-&gt;B 来表示边</li>
+<li>Incident: Node 8 is connected to nodes 3,7 来表示每个节点的<strong>邻域</strong>。</li>
+</ol>
+<h2 id="experiments">Experiments</h2>
+<p>使用PaLM 62B作为LLM，在不同图任务以及不同图编码器下的准确率比较，最有效的prompt (zero-shot、zero-cot、few-show、cot、cot-bag)用下划线标出，最佳图编码器用加粗标出。实验使用ER Graph作为数据集，ER Graph的统计数据如下表所示，可以看出平均节点数为12.37，平均边数为39.79，平均度为5.70。对于边存在任务，有53.96%的情况不存在边，对于cycle check任务，有81.96%的情况存在cycle（因为ER graph很可能存在cycle）。</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/graphqa_dataset.png#center" alt="graphqa_datase"  />
+</p>
+<p>从下面的实验结果可以看出，LLM在所有prompt heuristic的所有graph encoding function上预测的最高边存在概率为44.5%，76%的情况存在cycle。而在Node degree 任务上，均与真实平均度5.7差距较大，平均边数也与真实情况差距较大。</p>
+<p>简单的Prompt比如zero-shot 在简单的任务上比复杂的prompt比如zero-cot效果更好，因为简单的任务无需多跳推理。</p>
+<p>graph encoding function对LLM影响巨大。</p>
+<p>整型节点编码可以提升算数性能，比如node degree、node count和edge count的预测。</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/graphqa_exp.png#center" alt="graphqa_exp"  />
+</p>
+<h1 id="5-can-language-models-solve-graph-problems-in-natural-language">5. Can Language Models Solve Graph Problems in Natural Language?</h1>
 <p>[1] Learning on Large-scale Text-attributed Graphs via Variational Inference.</p>
 <p>[2] <a href="https://medium.com/@francescofranco_39234/in-context-learning-icl-a775cd8b7261">https://medium.com/@francescofranco_39234/in-context-learning-icl-a775cd8b7261</a></p>
 ]]></content:encoded>

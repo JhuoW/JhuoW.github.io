@@ -17,7 +17,40 @@
       <pubDate>Sun, 27 Mar 2022 15:38:50 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/barbell_graph/</guid>
-      <description>晕了 import networkx as nx import matplotlib.pyplot as plt n_clique, n_path = 10, 10 clique1 = nx.complete_graph(n_clique) clique1_pos = nx.circular_layout(clique1) clique2 = nx.complete_graph(n_clique) clique2_mapping = {node: node + n_clique for node in clique2} nx.relabel_nodes(clique2, clique2_mapping, copy=False) # avoids repeated nodes x_diff, y_diff = 8, -1 clique2_pos = {node: clique1_pos[node-n_clique] + (x_diff, y_diff) for node in clique2} path = nx.path_graph(n_path) path_mapping = {node: node + 2 * n_clique for node in path} nx.</description>
+      <description>&lt;h3 id=&#34;晕了&#34;&gt;晕了&lt;/h3&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import networkx as nx
+import matplotlib.pyplot as plt
+
+n_clique, n_path = 10, 10
+clique1 = nx.complete_graph(n_clique)
+clique1_pos = nx.circular_layout(clique1)
+clique2 = nx.complete_graph(n_clique)
+clique2_mapping = {node: node + n_clique for node in clique2}
+nx.relabel_nodes(clique2, clique2_mapping, copy=False) # avoids repeated nodes
+x_diff, y_diff = 8, -1
+clique2_pos = {node: clique1_pos[node-n_clique] + (x_diff, y_diff) for node in clique2}
+path = nx.path_graph(n_path)
+path_mapping = {node: node + 2 * n_clique for node in path}
+nx.relabel_nodes(path, path_mapping, copy=False) # avoids repeated nodes
+path_nodes = list(path.nodes)
+path_half1_nodes = path_nodes[:n_path//2]
+path_half2_nodes = path_nodes[n_path//2:]
+path_dist = 0.9
+clique2_entry = n_clique + n_clique // 2
+path_half1_pos = {node: clique1_pos[0] + (path_dist + i * path_dist, 0) for i, node in enumerate(path_half1_nodes)}
+path_half2_pos = {node: clique2_pos[clique2_entry] - (path_dist + i * path_dist, 0) for i, node in enumerate(path_half2_nodes[::-1])}
+path_pos = {**path_half1_pos, **path_half2_pos}
+barbell = nx.Graph()
+barbell.add_edges_from(clique1.edges)
+barbell.add_edges_from(clique2.edges)
+barbell.add_edges_from(path.edges)
+barbell.add_edges_from([(path_half1_nodes[0], 0), (path_half2_nodes[-1], clique2_entry)])
+clique_pos = {**clique1_pos, **clique2_pos}
+barbell_pos = {**clique_pos, **path_pos}
+plt.figure(figsize=(20, 6))
+nx.draw(barbell, pos=barbell_pos, with_labels=True)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://JhuoW.github.io/posts/barbell-graph/barbell.png#center&#34; alt=&#34;你想输入的替代文字&#34;  /&gt;
+&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h3 id="晕了">晕了</h3>
 <pre tabindex="0"><code>import networkx as nx
 import matplotlib.pyplot as plt

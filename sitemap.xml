@@ -5,10 +5,10 @@
     <loc>https://JhuoW.github.io/categories/</loc>
     <lastmod>2024-05-25T01:04:50+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/gnn/</loc>
+    <loc>https://JhuoW.github.io/categories/gnn/</loc>
     <lastmod>2024-05-25T01:04:50+08:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/gnn/</loc>
+    <loc>https://JhuoW.github.io/tags/gnn/</loc>
     <lastmod>2024-05-25T01:04:50+08:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/</loc>
@@ -215,10 +215,10 @@
     <loc>https://JhuoW.github.io/categories/network-embedding/</loc>
     <lastmod>2019-05-29T10:46:44+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/diffusion/</loc>
+    <loc>https://JhuoW.github.io/categories/diffusion/</loc>
     <lastmod>2019-05-12T22:09:38+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/diffusion/</loc>
+    <loc>https://JhuoW.github.io/tags/diffusion/</loc>
     <lastmod>2019-05-12T22:09:38+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/tags/network-embedding/</loc>
@@ -230,10 +230,10 @@
     <loc>https://JhuoW.github.io/posts/2019-05-12-embedding-ic/</loc>
     <lastmod>2019-05-12T22:09:38+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/influence-maximization/</loc>
+    <loc>https://JhuoW.github.io/categories/influence-maximization/</loc>
     <lastmod>2019-05-06T20:16:17+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/categories/influence-maximization/</loc>
+    <loc>https://JhuoW.github.io/tags/influence-maximization/</loc>
     <lastmod>2019-05-06T20:16:17+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/2019-05-06-im-conclusion/</loc>
@@ -251,6 +251,15 @@
     <loc>https://JhuoW.github.io/posts/bine/</loc>
     <lastmod>2019-03-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://JhuoW.github.io/tags/attention/</loc>
+    <lastmod>2019-02-17T22:01:15+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/tags/hawkes-process/</loc>
+    <lastmod>2019-02-17T22:01:15+00:00</lastmod>
+  </url><url>
+    <loc>https://JhuoW.github.io/posts/htne/</loc>
+    <lastmod>2019-02-17T22:01:15+00:00</lastmod>
+  </url><url>
     <loc>https://JhuoW.github.io/posts/graphgan/</loc>
     <lastmod>2019-01-22T16:57:05+00:00</lastmod>
   </url><url>
@@ -260,13 +269,7 @@
     <loc>https://JhuoW.github.io/tags/graph-softmax/</loc>
     <lastmod>2019-01-22T16:57:05+00:00</lastmod>
   </url><url>
-    <loc>https://JhuoW.github.io/tags/attention/</loc>
-    <lastmod>2019-01-22T11:02:29+00:00</lastmod>
-  </url><url>
     <loc>https://JhuoW.github.io/posts/2019-01-22-ne-edge-labels/</loc>
-    <lastmod>2019-01-22T11:02:29+00:00</lastmod>
-  </url><url>
-    <loc>https://JhuoW.github.io/tags/hawkes-process/</loc>
     <lastmod>2019-01-22T11:02:29+00:00</lastmod>
   </url><url>
     <loc>https://JhuoW.github.io/posts/sdne/</loc>
@@ -296,6 +299,8 @@
     <loc>https://JhuoW.github.io/posts/optimizer/</loc>
     <lastmod>2018-01-28T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://JhuoW.github.io/about-old/</loc>
+  </url><url>
     <loc>https://JhuoW.github.io/about/</loc>
   </url><url>
     <loc>https://JhuoW.github.io/archive/</loc>
@@ -303,7 +308,5 @@
     <loc>https://JhuoW.github.io/gallery/</loc>
   </url><url>
     <loc>https://JhuoW.github.io/search/</loc>
-  </url><url>
-    <loc>https://JhuoW.github.io/posts/htne/</loc>
   </url>
 </urlset>

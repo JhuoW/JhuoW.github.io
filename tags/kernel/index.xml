@@ -17,8 +17,14 @@
       <pubDate>Sat, 26 Mar 2022 22:39:20 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/rkhs_kernel/</guid>
-      <description>Hilbert Space Definition 1 (Norm) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):
- For $f \in \mathcal{F}$, $||f||_{\mathcal{F}}=0$ if and only if $f=0$. (norm separates points) $|\lambda f|_{\mathcal{F}}=|\lambda||f|_{\mathcal{F}}$, $\forall \lambda \in \mathbb{R}, \forall f \in \mathcal{F}$ (positive homogeneity). $|f+g|_{\mathcal{F}} \leq|f|_{\mathcal{F}}+|g|_{\mathcal{F}}, \forall f, g \in \mathcal{F}$ (triangle inequality).</description>
+      <description>&lt;h1 id=&#34;hilbert-space&#34;&gt;Hilbert Space&lt;/h1&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Definition 1&lt;/strong&gt;&lt;/em&gt; (&lt;a href=&#34;http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf&#34;&gt;Norm&lt;/a&gt;) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;For $f \in \mathcal{F}$, $||f||_{\mathcal{F}}=0$ if and only if $f=0$. (norm separates points)&lt;/li&gt;
+&lt;li&gt;$|\lambda f|_{\mathcal{F}}=|\lambda||f|_{\mathcal{F}}$, $\forall \lambda \in \mathbb{R}, \forall f \in \mathcal{F}$ (positive homogeneity).&lt;/li&gt;
+&lt;li&gt;$|f+g|_{\mathcal{F}} \leq|f|_{\mathcal{F}}+|g|_{\mathcal{F}}, \forall f, g \in \mathcal{F}$ (triangle inequality).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;向$||\cdot||_{\mathcal{F}}$中输入任意一个向量，只要满足以上条件，那么$||\cdot||_{\mathcal{F}}$是一个valid norm operator.&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h1 id="hilbert-space">Hilbert Space</h1>
 <p><em><strong>Definition 1</strong></em> (<a href="http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf">Norm</a>) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):</p>
 <ol>
@@ -99,8 +105,7 @@ $$
 $$
 If $\mathbf{K}$ is a <strong>positive semi-definite</strong> (<strong>PSD</strong>) matrix, then $\lambda_1, \cdots \lambda_m \geq 0$.</p>
 <blockquote>
-<p><em><strong>Assumption 1</strong></em>. All $\lambda_t$ are nonnegative.</p>
-</blockquote>
+<p><em><strong>Assumption 1</strong></em>. All $\lambda_t$ are nonnegative.</p></blockquote>
 <p>We consider this feature map:
 $$
 \begin{equation}

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Link prediction on JhuoW‘s Notes</title>
+    <title>Link Prediction on JhuoW‘s Notes</title>
     <link>https://JhuoW.github.io/tags/link-prediction/</link>
-    <description>Recent content in Link prediction on JhuoW‘s Notes</description>
+    <description>Recent content in Link Prediction on JhuoW‘s Notes</description>
     <image>
       <url>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
@@ -22,8 +22,7 @@
 <h1 id="introduction">Introduction</h1>
 <p>由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 <strong>Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure</strong>。</p>
 <blockquote>
-<p><strong>Link prediction heuristics:</strong>  基于预定义的假设的链路预测。举几个例子[1]：</p>
-</blockquote>
+<p><strong>Link prediction heuristics:</strong>  基于预定义的假设的链路预测。举几个例子[1]：</p></blockquote>
 <ol>
 <li>Common Neighbors (CN)： 公共邻居较多的节点存在边（heuristic），则需要计算节点对间的公共邻居。</li>
 <li>Preferential Attachment (PA): 一个节点当前的连接越多，那么它越有可能接受到新的连接（heuristic）,这需要统计每个节点的度, i.e., $P A(x, y)=|N(x)| *|N(y)|$</li>

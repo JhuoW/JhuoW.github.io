@@ -17,12 +17,34 @@
       <pubDate>Mon, 04 Apr 2022 16:41:42 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/pgd/</guid>
-      <description>当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）
-假设目标函数如下： $$ \definecolor{energy}{RGB}{114,0,172} \definecolor{freq}{RGB}{45,177,93} \definecolor{spin}{RGB}{251,0,29} \definecolor{signal}{RGB}{18,110,213} \definecolor{circle}{RGB}{217,86,16} \definecolor{average}{RGB}{203,23,206} \definecolor{red}{RGB}{255,0,0} f(w) = g(w) + h(w) $$ 其中$g(w)$是可微凸函数，$h(w)$是不可微（或局部不可微）凸函数。 以线性回归为例，
-给定$X \in \mathbb{R}^{m \times n}$, $y \in \mathbb{R}^m$， Ridge Regression的目标函数为
-$$ f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{2}}_{h(\boldsymbol{w})} $$ 因为$\ell_2$ norm处处可导，所以Ridge可以用SGD或GD来直接优化。但是若目标函数为Lasso，即正则化项定义为$\ell_1$ norm: $$ f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{1}}_{h(\boldsymbol{w})} $$ 这里$h(w)=\lambda||\boldsymbol{w}||_{1}$在$w=0$处不可导，那么可用PGD来优化。
-Proximity Operator 近端算子： 对于不可微函数$h(w)$, $h(w)$的proximity operator定义为：
-$$ u^* = \operatorname{prox}_{\color{signal}h}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2}||u-w||_{2}^{2}\right) $$ 近端算子$\operatorname{prox}_{\color{signal}h}(w)$只和不可微凸函数$h(\cdot)$有关。 上式含义，给定一个不可微凸函数$h(\cdot)$, 给定向量$w \in \mathbb{R}^n$, 找到向量$u = u^*$, 使得公式$h(u)+\frac{1}{2}||u-w||_{2}^{2}$最小。 这个$u^* = \operatorname{prox}_{\color{signal}h}(w)$就是$h(\cdot)$在给定$w$条件下的近端算子（Proximity Operator）。$u^* = \operatorname{prox}_{\color{signal}h}(w)$要求最佳的$u^* $可以使得函数值$h(u^*)$尽可能小，同时$u^*$要尽可能接近给定的$w$。</description>
+      <description>&lt;p&gt;当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）&lt;/p&gt;
+&lt;p&gt;假设目标函数如下：
+$$
+\definecolor{energy}{RGB}{114,0,172}
+\definecolor{freq}{RGB}{45,177,93}
+\definecolor{spin}{RGB}{251,0,29}
+\definecolor{signal}{RGB}{18,110,213}
+\definecolor{circle}{RGB}{217,86,16}
+\definecolor{average}{RGB}{203,23,206}
+\definecolor{red}{RGB}{255,0,0}
+f(w) = g(w) + h(w)
+$$
+其中$g(w)$是可微凸函数，$h(w)$是不可微（或局部不可微）凸函数。 以线性回归为例，&lt;/p&gt;
+&lt;p&gt;给定$X \in \mathbb{R}^{m \times n}$, $y \in \mathbb{R}^m$， Ridge Regression的目标函数为&lt;/p&gt;
+&lt;p&gt;$$
+f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{2}}_{h(\boldsymbol{w})}
+$$
+因为$\ell_2$ norm处处可导，所以Ridge可以用SGD或GD来直接优化。但是若目标函数为Lasso，即正则化项定义为$\ell_1$ norm:
+$$
+f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{1}}_{h(\boldsymbol{w})}
+$$
+这里$h(w)=\lambda||\boldsymbol{w}||_{1}$在$w=0$处不可导，那么可用PGD来优化。&lt;/p&gt;
+&lt;h1 id=&#34;proximity-operator&#34;&gt;Proximity Operator&lt;/h1&gt;
+&lt;p&gt;近端算子： 对于不可微函数$h(w)$, $h(w)$的proximity operator定义为：&lt;/p&gt;
+&lt;p&gt;$$
+u^* = \operatorname{prox}_{\color{signal}h}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2}||u-w||_{2}^{2}\right)
+$$
+近端算子$\operatorname{prox}_{\color{signal}h}(w)$只和不可微凸函数$h(\cdot)$有关。 上式含义，给定一个不可微凸函数$h(\cdot)$, 给定向量$w \in \mathbb{R}^n$, 找到向量$u = u^*$, 使得公式$h(u)+\frac{1}{2}||u-w||_{2}^{2}$最小。 这个$u^* = \operatorname{prox}_{\color{signal}h}(w)$就是$h(\cdot)$在给定$w$条件下的近端算子（Proximity Operator）。$u^* = \operatorname{prox}_{\color{signal}h}(w)$要求最佳的$u^* $可以使得函数值$h(u^*)$尽可能小，同时$u^*$要尽可能接近给定的$w$。&lt;/p&gt;</description>
       <content:encoded><![CDATA[<p>当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）</p>
 <p>假设目标函数如下：
 $$
@@ -99,8 +121,7 @@ $$
 <p>最后两步怎么来的？</p>
 <blockquote>
 <p>泰勒展开式：</p>
-<p>$$f(x)=\frac{f\left(a\right)}{0 !}+\frac{f^{\prime}\left(a\right)}{1 !}\left(x-a\right)+\frac{f^{\prime \prime}\left(a\right)}{2 !}\left(x-a\right)^{2}+\ldots+\frac{f^{(n)}\left(a\right)}{n !}\left(x-a\right)^{n}$$</p>
-</blockquote>
+<p>$$f(x)=\frac{f\left(a\right)}{0 !}+\frac{f^{\prime}\left(a\right)}{1 !}\left(x-a\right)+\frac{f^{\prime \prime}\left(a\right)}{2 !}\left(x-a\right)^{2}+\ldots+\frac{f^{(n)}\left(a\right)}{n !}\left(x-a\right)^{n}$$</p></blockquote>
 <p>对$g(u)$做泰勒展开， 令$a=w^{k-1}$:
 $$
 \begin{equation}
@@ -187,24 +208,29 @@ $$
       <pubDate>Sun, 28 Jan 2018 00:00:00 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/optimizer/</guid>
-      <description>最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。
-Gradient Desent(梯度下降) 目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。
-(1).梯度下降的原理：目标函数（损失函数）$f(x)$关于参数$x$的梯度是损失函数上升最快的方向。所以只要让$x$沿梯度的反方向走，就可以缩小目标函数。
-(2).目标函数关于参数$x$在epoch $t$时的梯度：
-$$g_t = \nabla_x f(x_t)$$
-(3).我们要最小化$f(x)$, 所以参数$x$需要往梯度的反方向移动：
-$$x_{t+1} = x_t-\eta_t g_t$$
-其中$x_{t+1}$为$t+1$时刻的参数值。
-Stochastic Gradient Desent(随机梯度下降) 梯度下降存在的问题有鞍点问题以及无法找到全局最优解的问题。所以引入SGD。
-首先给出无偏估计的定义，稍后会用到：
-无偏估计：估计量的均值等于真实值，即具体每一次估计值可能大于真实值，也可能小于真实值，而不能总是大于或小于真实值（这就产生了系统误差）。
-深度学习中，目标函数通常是训练集中各个样本损失的平均，假设一个batch的大小为$n$，那么训练这个batch的损失就是$f_{batch}(x) = \frac{\displaystyle\sum_{i=1}^{n} f_i(x)}{n}$ , 所以目标函数对$x$的梯度就是：
-$$\nabla f_{batch}(x) = \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x)$$
-如果使用GD来优化：
-$$x_{t+1} = x_{t}- \eta_t \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x) \ = x_t-\eta_t \nabla f_{batch}(x)$$ 上式可以看出，当训练样本非常大时，n也将边的非常大，那么梯度计算的计算开销就比较大。
-随机梯度下降（SGD）的思想是： 以一个batch为例，这个batch中有n个样本，每个样本$i \in {1, \cdots,n}$, 每次从中随机选取一个样本来更新参数$x$。
-$$x_{t+1} = x_{t}-\eta_t \nabla f_i(x)$$
-这样就更新了一个batch的参数。 对比上面两个式子可以看出SGD降低了计算复杂度。上面两个式子是等价的，因为随机梯度$\nabla f_i(x)$是对梯度$\nabla f_{batch}(x)$的无偏估计，因为：</description>
+      <description>&lt;p&gt;最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。&lt;/p&gt;
+&lt;h1 id=&#34;gradient-desent梯度下降&#34;&gt;Gradient Desent(梯度下降)&lt;/h1&gt;
+&lt;p&gt;目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。&lt;br&gt;
+(1).梯度下降的原理：目标函数（损失函数）$f(x)$关于参数$x$的梯度是损失函数上升最快的方向。所以只要让$x$沿梯度的反方向走，就可以缩小目标函数。&lt;br&gt;
+(2).目标函数关于参数$x$在epoch $t$时的梯度：&lt;br&gt;
+$$g_t = \nabla_x f(x_t)$$&lt;br&gt;
+(3).我们要最小化$f(x)$, 所以参数$x$需要往梯度的反方向移动：&lt;br&gt;
+$$x_{t+1} = x_t-\eta_t g_t$$&lt;br&gt;
+其中$x_{t+1}$为$t+1$时刻的参数值。&lt;/p&gt;
+&lt;h2 id=&#34;stochastic-gradient-desent随机梯度下降&#34;&gt;Stochastic Gradient Desent(随机梯度下降)&lt;/h2&gt;
+&lt;p&gt;梯度下降存在的问题有鞍点问题以及无法找到全局最优解的问题。所以引入SGD。&lt;br&gt;
+首先给出无偏估计的定义，稍后会用到：&lt;br&gt;
+&lt;a href=&#34;https://www.cnblogs.com/notwice/p/8538539.html&#34;&gt;无偏估计&lt;/a&gt;：估计量的均值等于真实值，即具体每一次估计值可能大于真实值，也可能小于真实值，而不能总是大于或小于真实值（这就产生了系统误差）。&lt;/p&gt;
+&lt;p&gt;深度学习中，目标函数通常是训练集中各个样本损失的平均，假设一个batch的大小为$n$，那么训练这个batch的损失就是$f_{batch}(x) = \frac{\displaystyle\sum_{i=1}^{n} f_i(x)}{n}$ , 所以目标函数对$x$的梯度就是：&lt;br&gt;
+$$\nabla f_{batch}(x) = \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x)$$&lt;br&gt;
+如果使用GD来优化：&lt;br&gt;
+$$x_{t+1} = x_{t}- \eta_t \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x) \ = x_t-\eta_t \nabla f_{batch}(x)$$
+上式可以看出，当训练样本非常大时，n也将边的非常大，那么梯度计算的计算开销就比较大。&lt;/p&gt;
+&lt;p&gt;随机梯度下降（SGD）的思想是： 以一个batch为例，这个batch中有n个样本，每个样本$i \in {1, \cdots,n}$, 每次从中随机选取一个样本来更新参数$x$。&lt;br&gt;
+$$x_{t+1} = x_{t}-\eta_t \nabla f_i(x)$$&lt;br&gt;
+这样就更新了一个batch的参数。 对比上面两个式子可以看出SGD降低了计算复杂度。上面两个式子是等价的，因为随机梯度$\nabla f_i(x)$是对梯度$\nabla f_{batch}(x)$的无偏估计，因为：&lt;br&gt;
+$$E_i \nabla f_i(\boldsymbol{x}) = \frac{1}{n} \sum_{i = 1}^n \nabla f_i(\boldsymbol{x}) = \nabla f_{batch}(\boldsymbol{x})$$&lt;br&gt;
+符合无偏估计的定义。&lt;/p&gt;</description>
       <content:encoded><![CDATA[<p>最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。</p>
 <h1 id="gradient-desent梯度下降">Gradient Desent(梯度下降)</h1>
 <p>目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。<br>

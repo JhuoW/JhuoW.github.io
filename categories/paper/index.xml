@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>paper on JhuoW‘s Notes</title>
+    <title>Paper on JhuoW‘s Notes</title>
     <link>https://JhuoW.github.io/categories/paper/</link>
-    <description>Recent content in paper on JhuoW‘s Notes</description>
+    <description>Recent content in Paper on JhuoW‘s Notes</description>
     <image>
       <url>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
@@ -183,6 +183,53 @@ $$
 $$
 P[\text { NOI belongs to class } i]=\sigma\left(\operatorname{MLP}\left(h_{c_i}\right)\right)
 $$</p>
+<h1 id="4-talk-like-a-graph-encoding-graphs-for-large-language-models">4. Talk like a Graph: Encoding Graphs for Large Language Models</h1>
+<p>prompt engineering的目的是找到一个合适的方式使LLM $f$可以解析问题$Q$，并且得到他的Answer $\mathcal{A}$，即$\mathcal{A} = f(Q)$。本工作的目标是为LLM$f$提供图$G$，使得LLM可以对图做推理QA，即$\mathcal{A} = f(G,Q)$。在该工作中，固定LLM $f$的参数不变，并引入一个图编码函数（graph encoding function）$g(G): G \to W$用于将图结构数据编码成text，以及一个问题重解析函数$q(Q): W \to W$。训练数据$D$有图$G$，问题$Q$和回答$S$组成，即每个训练数据$(G,Q,S) \in D$。训练目标是固定大语言模型$f$不变，找到最佳的图编码函数$g$和问题重解析函数$q$，使得给定训练$G$和$Q$，得到回答$S$的分数最高：
+$$
+\max _{g, q} \mathbb{E}_{G, Q, S \in D} \operatorname{score}_f(g(G), q(Q), S)
+$$</p>
+<h3 id="graph-encoding-function-gg">Graph encoding function $g(G)$</h3>
+<p>$g(G)$用于将$G$映射为LLM可以处理的token：首先，encode图中的节点，然后encode图中的边。具体编码技术如下图所示：</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/encoding_graph.png#center" alt="NOI"  />
+</p>
+<p><strong>Encoding Nodes</strong>:</p>
+<ol>
+<li>
+<p>整型节点编码：$G$ describes a graph among nodes 0,1,2,3,4,5,6,7</p>
+</li>
+<li>
+<p>使用well-known English first names：$G$ describes a friendship among James, Robert, Michael, Mary.</p>
+</li>
+<li>
+<p>使用电视剧《权力的游戏》和《南方公园》中流行的角色名字。</p>
+</li>
+<li>
+<p>包括美国政治家的名字。</p>
+</li>
+<li>
+<p>用字母表示的。</p>
+</li>
+</ol>
+<p><strong>Representing Edges</strong>:</p>
+<ol>
+<li>用括号表示边：The edge in $G$ given as (0,1), (0,2), &hellip;, (6,7), (7,8)</li>
+<li>Friendship: source node and target node are friends. 如 We have the following edges in $G$: James and Robert are friends, &hellip; Jennifer and Linda are friends。对应于上面的well-known English first name表示节点</li>
+<li>Coauthorship: 比如 James and Robert wrote a paper together 来表示一条边</li>
+<li>Social network: James and Robert are connected来表示一条边</li>
+<li>Arrows: A-&gt;B 来表示边</li>
+<li>Incident: Node 8 is connected to nodes 3,7 来表示每个节点的<strong>邻域</strong>。</li>
+</ol>
+<h2 id="experiments">Experiments</h2>
+<p>使用PaLM 62B作为LLM，在不同图任务以及不同图编码器下的准确率比较，最有效的prompt (zero-shot、zero-cot、few-show、cot、cot-bag)用下划线标出，最佳图编码器用加粗标出。实验使用ER Graph作为数据集，ER Graph的统计数据如下表所示，可以看出平均节点数为12.37，平均边数为39.79，平均度为5.70。对于边存在任务，有53.96%的情况不存在边，对于cycle check任务，有81.96%的情况存在cycle（因为ER graph很可能存在cycle）。</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/graphqa_dataset.png#center" alt="graphqa_datase"  />
+</p>
+<p>从下面的实验结果可以看出，LLM在所有prompt heuristic的所有graph encoding function上预测的最高边存在概率为44.5%，76%的情况存在cycle。而在Node degree 任务上，均与真实平均度5.7差距较大，平均边数也与真实情况差距较大。</p>
+<p>简单的Prompt比如zero-shot 在简单的任务上比复杂的prompt比如zero-cot效果更好，因为简单的任务无需多跳推理。</p>
+<p>graph encoding function对LLM影响巨大。</p>
+<p>整型节点编码可以提升算数性能，比如node degree、node count和edge count的预测。</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/graphqa_exp.png#center" alt="graphqa_exp"  />
+</p>
+<h1 id="5-can-language-models-solve-graph-problems-in-natural-language">5. Can Language Models Solve Graph Problems in Natural Language?</h1>
 <p>[1] Learning on Large-scale Text-attributed Graphs via Variational Inference.</p>
 <p>[2] <a href="https://medium.com/@francescofranco_39234/in-context-learning-icl-a775cd8b7261">https://medium.com/@francescofranco_39234/in-context-learning-icl-a775cd8b7261</a></p>
 ]]></content:encoded>
@@ -2197,8 +2244,7 @@ $$</p>
 <h1 id="introduction">Introduction</h1>
 <p>由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 <strong>Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure</strong>。</p>
 <blockquote>
-<p><strong>Link prediction heuristics:</strong>  基于预定义的假设的链路预测。举几个例子[1]：</p>
-</blockquote>
+<p><strong>Link prediction heuristics:</strong>  基于预定义的假设的链路预测。举几个例子[1]：</p></blockquote>
 <ol>
 <li>Common Neighbors (CN)： 公共邻居较多的节点存在边（heuristic），则需要计算节点对间的公共邻居。</li>
 <li>Preferential Attachment (PA): 一个节点当前的连接越多，那么它越有可能接受到新的连接（heuristic）,这需要统计每个节点的度, i.e., $P A(x, y)=|N(x)| *|N(y)|$</li>
@@ -2691,6 +2737,81 @@ $$\mathrm{maximize} \quad L = \alpha \log O_2+\beta \log O_3 - \gamma O_1$$
     </item>
     
     <item>
+      <title>SIGIR2018 《HTNE Embedding Temporal Network via Neighborhood Formation》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/htne/</link>
+      <pubDate>Sun, 17 Feb 2019 22:01:15 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/htne/</guid>
+      <description>&lt;p&gt;论文地址：&lt;a href=&#34;https://dl.acm.org/citation.cfm?id=3220054&#34;&gt;HTNE&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://JhuoW.github.io/posts/2019-01-17-HTNE/Fig1.png&#34; alt=&#34;你想输入的替代文字&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。&lt;/p&gt;
+&lt;p&gt;因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。&lt;/p&gt;
+&lt;p&gt;通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。&lt;/p&gt;
+&lt;p&gt;另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。&lt;/p&gt;
+&lt;p&gt;值得注意的是，本文目标是优化邻域生成序列的极大似然估计即&lt;strong&gt;条件强度函数&lt;/strong&gt;（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数&lt;/p&gt;
+&lt;h2 id=&#34;model&#34;&gt;Model&lt;/h2&gt;
+&lt;h3 id=&#34;definition&#34;&gt;Definition&lt;/h3&gt;
+&lt;p&gt;本文通过跟踪节点邻域的形成来捕获网络的形成过程。&lt;br&gt;
+&lt;strong&gt;Definition 1&lt;/strong&gt; : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。&lt;/p&gt;
+&lt;p&gt;因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Definition 2&lt;/strong&gt; : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&amp;hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&amp;hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。&lt;/p&gt;
+&lt;h3 id=&#34;hawkes-process&#34;&gt;Hawkes Process&lt;/h3&gt;
+&lt;p&gt;点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。&lt;br&gt;
+对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：&lt;br&gt;
+$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&amp;lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$&lt;br&gt;
+其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&amp;lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：&lt;br&gt;
+$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$&lt;br&gt;
+其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。&lt;br&gt;
+综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。&lt;/p&gt;
+&lt;p&gt;如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。&lt;/p&gt;
+&lt;p&gt;直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。&lt;br&gt;
+因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$. 这就与传统的NE方法差不多了。。。&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<p>论文地址：<a href="https://dl.acm.org/citation.cfm?id=3220054">HTNE</a></p>
+<h2 id="introduction">Introduction</h2>
+<p>本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。</p>
+<p><img loading="lazy" src="/posts/2019-01-17-HTNE/Fig1.png" alt="你想输入的替代文字"  />
+</p>
+<p>另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。</p>
+<p>因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。</p>
+<p>通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。</p>
+<p>另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。</p>
+<p>值得注意的是，本文目标是优化邻域生成序列的极大似然估计即<strong>条件强度函数</strong>（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数</p>
+<h2 id="model">Model</h2>
+<h3 id="definition">Definition</h3>
+<p>本文通过跟踪节点邻域的形成来捕获网络的形成过程。<br>
+<strong>Definition 1</strong> : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。</p>
+<p>因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。</p>
+<p><strong>Definition 2</strong> : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。</p>
+<h3 id="hawkes-process">Hawkes Process</h3>
+<p>点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。<br>
+对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：<br>
+$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$<br>
+其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：<br>
+$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$<br>
+其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。<br>
+综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。</p>
+<p>如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。</p>
+<p>直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。<br>
+因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$. 这就与传统的NE方法差不多了。。。</p>
+<h3 id="attention">Attention</h3>
+<p>根据论文中（3）式，可以看出，$\sum_{t_h&lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$这一部分主要描述了历史邻居对当前邻居的影响，但是完全忽略了源节点$x$，因为源节点$x$的变化也会影响到历史邻居对当前邻居的亲近程度(affinity)。因此，本文引入了<strong>attention model</strong>。as follows：<br>
+$$w_{h,x} = \frac{\exp(-||\mathbf{e}_x-\mathbf{e}_h||^2)}{\sum_{h&rsquo;}{\exp(-||\mathbf{e}_x-\mathbf{e}_{h&rsquo;}||^2)}}$$<br>
+这是一个softmax函数 来根据源节点$x$的不同为它的邻居赋予不同权重。</p>
+<p>最后， 历史邻居与当前邻居的连接紧密程度可以表示为:
+$$\alpha_{h,y}=w_{h,x}f(\mathbf{e}_h,\mathbf{e}_y)$$</p>
+<h3 id="optimization">Optimization</h3>
+<p>目标函数即为给定节点$x$以及基于邻域形成序列的霍克斯过程, 生成节点$y$的条件概率。 公式如下：
+$$p(y|x, \mathcal{H}_x(t)) = \frac{\lambda_{y|x}(t)}{\sum_{y&rsquo;}{\lambda_{y&rsquo;|x}(t)}}$$
+目标函数即为所有节点对的极大似然：
+$$\log \mathcal{L}=\sum_{x\in{\mathcal{V}}}{\sum_{y\in{\mathcal{H}_x}}}{\log{p(y|x,\mathcal{H}(t))}}$$</p>
+<p>最后，由于softmax过程是calculating expensive，所以采用负采样优化损失函数。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
       <title>AAAI2018 《GraphGAN:Graph Representation Learning with Generative Adversarial Nets》Reading Notes</title>
       <link>https://JhuoW.github.io/posts/graphgan/</link>
       <pubDate>Tue, 22 Jan 2019 16:57:05 +0000</pubDate>
@@ -3089,75 +3210,6 @@ $$
 \log \sigma(\overrightarrow{\mathbf{u}} \cdot \overrightarrow{\mathbf{v}})+k \times \mathbb{E}_{z \sim P(v)}[\log \sigma(-\overrightarrow{\mathbf{u}} \cdot \overrightarrow{\mathbf{z}})]
 $$
 其中$k$为负采样比例， $\sigma$为sigmoid, $P(v) \propto d_{v}^{3 / 4}$为负顶点的采样分布，$d_{v}$为顶点$v$的out-degree。</p>
-]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>SIGIR2018 《HTNE Embedding Temporal Network via Neighborhood Formation》 Reading Notes</title>
-      <link>https://JhuoW.github.io/posts/htne/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://JhuoW.github.io/posts/htne/</guid>
-      <description>论文地址：HTNE
-Introduction 本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。
-另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。
-因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。
-通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。
-另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。
-值得注意的是，本文目标是优化邻域生成序列的极大似然估计即条件强度函数（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数
-Model Definition 本文通过跟踪节点邻域的形成来捕获网络的形成过程。
-Definition 1 : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。
-因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。
-Definition 2 : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&amp;hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&amp;hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。
-Hawkes Process 点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。
-对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：
-$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&amp;lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$
-其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&amp;lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：
-$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$
-其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。
-综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。
-如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。
-直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。
-因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$.</description>
-      <content:encoded><![CDATA[<p>论文地址：<a href="https://dl.acm.org/citation.cfm?id=3220054">HTNE</a></p>
-<h2 id="introduction">Introduction</h2>
-<p>本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。</p>
-<p><img loading="lazy" src="/posts/2019-01-17-HTNE/Fig1.png" alt="你想输入的替代文字"  />
-</p>
-<p>另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。</p>
-<p>因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。</p>
-<p>通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。</p>
-<p>另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。</p>
-<p>值得注意的是，本文目标是优化邻域生成序列的极大似然估计即<strong>条件强度函数</strong>（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数</p>
-<h2 id="model">Model</h2>
-<h3 id="definition">Definition</h3>
-<p>本文通过跟踪节点邻域的形成来捕获网络的形成过程。<br>
-<strong>Definition 1</strong> : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。</p>
-<p>因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。</p>
-<p><strong>Definition 2</strong> : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。</p>
-<h3 id="hawkes-process">Hawkes Process</h3>
-<p>点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。<br>
-对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：<br>
-$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$<br>
-其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：<br>
-$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$<br>
-其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。<br>
-综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。</p>
-<p>如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。</p>
-<p>直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。<br>
-因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$. 这就与传统的NE方法差不多了。。。</p>
-<h3 id="attention">Attention</h3>
-<p>根据论文中（3）式，可以看出，$\sum_{t_h&lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$这一部分主要描述了历史邻居对当前邻居的影响，但是完全忽略了源节点$x$，因为源节点$x$的变化也会影响到历史邻居对当前邻居的亲近程度(affinity)。因此，本文引入了<strong>attention model</strong>。as follows：<br>
-$$w_{h,x} = \frac{\exp(-||\mathbf{e}_x-\mathbf{e}_h||^2)}{\sum_{h&rsquo;}{\exp(-||\mathbf{e}_x-\mathbf{e}_{h&rsquo;}||^2)}}$$<br>
-这是一个softmax函数 来根据源节点$x$的不同为它的邻居赋予不同权重。</p>
-<p>最后， 历史邻居与当前邻居的连接紧密程度可以表示为:
-$$\alpha_{h,y}=w_{h,x}f(\mathbf{e}_h,\mathbf{e}_y)$$</p>
-<h3 id="optimization">Optimization</h3>
-<p>目标函数即为给定节点$x$以及基于邻域形成序列的霍克斯过程, 生成节点$y$的条件概率。 公式如下：
-$$p(y|x, \mathcal{H}_x(t)) = \frac{\lambda_{y|x}(t)}{\sum_{y&rsquo;}{\lambda_{y&rsquo;|x}(t)}}$$
-目标函数即为所有节点对的极大似然：
-$$\log \mathcal{L}=\sum_{x\in{\mathcal{V}}}{\sum_{y\in{\mathcal{H}_x}}}{\log{p(y|x,\mathcal{H}(t))}}$$</p>
-<p>最后，由于softmax过程是calculating expensive，所以采用负采样优化损失函数。</p>
 ]]></content:encoded>
     </item>
     

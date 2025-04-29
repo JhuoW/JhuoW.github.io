@@ -183,6 +183,53 @@ $$
 $$
 P[\text { NOI belongs to class } i]=\sigma\left(\operatorname{MLP}\left(h_{c_i}\right)\right)
 $$</p>
+<h1 id="4-talk-like-a-graph-encoding-graphs-for-large-language-models">4. Talk like a Graph: Encoding Graphs for Large Language Models</h1>
+<p>prompt engineering的目的是找到一个合适的方式使LLM $f$可以解析问题$Q$，并且得到他的Answer $\mathcal{A}$，即$\mathcal{A} = f(Q)$。本工作的目标是为LLM$f$提供图$G$，使得LLM可以对图做推理QA，即$\mathcal{A} = f(G,Q)$。在该工作中，固定LLM $f$的参数不变，并引入一个图编码函数（graph encoding function）$g(G): G \to W$用于将图结构数据编码成text，以及一个问题重解析函数$q(Q): W \to W$。训练数据$D$有图$G$，问题$Q$和回答$S$组成，即每个训练数据$(G,Q,S) \in D$。训练目标是固定大语言模型$f$不变，找到最佳的图编码函数$g$和问题重解析函数$q$，使得给定训练$G$和$Q$，得到回答$S$的分数最高：
+$$
+\max _{g, q} \mathbb{E}_{G, Q, S \in D} \operatorname{score}_f(g(G), q(Q), S)
+$$</p>
+<h3 id="graph-encoding-function-gg">Graph encoding function $g(G)$</h3>
+<p>$g(G)$用于将$G$映射为LLM可以处理的token：首先，encode图中的节点，然后encode图中的边。具体编码技术如下图所示：</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/encoding_graph.png#center" alt="NOI"  />
+</p>
+<p><strong>Encoding Nodes</strong>:</p>
+<ol>
+<li>
+<p>整型节点编码：$G$ describes a graph among nodes 0,1,2,3,4,5,6,7</p>
+</li>
+<li>
+<p>使用well-known English first names：$G$ describes a friendship among James, Robert, Michael, Mary.</p>
+</li>
+<li>
+<p>使用电视剧《权力的游戏》和《南方公园》中流行的角色名字。</p>
+</li>
+<li>
+<p>包括美国政治家的名字。</p>
+</li>
+<li>
+<p>用字母表示的。</p>
+</li>
+</ol>
+<p><strong>Representing Edges</strong>:</p>
+<ol>
+<li>用括号表示边：The edge in $G$ given as (0,1), (0,2), &hellip;, (6,7), (7,8)</li>
+<li>Friendship: source node and target node are friends. 如 We have the following edges in $G$: James and Robert are friends, &hellip; Jennifer and Linda are friends。对应于上面的well-known English first name表示节点</li>
+<li>Coauthorship: 比如 James and Robert wrote a paper together 来表示一条边</li>
+<li>Social network: James and Robert are connected来表示一条边</li>
+<li>Arrows: A-&gt;B 来表示边</li>
+<li>Incident: Node 8 is connected to nodes 3,7 来表示每个节点的<strong>邻域</strong>。</li>
+</ol>
+<h2 id="experiments">Experiments</h2>
+<p>使用PaLM 62B作为LLM，在不同图任务以及不同图编码器下的准确率比较，最有效的prompt (zero-shot、zero-cot、few-show、cot、cot-bag)用下划线标出，最佳图编码器用加粗标出。实验使用ER Graph作为数据集，ER Graph的统计数据如下表所示，可以看出平均节点数为12.37，平均边数为39.79，平均度为5.70。对于边存在任务，有53.96%的情况不存在边，对于cycle check任务，有81.96%的情况存在cycle（因为ER graph很可能存在cycle）。</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/graphqa_dataset.png#center" alt="graphqa_datase"  />
+</p>
+<p>从下面的实验结果可以看出，LLM在所有prompt heuristic的所有graph encoding function上预测的最高边存在概率为44.5%，76%的情况存在cycle。而在Node degree 任务上，均与真实平均度5.7差距较大，平均边数也与真实情况差距较大。</p>
+<p>简单的Prompt比如zero-shot 在简单的任务上比复杂的prompt比如zero-cot效果更好，因为简单的任务无需多跳推理。</p>
+<p>graph encoding function对LLM影响巨大。</p>
+<p>整型节点编码可以提升算数性能，比如node degree、node count和edge count的预测。</p>
+<p><img loading="lazy" src="/posts/2024-05-26-graphllm/graphqa_exp.png#center" alt="graphqa_exp"  />
+</p>
+<h1 id="5-can-language-models-solve-graph-problems-in-natural-language">5. Can Language Models Solve Graph Problems in Natural Language?</h1>
 <p>[1] Learning on Large-scale Text-attributed Graphs via Variational Inference.</p>
 <p>[2] <a href="https://medium.com/@francescofranco_39234/in-context-learning-icl-a775cd8b7261">https://medium.com/@francescofranco_39234/in-context-learning-icl-a775cd8b7261</a></p>
 ]]></content:encoded>
@@ -2040,12 +2087,34 @@ $$
       <pubDate>Mon, 04 Apr 2022 16:41:42 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/pgd/</guid>
-      <description>当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）
-假设目标函数如下： $$ \definecolor{energy}{RGB}{114,0,172} \definecolor{freq}{RGB}{45,177,93} \definecolor{spin}{RGB}{251,0,29} \definecolor{signal}{RGB}{18,110,213} \definecolor{circle}{RGB}{217,86,16} \definecolor{average}{RGB}{203,23,206} \definecolor{red}{RGB}{255,0,0} f(w) = g(w) + h(w) $$ 其中$g(w)$是可微凸函数，$h(w)$是不可微（或局部不可微）凸函数。 以线性回归为例，
-给定$X \in \mathbb{R}^{m \times n}$, $y \in \mathbb{R}^m$， Ridge Regression的目标函数为
-$$ f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{2}}_{h(\boldsymbol{w})} $$ 因为$\ell_2$ norm处处可导，所以Ridge可以用SGD或GD来直接优化。但是若目标函数为Lasso，即正则化项定义为$\ell_1$ norm: $$ f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{1}}_{h(\boldsymbol{w})} $$ 这里$h(w)=\lambda||\boldsymbol{w}||_{1}$在$w=0$处不可导，那么可用PGD来优化。
-Proximity Operator 近端算子： 对于不可微函数$h(w)$, $h(w)$的proximity operator定义为：
-$$ u^* = \operatorname{prox}_{\color{signal}h}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2}||u-w||_{2}^{2}\right) $$ 近端算子$\operatorname{prox}_{\color{signal}h}(w)$只和不可微凸函数$h(\cdot)$有关。 上式含义，给定一个不可微凸函数$h(\cdot)$, 给定向量$w \in \mathbb{R}^n$, 找到向量$u = u^*$, 使得公式$h(u)+\frac{1}{2}||u-w||_{2}^{2}$最小。 这个$u^* = \operatorname{prox}_{\color{signal}h}(w)$就是$h(\cdot)$在给定$w$条件下的近端算子（Proximity Operator）。$u^* = \operatorname{prox}_{\color{signal}h}(w)$要求最佳的$u^* $可以使得函数值$h(u^*)$尽可能小，同时$u^*$要尽可能接近给定的$w$。</description>
+      <description>&lt;p&gt;当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）&lt;/p&gt;
+&lt;p&gt;假设目标函数如下：
+$$
+\definecolor{energy}{RGB}{114,0,172}
+\definecolor{freq}{RGB}{45,177,93}
+\definecolor{spin}{RGB}{251,0,29}
+\definecolor{signal}{RGB}{18,110,213}
+\definecolor{circle}{RGB}{217,86,16}
+\definecolor{average}{RGB}{203,23,206}
+\definecolor{red}{RGB}{255,0,0}
+f(w) = g(w) + h(w)
+$$
+其中$g(w)$是可微凸函数，$h(w)$是不可微（或局部不可微）凸函数。 以线性回归为例，&lt;/p&gt;
+&lt;p&gt;给定$X \in \mathbb{R}^{m \times n}$, $y \in \mathbb{R}^m$， Ridge Regression的目标函数为&lt;/p&gt;
+&lt;p&gt;$$
+f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{2}}_{h(\boldsymbol{w})}
+$$
+因为$\ell_2$ norm处处可导，所以Ridge可以用SGD或GD来直接优化。但是若目标函数为Lasso，即正则化项定义为$\ell_1$ norm:
+$$
+f(\boldsymbol{w})=\underbrace{\frac{1}{2}||\boldsymbol{y}-\boldsymbol{X} \boldsymbol{w}||_{2}^{2}}_{g(\boldsymbol{w})}+\underbrace{\lambda||\boldsymbol{w}||_{1}}_{h(\boldsymbol{w})}
+$$
+这里$h(w)=\lambda||\boldsymbol{w}||_{1}$在$w=0$处不可导，那么可用PGD来优化。&lt;/p&gt;
+&lt;h1 id=&#34;proximity-operator&#34;&gt;Proximity Operator&lt;/h1&gt;
+&lt;p&gt;近端算子： 对于不可微函数$h(w)$, $h(w)$的proximity operator定义为：&lt;/p&gt;
+&lt;p&gt;$$
+u^* = \operatorname{prox}_{\color{signal}h}(w)=\underset{u}{\arg \min }\left(h(u)+\frac{1}{2}||u-w||_{2}^{2}\right)
+$$
+近端算子$\operatorname{prox}_{\color{signal}h}(w)$只和不可微凸函数$h(\cdot)$有关。 上式含义，给定一个不可微凸函数$h(\cdot)$, 给定向量$w \in \mathbb{R}^n$, 找到向量$u = u^*$, 使得公式$h(u)+\frac{1}{2}||u-w||_{2}^{2}$最小。 这个$u^* = \operatorname{prox}_{\color{signal}h}(w)$就是$h(\cdot)$在给定$w$条件下的近端算子（Proximity Operator）。$u^* = \operatorname{prox}_{\color{signal}h}(w)$要求最佳的$u^* $可以使得函数值$h(u^*)$尽可能小，同时$u^*$要尽可能接近给定的$w$。&lt;/p&gt;</description>
       <content:encoded><![CDATA[<p>当目标函数中有不可微部分时，可使用近端梯度下降来优化（Proximal Gradient Descent）</p>
 <p>假设目标函数如下：
 $$
@@ -2122,8 +2191,7 @@ $$
 <p>最后两步怎么来的？</p>
 <blockquote>
 <p>泰勒展开式：</p>
-<p>$$f(x)=\frac{f\left(a\right)}{0 !}+\frac{f^{\prime}\left(a\right)}{1 !}\left(x-a\right)+\frac{f^{\prime \prime}\left(a\right)}{2 !}\left(x-a\right)^{2}+\ldots+\frac{f^{(n)}\left(a\right)}{n !}\left(x-a\right)^{n}$$</p>
-</blockquote>
+<p>$$f(x)=\frac{f\left(a\right)}{0 !}+\frac{f^{\prime}\left(a\right)}{1 !}\left(x-a\right)+\frac{f^{\prime \prime}\left(a\right)}{2 !}\left(x-a\right)^{2}+\ldots+\frac{f^{(n)}\left(a\right)}{n !}\left(x-a\right)^{n}$$</p></blockquote>
 <p>对$g(u)$做泰勒展开， 令$a=w^{k-1}$:
 $$
 \begin{equation}
@@ -2210,7 +2278,8 @@ $$
       <pubDate>Sat, 02 Apr 2022 15:00:20 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/laplacian/</guid>
-      <description>Introduction The spectral graph theory studies the properties of graphs via the eigenvalues and eigenvectors of their associated graph matrices: the adjacency matrix and the graph Laplacian and its variants. The Laplacian allows a natural link between discrete representations, such as graphs, and continuous representations, such as vector spaces and manifolds. The most important application of the Laplacian is spectral clustering that corresponds to a computationally tractable solution to the graph partitionning problem.</description>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;The spectral graph theory studies the properties of graphs via the eigenvalues and eigenvectors of their associated graph matrices: the adjacency matrix and the graph Laplacian and its variants. The Laplacian allows a natural link between discrete representations, such as graphs, and continuous representations, such as vector spaces and manifolds.  The most important application of the Laplacian is spectral clustering that corresponds to a computationally tractable solution to the graph partitionning problem. Another application is spectral matching that solves for graph matching.&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h1 id="introduction">Introduction</h1>
 <p>The spectral graph theory studies the properties of graphs via the eigenvalues and eigenvectors of their associated graph matrices: the adjacency matrix and the graph Laplacian and its variants. The Laplacian allows a natural link between discrete representations, such as graphs, and continuous representations, such as vector spaces and manifolds.  The most important application of the Laplacian is spectral clustering that corresponds to a computationally tractable solution to the graph partitionning problem. Another application is spectral matching that solves for graph matching.</p>
 <h1 id="basic-notations">Basic notations</h1>
@@ -3055,8 +3124,7 @@ $$
 \theta_{\mathrm{MLE}} = \arg \max_\theta  P(X|\theta)  \tag{2}
 $$</p>
 <blockquote>
-<p>最大似然估计：给定一组样本$X$，模型的参数$\theta$是研究对象。若能找到参数$\theta_{\mathrm{MLE}}$，使得样本发生的可能性最大，则此估计值$\theta_{\mathrm{MLE}}$为参数$\theta$的最大似然估计。</p>
-</blockquote>
+<p>最大似然估计：给定一组样本$X$，模型的参数$\theta$是研究对象。若能找到参数$\theta_{\mathrm{MLE}}$，使得样本发生的可能性最大，则此估计值$\theta_{\mathrm{MLE}}$为参数$\theta$的最大似然估计。</p></blockquote>
 <p>举例来说，如果模型是单个Gaussian Distribution下，参数为Gaussian Distribution的参数（均值$\mu$, 标准差$\Sigma$， $\theta = {\mu, \Sigma}$）.
 给定一组数据$X$, 要计算$X$来自什么样的Gaussian，即：$P(\cdot | \theta) = f_\theta(\cdot) = \mathcal{N}(\cdot | \mu,\Sigma)$是一个Gaussian Distribution函数，目标为：
 $$
@@ -3134,8 +3202,7 @@ $$
 \log P(X|\theta^{(t+1)}) &amp;= Q(\theta^{(t+1)},\theta^{(t)}) - H(\theta^{(t+1)},\theta^{(t)}) \\
 \log P(X|\theta^{(t)}) &amp;= Q(\theta^{(t)},\theta^{(t)}) - H(\theta^{(t)},\theta^{(t)})
 \end{aligned}  \tag{15}
-$$</p>
-</blockquote>
+$$</p></blockquote>
 <p>首先，根据EM的迭代求解公式，$\theta^{(t+1)}$由
 $$
 \theta^{(t+1)} = \arg \max_\theta Q(\theta,\theta^{(t)})  \tag{16}
@@ -3150,8 +3217,7 @@ $$
 <p>If $g(x)$ is a convex function on $R_X$, and $\mathbb{E}[g(x)]$ and $g(\mathbb{E}[X])$ are finite, then $\mathbb{E}[g(x)] \geq g(\mathbb{E}[X])$。</p>
 <p><img loading="lazy" src="/posts/EM_Algo/Convex_b.png" alt=""  />
 </p>
-<p>显然$\log$是concave，所以$\mathbb{E}[\log(\cdot)]\leq \log(\mathbb{E}[\cdot])$。同理$-\log$是convex，所以$\mathbb{E}[-\log(\cdot)]\geq -\log(\mathbb{E}[\cdot])$。</p>
-</blockquote>
+<p>显然$\log$是concave，所以$\mathbb{E}[\log(\cdot)]\leq \log(\mathbb{E}[\cdot])$。同理$-\log$是convex，所以$\mathbb{E}[-\log(\cdot)]\geq -\log(\mathbb{E}[\cdot])$。</p></blockquote>
 <p>下面，计算$H(\theta^{(t)},\theta^{(t)})-H(\theta,\theta^{(t)})$：
 $$
 \begin{aligned}
@@ -3333,8 +3399,7 @@ $$</p>
 <h1 id="introduction">Introduction</h1>
 <p>由于GNNs过度强调平滑的节点特征而不是图结构，使得在Link Prediction任务上的表现甚至弱于heuristic方法。平滑邻居难以反映邻域结构的相关性以及其他拓扑特征。 <strong>Structural information, (e.g., overlapped neighborhoods, degrees, and shortest path), is crucial for link prediction whereas GNNs heavily rely on smoothed node features rather than graph structure</strong>。</p>
 <blockquote>
-<p><strong>Link prediction heuristics:</strong>  基于预定义的假设的链路预测。举几个例子[1]：</p>
-</blockquote>
+<p><strong>Link prediction heuristics:</strong>  基于预定义的假设的链路预测。举几个例子[1]：</p></blockquote>
 <ol>
 <li>Common Neighbors (CN)： 公共邻居较多的节点存在边（heuristic），则需要计算节点对间的公共邻居。</li>
 <li>Preferential Attachment (PA): 一个节点当前的连接越多，那么它越有可能接受到新的连接（heuristic）,这需要统计每个节点的度, i.e., $P A(x, y)=|N(x)| *|N(y)|$</li>
@@ -3514,416 +3579,823 @@ $$</p>
       <pubDate>Tue, 29 Mar 2022 11:03:50 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2019-04-28-paper-unscramble/</guid>
-      <description>这篇笔记用于收藏别人的博客
-Tech Blog    Blog Author     https://michael-bronstein.medium.com/ Michael Bronstein   https://geometricdeeplearning.com/ Michael Bronstein   https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c Vitaly Kurin (Many Paper Notes)   https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html UvA DL Notebooks   https://graph-neural-networks.github.io/index.html GNN Books   http://prob140.org/sp17/textbook/ Probability for Data Science class at UC Berkeley   https://graphreason.github.io/schedule.html Learning and Reasoning with Graph-Structured Representations ICML 2019 Workshop   https://chuxuzhang.github.io/KDD21_Tutorial.html KDD2021 Tutorial: Data Efficient Learning on Graphs   http://songcy.</description>
+      <description>&lt;p&gt;&lt;strong&gt;这篇笔记用于收藏别人的博客&lt;/strong&gt;&lt;/p&gt;
+&lt;h1 id=&#34;tech-blog&#34;&gt;Tech Blog&lt;/h1&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;Blog&lt;/th&gt;
+          &lt;th&gt;Author&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://michael-bronstein.medium.com/&#34;&gt;https://michael-bronstein.medium.com/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Michael Bronstein&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://geometricdeeplearning.com/&#34;&gt;https://geometricdeeplearning.com/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Michael Bronstein&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c&#34;&gt;https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Vitaly Kurin (Many Paper Notes)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html&#34;&gt;https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;UvA DL Notebooks&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://graph-neural-networks.github.io/index.html&#34;&gt;https://graph-neural-networks.github.io/index.html&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;GNN Books&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;http://prob140.org/sp17/textbook/&#34;&gt;http://prob140.org/sp17/textbook/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;a href=&#34;http://prob140.org/&#34;&gt;Probability for Data Science&lt;/a&gt; class at UC Berkeley&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://graphreason.github.io/schedule.html&#34;&gt;https://graphreason.github.io/schedule.html&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;a href=&#34;https://graphreason.github.io/index.html&#34;&gt;Learning and Reasoning with Graph-Structured Representations&lt;/a&gt; ICML 2019 Workshop&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://chuxuzhang.github.io/KDD21_Tutorial.html&#34;&gt;https://chuxuzhang.github.io/KDD21_Tutorial.html&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;KDD2021 Tutorial: Data Efficient Learning on Graphs&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;http://songcy.net/posts/&#34;&gt;http://songcy.net/posts/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Changyue Song (Kernel)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://www.cs.mcgill.ca/~wlh/grl_book/&#34;&gt;https://www.cs.mcgill.ca/~wlh/grl_book/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;William L. Hamilton&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://kexue.fm/&#34;&gt;https://kexue.fm/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;BoJone&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://danielegrattarola.github.io/blog/&#34;&gt;https://danielegrattarola.github.io/blog/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Daniele Grattarola (EPFL)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html&#34;&gt;https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Google AI Blog&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://zhiyuchen.com/blogs/&#34;&gt;https://zhiyuchen.com/blogs/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Zhiyu Chen&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://andreasloukas.blog/&#34;&gt;https://andreasloukas.blog/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Andreas Loukas (EPFL)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://irhum.pubpub.org/pub/gnn/release/4&#34;&gt;https://irhum.pubpub.org/pub/gnn/release/4&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Understanding Graph Neural Networks&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://lilianweng.github.io/&#34;&gt;https://lilianweng.github.io/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Lilian Weng&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://www.zhihu.com/column/marlin&#34;&gt;https://www.zhihu.com/column/marlin&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;深度学习与图网络&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/roboticcam/machine-learning-notes&#34;&gt;https://github.com/roboticcam/machine-learning-notes&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Yida Xu&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://www.dgl.ai/pages/index.html&#34;&gt;https://www.dgl.ai/pages/index.html&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;DGL&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://www.kexinhuang.com/tech-blog&#34;&gt;https://www.kexinhuang.com/tech-blog&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Kexin Huang&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8&#34;&gt;https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Rishabh Anand&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://saashanair.com/blog&#34;&gt;https://saashanair.com/blog&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Saasha Nair&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;http://www.huaxiaozhuan.com/&#34;&gt;http://www.huaxiaozhuan.com/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;华校专&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/dglai/WWW20-Hands-on-Tutorial&#34;&gt;https://github.com/dglai/WWW20-Hands-on-Tutorial&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;DGL&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://blog.csdn.net/CSDNTianJi/article/details/104195306&#34;&gt;https://blog.csdn.net/CSDNTianJi/article/details/104195306&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Meng Liu&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://www.chaitjo.com/post/&#34;&gt;https://www.chaitjo.com/post/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Chaitanya K. Joshi&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://scottfreitas.medium.com/&#34;&gt;https://scottfreitas.medium.com/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Scott Freitas&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://fabianfuchsml.github.io/&#34;&gt;https://fabianfuchsml.github.io/&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Fabian Fuchs&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://medium.com/@pantelis.elinas&#34;&gt;https://medium.com/@pantelis.elinas&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Pantelis Elinas&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/tianyicui/pack&#34;&gt;https://github.com/tianyicui/pack&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;背包9講&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://www.fenghz.xyz/&#34;&gt;https://www.fenghz.xyz/&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://sakigami-yang.me/2017/08/13/about-kernel-01/&#34;&gt;https://sakigami-yang.me/2017/08/13/about-kernel-01/&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;kernel&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://davidham3.github.io/blog&#34;&gt;https://davidham3.github.io/blog&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://fenghz.github.io/index.html&#34;&gt;https://fenghz.github.io/index.html&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://archwalker.github.io/&#34;&gt;https://archwalker.github.io/&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;awesome-awesomes&#34;&gt;Awesome-Awesomes&lt;/h1&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;Repo&lt;/th&gt;
+          &lt;th&gt;Name&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/naganandy/graph-based-deep-learning-literature&#34;&gt;https://github.com/naganandy/graph-based-deep-learning-literature&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;links to conference publications in graph-based deep learning&lt;/strong&gt; (Very, Very, Very Important)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/SherylHYX/pytorch_geometric_signed_directed&#34;&gt;https://github.com/SherylHYX/pytorch_geometric_signed_directed&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning&#34;&gt;https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Paper Lists for Fair Graph Learning&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/thunlp/PromptPapers&#34;&gt;https://github.com/thunlp/PromptPapers&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Must-read papers on prompt-based tuning for pre-trained language models.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/zhao-tong/graph-data-augmentation-papers&#34;&gt;https://github.com/zhao-tong/graph-data-augmentation-papers&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A curated list of graph data augmentation papers.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/Thinklab-SJTU/ThinkMatch&#34;&gt;https://github.com/Thinklab-SJTU/ThinkMatch&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Code &amp;amp; pretrained models of novel deep graph matching methods.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/FLHonker/Awesome-Knowledge-Distillation&#34;&gt;https://github.com/FLHonker/Awesome-Knowledge-Distillation&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Awesome Knowledge-Distillation. 分类整理的知识蒸馏paper(2014-2021)。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/zlpure/awesome-graph-representation-learning&#34;&gt;https://github.com/zlpure/awesome-graph-representation-learning&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A curated list for awesome graph representation learning resources.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/basiralab/GNNs-in-Network-Neuroscience&#34;&gt;https://github.com/basiralab/GNNs-in-Network-Neuroscience&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A review of papers proposing novel GNN methods with application to brain connectivity published in 2017-2020.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/flyingdoog/awesome-graph-explainability-papers&#34;&gt;https://github.com/flyingdoog/awesome-graph-explainability-papers&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Papers about explainability of GNNs&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/yuanqidu/awesome-graph-generation&#34;&gt;https://github.com/yuanqidu/awesome-graph-generation&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A curated list of graph generation papers and resources.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/benedekrozemberczki/awesome-decision-tree-papers&#34;&gt;https://github.com/benedekrozemberczki/awesome-decision-tree-papers&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A collection of research papers on decision, classification and regression trees with implementations.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/AstraZeneca/awesome-explainable-graph-reasoning&#34;&gt;https://github.com/AstraZeneca/awesome-explainable-graph-reasoning&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A collection of research papers and software related to explainability in graph machine learning.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/LirongWu/awesome-graph-self-supervised-learning&#34;&gt;https://github.com/LirongWu/awesome-graph-self-supervised-learning&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Awesome Graph Self-Supervised Learning&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/Chen-Cai-OSU/awesome-equivariant-network&#34;&gt;https://github.com/Chen-Cai-OSU/awesome-equivariant-network&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Paper list for equivariant neural network&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/mengliu1998/DL4DisassortativeGraphs&#34;&gt;https://github.com/mengliu1998/DL4DisassortativeGraphs&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Papers about developing DL methods on disassortative graphs&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers&#34;&gt;https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A curated list of graph reinforcement learning papers.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/ChandlerBang/awesome-self-supervised-gnn&#34;&gt;https://github.com/ChandlerBang/awesome-self-supervised-gnn&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Papers about pretraining and self-supervised learning on Graph Neural Networks (GNN).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks&#34;&gt;https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Paper Lists for Graph Neural Networks&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/jwzhanggy/IFMLab_GNN&#34;&gt;https://github.com/jwzhanggy/IFMLab_GNN&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Graph Neural Network Models from IFM Lab&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/ChandlerBang/awesome-graph-attack-papers&#34;&gt;https://github.com/ChandlerBang/awesome-graph-attack-papers&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Adversarial attacks and defenses on Graph Neural Networks.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/safe-graph/graph-adversarial-learning-literature&#34;&gt;https://github.com/safe-graph/graph-adversarial-learning-literature&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A curated list of adversarial attacks and defenses papers on graph-structured data.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/benedekrozemberczki/awesome-graph-classification&#34;&gt;https://github.com/benedekrozemberczki/awesome-graph-classification&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A collection of important graph embedding, classification and representation learning papers with implementations.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers&#34;&gt;https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A curated list of gradient boosting research papers with implementations.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/benedekrozemberczki/awesome-community-detection&#34;&gt;https://github.com/benedekrozemberczki/awesome-community-detection&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A curated list of community detection research papers with implementations.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/giannifranchi/awesome-uncertainty-deeplearning&#34;&gt;https://github.com/giannifranchi/awesome-uncertainty-deeplearning&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;This repository contains a collection of surveys, datasets, papers, and codes, for predictive uncertainty estimation in deep learning models.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://sites.google.com/site/graphmatchingmethods/&#34;&gt;https://sites.google.com/site/graphmatchingmethods/&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Efficient Methods for Graph Matching and MAP Inference&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/yueliu1999/Awesome-Deep-Graph-Clustering&#34;&gt;https://github.com/yueliu1999/Awesome-Deep-Graph-Clustering&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Awesome Deep Graph Clustering is a collection of SOTA, novel deep graph clustering methods (papers, codes, and datasets).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/jwwthu/GNN4Traffic&#34;&gt;https://github.com/jwwthu/GNN4Traffic&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;This is the repository for the collection of Graph Neural Network for Traffic Forecasting.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/zwt233/Awesome-Auto-GNNs&#34;&gt;https://github.com/zwt233/Awesome-Auto-GNNs&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A paper collection about automated graph learning&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/chaitjo/awesome-efficient-gnn&#34;&gt;https://github.com/chaitjo/awesome-efficient-gnn&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Efficient Graph Neural Networks - a curated list of papers and projects&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs&#34;&gt;https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Awesome Resources on Trustworthy Graph Neural Networks&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders&#34;&gt;https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A collection of literature after or concurrent with Masked Autoencoder (MAE) (Kaiming He el al.).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection&#34;&gt;https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Awesome graph anomaly detection techniques built based on deep learning frameworks.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/mengliu1998/awesome-expressive-gnn&#34;&gt;https://github.com/mengliu1998/awesome-expressive-gnn&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A collection of papers studying/improving the expressiveness of graph neural networks (GNNs)&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;useful-repotools&#34;&gt;Useful Repo/Tools&lt;/h1&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;Name&lt;/th&gt;
+          &lt;th&gt;Info&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;http://acronymify.com/&#34;&gt;http://acronymify.com/&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Model Name&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://csacademy.com/app/graph_editor/&#34;&gt;https://csacademy.com/app/graph_editor/&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Graph Editor&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/guanyingc/python_plot_utils&#34;&gt;https://github.com/guanyingc/python_plot_utils&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;A simple code for plotting figure, colorbar, and cropping with python&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/guanyingc/latex_paper_writing_tips&#34;&gt;https://github.com/guanyingc/latex_paper_writing_tips&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Tips for Writing a Research Paper using LaTeX&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/JhuoW/Pytorch_Program_Templete&#34;&gt;https://github.com/JhuoW/Pytorch_Program_Templete&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Pytorch Program Templete GNN&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/graph4ai/graph4nlp&#34;&gt;https://github.com/graph4ai/graph4nlp&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Graph4nlp is the library for the easy use of Graph Neural Networks for NLP. Welcome to visit our DLG4NLP website (&lt;a href=&#34;https://dlg4nlp.github.io/index.html&#34;&gt;https://dlg4nlp.github.io/index.html&lt;/a&gt;) for various learning resources!&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/benedekrozemberczki/pytorch_geometric_temporal&#34;&gt;https://github.com/benedekrozemberczki/pytorch_geometric_temporal&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;PyTorch Geometric Temporal: Spatiotemporal Signal Processing with Neural Machine Learning Models (CIKM 2021)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/ysig/GraKeL&#34;&gt;https://github.com/ysig/GraKeL&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A scikit-learn compatible library for graph kernels&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/jajupmochi/graphkit-learn&#34;&gt;https://github.com/jajupmochi/graphkit-learn&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A python package for graph kernels, graph edit distances, and graph pre-image problem.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/pliang279/awesome-phd-advice&#34;&gt;https://github.com/pliang279/awesome-phd-advice&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Collection of advice for prospective and current PhD students&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/MLEveryday/100-Days-Of-ML-Code&#34;&gt;https://github.com/MLEveryday/100-Days-Of-ML-Code&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;100-Days-Of-ML-Code中文版&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/d2l-ai/d2l-zh&#34;&gt;https://github.com/d2l-ai/d2l-zh&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;《动手学深度学习》&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/lukas-blecher/LaTeX-OCR&#34;&gt;https://github.com/lukas-blecher/LaTeX-OCR&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;pix2tex: Using a ViT to convert images of equations into LaTeX code.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/thunlp/OpenPrompt&#34;&gt;https://github.com/thunlp/OpenPrompt&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;An Open-Source Framework for Prompt-Learning.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/snap-stanford/GraphGym&#34;&gt;https://github.com/snap-stanford/GraphGym&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;Platform for designing and evaluating Graph Neural Networks (GNN)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/pygod-team/pygod&#34;&gt;https://github.com/pygod-team/pygod&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A Python Library for Graph Outlier Detection (Anomaly Detection)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/MLNLP-World/Paper_Writing_Tips&#34;&gt;https://github.com/MLNLP-World/Paper_Writing_Tips&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;latex写作建议&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/dair-ai/ML-YouTube-Courses&#34;&gt;https://github.com/dair-ai/ML-YouTube-Courses&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;A place to discover the latest machine learning courses on YouTube.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;miscellaneous&#34;&gt;Miscellaneous&lt;/h1&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;Name&lt;/th&gt;
+          &lt;th&gt;Desc&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://github.com/The-Run-Philosophy-Organization/run&#34;&gt;https://github.com/The-Run-Philosophy-Organization/run&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;run学指南&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;a href=&#34;https://10beasts.net/&#34;&gt;https://10beasts.net/&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;测评&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</description>
       <content:encoded><![CDATA[<p><strong>这篇笔记用于收藏别人的博客</strong></p>
 <h1 id="tech-blog">Tech Blog</h1>
 <table>
-<thead>
-<tr>
-<th>Blog</th>
-<th>Author</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><a href="https://michael-bronstein.medium.com/">https://michael-bronstein.medium.com/</a></strong></td>
-<td>Michael Bronstein</td>
-</tr>
-<tr>
-<td><strong><a href="https://geometricdeeplearning.com/">https://geometricdeeplearning.com/</a></strong></td>
-<td>Michael Bronstein</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c">https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c</a></strong></td>
-<td>Vitaly Kurin (Many Paper Notes)</td>
-</tr>
-<tr>
-<td><strong><a href="https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html">https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html</a></strong></td>
-<td>UvA DL Notebooks</td>
-</tr>
-<tr>
-<td><strong><a href="https://graph-neural-networks.github.io/index.html">https://graph-neural-networks.github.io/index.html</a></strong></td>
-<td>GNN Books</td>
-</tr>
-<tr>
-<td><strong><a href="http://prob140.org/sp17/textbook/">http://prob140.org/sp17/textbook/</a></strong></td>
-<td><a href="http://prob140.org/">Probability for Data Science</a> class at UC Berkeley</td>
-</tr>
-<tr>
-<td><strong><a href="https://graphreason.github.io/schedule.html">https://graphreason.github.io/schedule.html</a></strong></td>
-<td><a href="https://graphreason.github.io/index.html">Learning and Reasoning with Graph-Structured Representations</a> ICML 2019 Workshop</td>
-</tr>
-<tr>
-<td><strong><a href="https://chuxuzhang.github.io/KDD21_Tutorial.html">https://chuxuzhang.github.io/KDD21_Tutorial.html</a></strong></td>
-<td>KDD2021 Tutorial: Data Efficient Learning on Graphs</td>
-</tr>
-<tr>
-<td><strong><a href="http://songcy.net/posts/">http://songcy.net/posts/</a></strong></td>
-<td>Changyue Song (Kernel)</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.cs.mcgill.ca/~wlh/grl_book/">https://www.cs.mcgill.ca/~wlh/grl_book/</a></strong></td>
-<td>William L. Hamilton</td>
-</tr>
-<tr>
-<td><strong><a href="https://kexue.fm/">https://kexue.fm/</a></strong></td>
-<td>BoJone</td>
-</tr>
-<tr>
-<td><strong><a href="https://danielegrattarola.github.io/blog/">https://danielegrattarola.github.io/blog/</a></strong></td>
-<td>Daniele Grattarola (EPFL)</td>
-</tr>
-<tr>
-<td><strong><a href="https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html">https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html</a></strong></td>
-<td>Google AI Blog</td>
-</tr>
-<tr>
-<td><strong><a href="https://zhiyuchen.com/blogs/">https://zhiyuchen.com/blogs/</a></strong></td>
-<td>Zhiyu Chen</td>
-</tr>
-<tr>
-<td><strong><a href="https://andreasloukas.blog/">https://andreasloukas.blog/</a></strong></td>
-<td>Andreas Loukas (EPFL)</td>
-</tr>
-<tr>
-<td><strong><a href="https://irhum.pubpub.org/pub/gnn/release/4">https://irhum.pubpub.org/pub/gnn/release/4</a></strong></td>
-<td>Understanding Graph Neural Networks</td>
-</tr>
-<tr>
-<td><strong><a href="https://lilianweng.github.io/">https://lilianweng.github.io/</a></strong></td>
-<td>Lilian Weng</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.zhihu.com/column/marlin">https://www.zhihu.com/column/marlin</a></strong></td>
-<td>深度学习与图网络</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/roboticcam/machine-learning-notes">https://github.com/roboticcam/machine-learning-notes</a></strong></td>
-<td>Yida Xu</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.dgl.ai/pages/index.html">https://www.dgl.ai/pages/index.html</a></strong></td>
-<td>DGL</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.kexinhuang.com/tech-blog">https://www.kexinhuang.com/tech-blog</a></strong></td>
-<td>Kexin Huang</td>
-</tr>
-<tr>
-<td><strong><a href="https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8">https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8</a></strong></td>
-<td>Rishabh Anand</td>
-</tr>
-<tr>
-<td><strong><a href="https://saashanair.com/blog">https://saashanair.com/blog</a></strong></td>
-<td>Saasha Nair</td>
-</tr>
-<tr>
-<td><strong><a href="http://www.huaxiaozhuan.com/">http://www.huaxiaozhuan.com/</a></strong></td>
-<td>华校专</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/dglai/WWW20-Hands-on-Tutorial">https://github.com/dglai/WWW20-Hands-on-Tutorial</a></strong></td>
-<td>DGL</td>
-</tr>
-<tr>
-<td><strong><a href="https://blog.csdn.net/CSDNTianJi/article/details/104195306">https://blog.csdn.net/CSDNTianJi/article/details/104195306</a></strong></td>
-<td>Meng Liu</td>
-</tr>
-<tr>
-<td><strong><a href="https://www.chaitjo.com/post/">https://www.chaitjo.com/post/</a></strong></td>
-<td>Chaitanya K. Joshi</td>
-</tr>
-<tr>
-<td><strong><a href="https://scottfreitas.medium.com/">https://scottfreitas.medium.com/</a></strong></td>
-<td>Scott Freitas</td>
-</tr>
-<tr>
-<td><strong><a href="https://fabianfuchsml.github.io/">https://fabianfuchsml.github.io/</a></strong></td>
-<td>Fabian Fuchs</td>
-</tr>
-<tr>
-<td><strong><a href="https://medium.com/@pantelis.elinas">https://medium.com/@pantelis.elinas</a></strong></td>
-<td>Pantelis Elinas</td>
-</tr>
-<tr>
-<td><a href="https://github.com/tianyicui/pack">https://github.com/tianyicui/pack</a></td>
-<td>背包9講</td>
-</tr>
-<tr>
-<td><a href="https://www.fenghz.xyz/">https://www.fenghz.xyz/</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://sakigami-yang.me/2017/08/13/about-kernel-01/">https://sakigami-yang.me/2017/08/13/about-kernel-01/</a></td>
-<td>kernel</td>
-</tr>
-<tr>
-<td><a href="https://davidham3.github.io/blog">https://davidham3.github.io/blog</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://fenghz.github.io/index.html">https://fenghz.github.io/index.html</a></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://archwalker.github.io/">https://archwalker.github.io/</a></td>
-<td></td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>Blog</th>
+          <th>Author</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong><a href="https://michael-bronstein.medium.com/">https://michael-bronstein.medium.com/</a></strong></td>
+          <td>Michael Bronstein</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://geometricdeeplearning.com/">https://geometricdeeplearning.com/</a></strong></td>
+          <td>Michael Bronstein</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c">https://www.notion.so/Paper-Notes-by-Vitaly-Kurin-97827e14e5cd4183815cfe3a5ecf2f4c</a></strong></td>
+          <td>Vitaly Kurin (Many Paper Notes)</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html">https://uvadlc-notebooks.readthedocs.io/en/latest/tutorial_notebooks/tutorial1/Lisa_Cluster.html</a></strong></td>
+          <td>UvA DL Notebooks</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://graph-neural-networks.github.io/index.html">https://graph-neural-networks.github.io/index.html</a></strong></td>
+          <td>GNN Books</td>
+      </tr>
+      <tr>
+          <td><strong><a href="http://prob140.org/sp17/textbook/">http://prob140.org/sp17/textbook/</a></strong></td>
+          <td><a href="http://prob140.org/">Probability for Data Science</a> class at UC Berkeley</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://graphreason.github.io/schedule.html">https://graphreason.github.io/schedule.html</a></strong></td>
+          <td><a href="https://graphreason.github.io/index.html">Learning and Reasoning with Graph-Structured Representations</a> ICML 2019 Workshop</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://chuxuzhang.github.io/KDD21_Tutorial.html">https://chuxuzhang.github.io/KDD21_Tutorial.html</a></strong></td>
+          <td>KDD2021 Tutorial: Data Efficient Learning on Graphs</td>
+      </tr>
+      <tr>
+          <td><strong><a href="http://songcy.net/posts/">http://songcy.net/posts/</a></strong></td>
+          <td>Changyue Song (Kernel)</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://www.cs.mcgill.ca/~wlh/grl_book/">https://www.cs.mcgill.ca/~wlh/grl_book/</a></strong></td>
+          <td>William L. Hamilton</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://kexue.fm/">https://kexue.fm/</a></strong></td>
+          <td>BoJone</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://danielegrattarola.github.io/blog/">https://danielegrattarola.github.io/blog/</a></strong></td>
+          <td>Daniele Grattarola (EPFL)</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html">https://ai.googleblog.com/2022/03/robust-graph-neural-networks.html</a></strong></td>
+          <td>Google AI Blog</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://zhiyuchen.com/blogs/">https://zhiyuchen.com/blogs/</a></strong></td>
+          <td>Zhiyu Chen</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://andreasloukas.blog/">https://andreasloukas.blog/</a></strong></td>
+          <td>Andreas Loukas (EPFL)</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://irhum.pubpub.org/pub/gnn/release/4">https://irhum.pubpub.org/pub/gnn/release/4</a></strong></td>
+          <td>Understanding Graph Neural Networks</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://lilianweng.github.io/">https://lilianweng.github.io/</a></strong></td>
+          <td>Lilian Weng</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://www.zhihu.com/column/marlin">https://www.zhihu.com/column/marlin</a></strong></td>
+          <td>深度学习与图网络</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://github.com/roboticcam/machine-learning-notes">https://github.com/roboticcam/machine-learning-notes</a></strong></td>
+          <td>Yida Xu</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://www.dgl.ai/pages/index.html">https://www.dgl.ai/pages/index.html</a></strong></td>
+          <td>DGL</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://www.kexinhuang.com/tech-blog">https://www.kexinhuang.com/tech-blog</a></strong></td>
+          <td>Kexin Huang</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8">https://rish16.notion.site/a8c6fcb0c29c4764afa1926ad33084f8?v=bb27bb0444574fbd85f0c9d7e43b9da8</a></strong></td>
+          <td>Rishabh Anand</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://saashanair.com/blog">https://saashanair.com/blog</a></strong></td>
+          <td>Saasha Nair</td>
+      </tr>
+      <tr>
+          <td><strong><a href="http://www.huaxiaozhuan.com/">http://www.huaxiaozhuan.com/</a></strong></td>
+          <td>华校专</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://github.com/dglai/WWW20-Hands-on-Tutorial">https://github.com/dglai/WWW20-Hands-on-Tutorial</a></strong></td>
+          <td>DGL</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://blog.csdn.net/CSDNTianJi/article/details/104195306">https://blog.csdn.net/CSDNTianJi/article/details/104195306</a></strong></td>
+          <td>Meng Liu</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://www.chaitjo.com/post/">https://www.chaitjo.com/post/</a></strong></td>
+          <td>Chaitanya K. Joshi</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://scottfreitas.medium.com/">https://scottfreitas.medium.com/</a></strong></td>
+          <td>Scott Freitas</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://fabianfuchsml.github.io/">https://fabianfuchsml.github.io/</a></strong></td>
+          <td>Fabian Fuchs</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://medium.com/@pantelis.elinas">https://medium.com/@pantelis.elinas</a></strong></td>
+          <td>Pantelis Elinas</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/tianyicui/pack">https://github.com/tianyicui/pack</a></td>
+          <td>背包9講</td>
+      </tr>
+      <tr>
+          <td><a href="https://www.fenghz.xyz/">https://www.fenghz.xyz/</a></td>
+          <td></td>
+      </tr>
+      <tr>
+          <td><a href="https://sakigami-yang.me/2017/08/13/about-kernel-01/">https://sakigami-yang.me/2017/08/13/about-kernel-01/</a></td>
+          <td>kernel</td>
+      </tr>
+      <tr>
+          <td><a href="https://davidham3.github.io/blog">https://davidham3.github.io/blog</a></td>
+          <td></td>
+      </tr>
+      <tr>
+          <td><a href="https://fenghz.github.io/index.html">https://fenghz.github.io/index.html</a></td>
+          <td></td>
+      </tr>
+      <tr>
+          <td><a href="https://archwalker.github.io/">https://archwalker.github.io/</a></td>
+          <td></td>
+      </tr>
+  </tbody>
 </table>
 <h1 id="awesome-awesomes">Awesome-Awesomes</h1>
 <table>
-<thead>
-<tr>
-<th>Repo</th>
-<th>Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><a href="https://github.com/naganandy/graph-based-deep-learning-literature">https://github.com/naganandy/graph-based-deep-learning-literature</a></strong></td>
-<td><strong>links to conference publications in graph-based deep learning</strong> (Very, Very, Very Important)</td>
-</tr>
-<tr>
-<td><a href="https://github.com/SherylHYX/pytorch_geometric_signed_directed">https://github.com/SherylHYX/pytorch_geometric_signed_directed</a></td>
-<td>PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning">https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning</a></td>
-<td>Paper Lists for Fair Graph Learning</td>
-</tr>
-<tr>
-<td><a href="https://github.com/thunlp/PromptPapers">https://github.com/thunlp/PromptPapers</a></td>
-<td>Must-read papers on prompt-based tuning for pre-trained language models.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/zhao-tong/graph-data-augmentation-papers">https://github.com/zhao-tong/graph-data-augmentation-papers</a></td>
-<td>A curated list of graph data augmentation papers.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/Thinklab-SJTU/ThinkMatch">https://github.com/Thinklab-SJTU/ThinkMatch</a></td>
-<td>Code &amp; pretrained models of novel deep graph matching methods.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/FLHonker/Awesome-Knowledge-Distillation">https://github.com/FLHonker/Awesome-Knowledge-Distillation</a></td>
-<td>Awesome Knowledge-Distillation. 分类整理的知识蒸馏paper(2014-2021)。</td>
-</tr>
-<tr>
-<td><a href="https://github.com/zlpure/awesome-graph-representation-learning">https://github.com/zlpure/awesome-graph-representation-learning</a></td>
-<td>A curated list for awesome graph representation learning resources.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/basiralab/GNNs-in-Network-Neuroscience">https://github.com/basiralab/GNNs-in-Network-Neuroscience</a></td>
-<td>A review of papers proposing novel GNN methods with application to brain connectivity published in 2017-2020.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/flyingdoog/awesome-graph-explainability-papers">https://github.com/flyingdoog/awesome-graph-explainability-papers</a></td>
-<td>Papers about explainability of GNNs</td>
-</tr>
-<tr>
-<td><a href="https://github.com/yuanqidu/awesome-graph-generation">https://github.com/yuanqidu/awesome-graph-generation</a></td>
-<td>A curated list of graph generation papers and resources.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-decision-tree-papers">https://github.com/benedekrozemberczki/awesome-decision-tree-papers</a></td>
-<td>A collection of research papers on decision, classification and regression trees with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/AstraZeneca/awesome-explainable-graph-reasoning">https://github.com/AstraZeneca/awesome-explainable-graph-reasoning</a></td>
-<td>A collection of research papers and software related to explainability in graph machine learning.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/LirongWu/awesome-graph-self-supervised-learning">https://github.com/LirongWu/awesome-graph-self-supervised-learning</a></td>
-<td>Awesome Graph Self-Supervised Learning</td>
-</tr>
-<tr>
-<td><a href="https://github.com/Chen-Cai-OSU/awesome-equivariant-network">https://github.com/Chen-Cai-OSU/awesome-equivariant-network</a></td>
-<td>Paper list for equivariant neural network</td>
-</tr>
-<tr>
-<td><a href="https://github.com/mengliu1998/DL4DisassortativeGraphs">https://github.com/mengliu1998/DL4DisassortativeGraphs</a></td>
-<td>Papers about developing DL methods on disassortative graphs</td>
-</tr>
-<tr>
-<td><a href="https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers">https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers</a></td>
-<td>A curated list of graph reinforcement learning papers.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/ChandlerBang/awesome-self-supervised-gnn">https://github.com/ChandlerBang/awesome-self-supervised-gnn</a></td>
-<td>Papers about pretraining and self-supervised learning on Graph Neural Networks (GNN).</td>
-</tr>
-<tr>
-<td><a href="https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks">https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks</a></td>
-<td>Paper Lists for Graph Neural Networks</td>
-</tr>
-<tr>
-<td><a href="https://github.com/jwzhanggy/IFMLab_GNN">https://github.com/jwzhanggy/IFMLab_GNN</a></td>
-<td>Graph Neural Network Models from IFM Lab</td>
-</tr>
-<tr>
-<td><a href="https://github.com/ChandlerBang/awesome-graph-attack-papers">https://github.com/ChandlerBang/awesome-graph-attack-papers</a></td>
-<td>Adversarial attacks and defenses on Graph Neural Networks.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/safe-graph/graph-adversarial-learning-literature">https://github.com/safe-graph/graph-adversarial-learning-literature</a></td>
-<td>A curated list of adversarial attacks and defenses papers on graph-structured data.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-graph-classification">https://github.com/benedekrozemberczki/awesome-graph-classification</a></td>
-<td>A collection of important graph embedding, classification and representation learning papers with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers">https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers</a></td>
-<td>A curated list of gradient boosting research papers with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/awesome-community-detection">https://github.com/benedekrozemberczki/awesome-community-detection</a></td>
-<td>A curated list of community detection research papers with implementations.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/giannifranchi/awesome-uncertainty-deeplearning">https://github.com/giannifranchi/awesome-uncertainty-deeplearning</a></td>
-<td>This repository contains a collection of surveys, datasets, papers, and codes, for predictive uncertainty estimation in deep learning models.</td>
-</tr>
-<tr>
-<td><a href="https://sites.google.com/site/graphmatchingmethods/">https://sites.google.com/site/graphmatchingmethods/</a></td>
-<td>Efficient Methods for Graph Matching and MAP Inference</td>
-</tr>
-<tr>
-<td><a href="https://github.com/yueliu1999/Awesome-Deep-Graph-Clustering">https://github.com/yueliu1999/Awesome-Deep-Graph-Clustering</a></td>
-<td>Awesome Deep Graph Clustering is a collection of SOTA, novel deep graph clustering methods (papers, codes, and datasets).</td>
-</tr>
-<tr>
-<td><a href="https://github.com/jwwthu/GNN4Traffic">https://github.com/jwwthu/GNN4Traffic</a></td>
-<td>This is the repository for the collection of Graph Neural Network for Traffic Forecasting.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/zwt233/Awesome-Auto-GNNs">https://github.com/zwt233/Awesome-Auto-GNNs</a></td>
-<td>A paper collection about automated graph learning</td>
-</tr>
-<tr>
-<td><a href="https://github.com/chaitjo/awesome-efficient-gnn">https://github.com/chaitjo/awesome-efficient-gnn</a></td>
-<td>Efficient Graph Neural Networks - a curated list of papers and projects</td>
-</tr>
-<tr>
-<td><a href="https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs">https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs</a></td>
-<td>Awesome Resources on Trustworthy Graph Neural Networks</td>
-</tr>
-<tr>
-<td><a href="https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders">https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders</a></td>
-<td>A collection of literature after or concurrent with Masked Autoencoder (MAE) (Kaiming He el al.).</td>
-</tr>
-<tr>
-<td><a href="https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection">https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection</a></td>
-<td>Awesome graph anomaly detection techniques built based on deep learning frameworks.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/mengliu1998/awesome-expressive-gnn">https://github.com/mengliu1998/awesome-expressive-gnn</a></td>
-<td>A collection of papers studying/improving the expressiveness of graph neural networks (GNNs)</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>Repo</th>
+          <th>Name</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong><a href="https://github.com/naganandy/graph-based-deep-learning-literature">https://github.com/naganandy/graph-based-deep-learning-literature</a></strong></td>
+          <td><strong>links to conference publications in graph-based deep learning</strong> (Very, Very, Very Important)</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/SherylHYX/pytorch_geometric_signed_directed">https://github.com/SherylHYX/pytorch_geometric_signed_directed</a></td>
+          <td>PyTorch Geometric Signed Directed is a signed/directed graph neural network extension library for PyTorch Geometric.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning">https://github.com/EdisonLeeeee/Awesome-Fair-Graph-Learning</a></td>
+          <td>Paper Lists for Fair Graph Learning</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/thunlp/PromptPapers">https://github.com/thunlp/PromptPapers</a></td>
+          <td>Must-read papers on prompt-based tuning for pre-trained language models.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/zhao-tong/graph-data-augmentation-papers">https://github.com/zhao-tong/graph-data-augmentation-papers</a></td>
+          <td>A curated list of graph data augmentation papers.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/Thinklab-SJTU/ThinkMatch">https://github.com/Thinklab-SJTU/ThinkMatch</a></td>
+          <td>Code &amp; pretrained models of novel deep graph matching methods.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/FLHonker/Awesome-Knowledge-Distillation">https://github.com/FLHonker/Awesome-Knowledge-Distillation</a></td>
+          <td>Awesome Knowledge-Distillation. 分类整理的知识蒸馏paper(2014-2021)。</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/zlpure/awesome-graph-representation-learning">https://github.com/zlpure/awesome-graph-representation-learning</a></td>
+          <td>A curated list for awesome graph representation learning resources.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/basiralab/GNNs-in-Network-Neuroscience">https://github.com/basiralab/GNNs-in-Network-Neuroscience</a></td>
+          <td>A review of papers proposing novel GNN methods with application to brain connectivity published in 2017-2020.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/flyingdoog/awesome-graph-explainability-papers">https://github.com/flyingdoog/awesome-graph-explainability-papers</a></td>
+          <td>Papers about explainability of GNNs</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/yuanqidu/awesome-graph-generation">https://github.com/yuanqidu/awesome-graph-generation</a></td>
+          <td>A curated list of graph generation papers and resources.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/benedekrozemberczki/awesome-decision-tree-papers">https://github.com/benedekrozemberczki/awesome-decision-tree-papers</a></td>
+          <td>A collection of research papers on decision, classification and regression trees with implementations.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/AstraZeneca/awesome-explainable-graph-reasoning">https://github.com/AstraZeneca/awesome-explainable-graph-reasoning</a></td>
+          <td>A collection of research papers and software related to explainability in graph machine learning.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/LirongWu/awesome-graph-self-supervised-learning">https://github.com/LirongWu/awesome-graph-self-supervised-learning</a></td>
+          <td>Awesome Graph Self-Supervised Learning</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/Chen-Cai-OSU/awesome-equivariant-network">https://github.com/Chen-Cai-OSU/awesome-equivariant-network</a></td>
+          <td>Paper list for equivariant neural network</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/mengliu1998/DL4DisassortativeGraphs">https://github.com/mengliu1998/DL4DisassortativeGraphs</a></td>
+          <td>Papers about developing DL methods on disassortative graphs</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers">https://github.com/SunQingYun1996/Graph-Reinforcement-Learning-Papers</a></td>
+          <td>A curated list of graph reinforcement learning papers.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/ChandlerBang/awesome-self-supervised-gnn">https://github.com/ChandlerBang/awesome-self-supervised-gnn</a></td>
+          <td>Papers about pretraining and self-supervised learning on Graph Neural Networks (GNN).</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks">https://github.com/GRAND-Lab/Awesome-Graph-Neural-Networks</a></td>
+          <td>Paper Lists for Graph Neural Networks</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/jwzhanggy/IFMLab_GNN">https://github.com/jwzhanggy/IFMLab_GNN</a></td>
+          <td>Graph Neural Network Models from IFM Lab</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/ChandlerBang/awesome-graph-attack-papers">https://github.com/ChandlerBang/awesome-graph-attack-papers</a></td>
+          <td>Adversarial attacks and defenses on Graph Neural Networks.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/safe-graph/graph-adversarial-learning-literature">https://github.com/safe-graph/graph-adversarial-learning-literature</a></td>
+          <td>A curated list of adversarial attacks and defenses papers on graph-structured data.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/benedekrozemberczki/awesome-graph-classification">https://github.com/benedekrozemberczki/awesome-graph-classification</a></td>
+          <td>A collection of important graph embedding, classification and representation learning papers with implementations.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers">https://github.com/benedekrozemberczki/awesome-gradient-boosting-papers</a></td>
+          <td>A curated list of gradient boosting research papers with implementations.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/benedekrozemberczki/awesome-community-detection">https://github.com/benedekrozemberczki/awesome-community-detection</a></td>
+          <td>A curated list of community detection research papers with implementations.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/giannifranchi/awesome-uncertainty-deeplearning">https://github.com/giannifranchi/awesome-uncertainty-deeplearning</a></td>
+          <td>This repository contains a collection of surveys, datasets, papers, and codes, for predictive uncertainty estimation in deep learning models.</td>
+      </tr>
+      <tr>
+          <td><a href="https://sites.google.com/site/graphmatchingmethods/">https://sites.google.com/site/graphmatchingmethods/</a></td>
+          <td>Efficient Methods for Graph Matching and MAP Inference</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/yueliu1999/Awesome-Deep-Graph-Clustering">https://github.com/yueliu1999/Awesome-Deep-Graph-Clustering</a></td>
+          <td>Awesome Deep Graph Clustering is a collection of SOTA, novel deep graph clustering methods (papers, codes, and datasets).</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/jwwthu/GNN4Traffic">https://github.com/jwwthu/GNN4Traffic</a></td>
+          <td>This is the repository for the collection of Graph Neural Network for Traffic Forecasting.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/zwt233/Awesome-Auto-GNNs">https://github.com/zwt233/Awesome-Auto-GNNs</a></td>
+          <td>A paper collection about automated graph learning</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/chaitjo/awesome-efficient-gnn">https://github.com/chaitjo/awesome-efficient-gnn</a></td>
+          <td>Efficient Graph Neural Networks - a curated list of papers and projects</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs">https://github.com/Radical3-HeZhang/Awesome-Trustworthy-GNNs</a></td>
+          <td>Awesome Resources on Trustworthy Graph Neural Networks</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders">https://github.com/EdisonLeeeee/Awesome-Masked-Autoencoders</a></td>
+          <td>A collection of literature after or concurrent with Masked Autoencoder (MAE) (Kaiming He el al.).</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection">https://github.com/XiaoxiaoMa-MQ/Awesome-Deep-Graph-Anomaly-Detection</a></td>
+          <td>Awesome graph anomaly detection techniques built based on deep learning frameworks.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/mengliu1998/awesome-expressive-gnn">https://github.com/mengliu1998/awesome-expressive-gnn</a></td>
+          <td>A collection of papers studying/improving the expressiveness of graph neural networks (GNNs)</td>
+      </tr>
+  </tbody>
 </table>
 <h1 id="useful-repotools">Useful Repo/Tools</h1>
 <table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Info</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="http://acronymify.com/">http://acronymify.com/</a></td>
-<td>Model Name</td>
-</tr>
-<tr>
-<td><a href="https://csacademy.com/app/graph_editor/">https://csacademy.com/app/graph_editor/</a></td>
-<td>Graph Editor</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/guanyingc/python_plot_utils">https://github.com/guanyingc/python_plot_utils</a></strong></td>
-<td>A simple code for plotting figure, colorbar, and cropping with python</td>
-</tr>
-<tr>
-<td><strong><a href="https://github.com/guanyingc/latex_paper_writing_tips">https://github.com/guanyingc/latex_paper_writing_tips</a></strong></td>
-<td>Tips for Writing a Research Paper using LaTeX</td>
-</tr>
-<tr>
-<td><a href="https://github.com/JhuoW/Pytorch_Program_Templete">https://github.com/JhuoW/Pytorch_Program_Templete</a></td>
-<td>Pytorch Program Templete GNN</td>
-</tr>
-<tr>
-<td><a href="https://github.com/graph4ai/graph4nlp">https://github.com/graph4ai/graph4nlp</a></td>
-<td>Graph4nlp is the library for the easy use of Graph Neural Networks for NLP. Welcome to visit our DLG4NLP website (<a href="https://dlg4nlp.github.io/index.html">https://dlg4nlp.github.io/index.html</a>) for various learning resources!</td>
-</tr>
-<tr>
-<td><a href="https://github.com/benedekrozemberczki/pytorch_geometric_temporal">https://github.com/benedekrozemberczki/pytorch_geometric_temporal</a></td>
-<td>PyTorch Geometric Temporal: Spatiotemporal Signal Processing with Neural Machine Learning Models (CIKM 2021)</td>
-</tr>
-<tr>
-<td><a href="https://github.com/ysig/GraKeL">https://github.com/ysig/GraKeL</a></td>
-<td>A scikit-learn compatible library for graph kernels</td>
-</tr>
-<tr>
-<td><a href="https://github.com/jajupmochi/graphkit-learn">https://github.com/jajupmochi/graphkit-learn</a></td>
-<td>A python package for graph kernels, graph edit distances, and graph pre-image problem.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pliang279/awesome-phd-advice">https://github.com/pliang279/awesome-phd-advice</a></td>
-<td>Collection of advice for prospective and current PhD students</td>
-</tr>
-<tr>
-<td><a href="https://github.com/MLEveryday/100-Days-Of-ML-Code">https://github.com/MLEveryday/100-Days-Of-ML-Code</a></td>
-<td>100-Days-Of-ML-Code中文版</td>
-</tr>
-<tr>
-<td><a href="https://github.com/d2l-ai/d2l-zh">https://github.com/d2l-ai/d2l-zh</a></td>
-<td>《动手学深度学习》</td>
-</tr>
-<tr>
-<td><a href="https://github.com/lukas-blecher/LaTeX-OCR">https://github.com/lukas-blecher/LaTeX-OCR</a></td>
-<td>pix2tex: Using a ViT to convert images of equations into LaTeX code.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/thunlp/OpenPrompt">https://github.com/thunlp/OpenPrompt</a></td>
-<td>An Open-Source Framework for Prompt-Learning.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/snap-stanford/GraphGym">https://github.com/snap-stanford/GraphGym</a></td>
-<td>Platform for designing and evaluating Graph Neural Networks (GNN)</td>
-</tr>
-<tr>
-<td><a href="https://github.com/pygod-team/pygod">https://github.com/pygod-team/pygod</a></td>
-<td>A Python Library for Graph Outlier Detection (Anomaly Detection)</td>
-</tr>
-<tr>
-<td><a href="https://github.com/MLNLP-World/Paper_Writing_Tips">https://github.com/MLNLP-World/Paper_Writing_Tips</a></td>
-<td>latex写作建议</td>
-</tr>
-<tr>
-<td><a href="https://github.com/dair-ai/ML-YouTube-Courses">https://github.com/dair-ai/ML-YouTube-Courses</a></td>
-<td>A place to discover the latest machine learning courses on YouTube.</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>Name</th>
+          <th>Info</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><a href="http://acronymify.com/">http://acronymify.com/</a></td>
+          <td>Model Name</td>
+      </tr>
+      <tr>
+          <td><a href="https://csacademy.com/app/graph_editor/">https://csacademy.com/app/graph_editor/</a></td>
+          <td>Graph Editor</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://github.com/guanyingc/python_plot_utils">https://github.com/guanyingc/python_plot_utils</a></strong></td>
+          <td>A simple code for plotting figure, colorbar, and cropping with python</td>
+      </tr>
+      <tr>
+          <td><strong><a href="https://github.com/guanyingc/latex_paper_writing_tips">https://github.com/guanyingc/latex_paper_writing_tips</a></strong></td>
+          <td>Tips for Writing a Research Paper using LaTeX</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/JhuoW/Pytorch_Program_Templete">https://github.com/JhuoW/Pytorch_Program_Templete</a></td>
+          <td>Pytorch Program Templete GNN</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/graph4ai/graph4nlp">https://github.com/graph4ai/graph4nlp</a></td>
+          <td>Graph4nlp is the library for the easy use of Graph Neural Networks for NLP. Welcome to visit our DLG4NLP website (<a href="https://dlg4nlp.github.io/index.html">https://dlg4nlp.github.io/index.html</a>) for various learning resources!</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/benedekrozemberczki/pytorch_geometric_temporal">https://github.com/benedekrozemberczki/pytorch_geometric_temporal</a></td>
+          <td>PyTorch Geometric Temporal: Spatiotemporal Signal Processing with Neural Machine Learning Models (CIKM 2021)</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/ysig/GraKeL">https://github.com/ysig/GraKeL</a></td>
+          <td>A scikit-learn compatible library for graph kernels</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/jajupmochi/graphkit-learn">https://github.com/jajupmochi/graphkit-learn</a></td>
+          <td>A python package for graph kernels, graph edit distances, and graph pre-image problem.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/pliang279/awesome-phd-advice">https://github.com/pliang279/awesome-phd-advice</a></td>
+          <td>Collection of advice for prospective and current PhD students</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/MLEveryday/100-Days-Of-ML-Code">https://github.com/MLEveryday/100-Days-Of-ML-Code</a></td>
+          <td>100-Days-Of-ML-Code中文版</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/d2l-ai/d2l-zh">https://github.com/d2l-ai/d2l-zh</a></td>
+          <td>《动手学深度学习》</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/lukas-blecher/LaTeX-OCR">https://github.com/lukas-blecher/LaTeX-OCR</a></td>
+          <td>pix2tex: Using a ViT to convert images of equations into LaTeX code.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/thunlp/OpenPrompt">https://github.com/thunlp/OpenPrompt</a></td>
+          <td>An Open-Source Framework for Prompt-Learning.</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/snap-stanford/GraphGym">https://github.com/snap-stanford/GraphGym</a></td>
+          <td>Platform for designing and evaluating Graph Neural Networks (GNN)</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/pygod-team/pygod">https://github.com/pygod-team/pygod</a></td>
+          <td>A Python Library for Graph Outlier Detection (Anomaly Detection)</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/MLNLP-World/Paper_Writing_Tips">https://github.com/MLNLP-World/Paper_Writing_Tips</a></td>
+          <td>latex写作建议</td>
+      </tr>
+      <tr>
+          <td><a href="https://github.com/dair-ai/ML-YouTube-Courses">https://github.com/dair-ai/ML-YouTube-Courses</a></td>
+          <td>A place to discover the latest machine learning courses on YouTube.</td>
+      </tr>
+  </tbody>
 </table>
 <h1 id="miscellaneous">Miscellaneous</h1>
 <table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Desc</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="https://github.com/The-Run-Philosophy-Organization/run">https://github.com/The-Run-Philosophy-Organization/run</a></td>
-<td>run学指南</td>
-</tr>
-<tr>
-<td><a href="https://10beasts.net/">https://10beasts.net/</a></td>
-<td>测评</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th>Name</th>
+          <th>Desc</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><a href="https://github.com/The-Run-Philosophy-Organization/run">https://github.com/The-Run-Philosophy-Organization/run</a></td>
+          <td>run学指南</td>
+      </tr>
+      <tr>
+          <td><a href="https://10beasts.net/">https://10beasts.net/</a></td>
+          <td>测评</td>
+      </tr>
+  </tbody>
 </table>
 ]]></content:encoded>
     </item>
@@ -4009,7 +4481,40 @@ $$
       <pubDate>Sun, 27 Mar 2022 15:38:50 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/barbell_graph/</guid>
-      <description>晕了 import networkx as nx import matplotlib.pyplot as plt n_clique, n_path = 10, 10 clique1 = nx.complete_graph(n_clique) clique1_pos = nx.circular_layout(clique1) clique2 = nx.complete_graph(n_clique) clique2_mapping = {node: node + n_clique for node in clique2} nx.relabel_nodes(clique2, clique2_mapping, copy=False) # avoids repeated nodes x_diff, y_diff = 8, -1 clique2_pos = {node: clique1_pos[node-n_clique] + (x_diff, y_diff) for node in clique2} path = nx.path_graph(n_path) path_mapping = {node: node + 2 * n_clique for node in path} nx.</description>
+      <description>&lt;h3 id=&#34;晕了&#34;&gt;晕了&lt;/h3&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import networkx as nx
+import matplotlib.pyplot as plt
+
+n_clique, n_path = 10, 10
+clique1 = nx.complete_graph(n_clique)
+clique1_pos = nx.circular_layout(clique1)
+clique2 = nx.complete_graph(n_clique)
+clique2_mapping = {node: node + n_clique for node in clique2}
+nx.relabel_nodes(clique2, clique2_mapping, copy=False) # avoids repeated nodes
+x_diff, y_diff = 8, -1
+clique2_pos = {node: clique1_pos[node-n_clique] + (x_diff, y_diff) for node in clique2}
+path = nx.path_graph(n_path)
+path_mapping = {node: node + 2 * n_clique for node in path}
+nx.relabel_nodes(path, path_mapping, copy=False) # avoids repeated nodes
+path_nodes = list(path.nodes)
+path_half1_nodes = path_nodes[:n_path//2]
+path_half2_nodes = path_nodes[n_path//2:]
+path_dist = 0.9
+clique2_entry = n_clique + n_clique // 2
+path_half1_pos = {node: clique1_pos[0] + (path_dist + i * path_dist, 0) for i, node in enumerate(path_half1_nodes)}
+path_half2_pos = {node: clique2_pos[clique2_entry] - (path_dist + i * path_dist, 0) for i, node in enumerate(path_half2_nodes[::-1])}
+path_pos = {**path_half1_pos, **path_half2_pos}
+barbell = nx.Graph()
+barbell.add_edges_from(clique1.edges)
+barbell.add_edges_from(clique2.edges)
+barbell.add_edges_from(path.edges)
+barbell.add_edges_from([(path_half1_nodes[0], 0), (path_half2_nodes[-1], clique2_entry)])
+clique_pos = {**clique1_pos, **clique2_pos}
+barbell_pos = {**clique_pos, **path_pos}
+plt.figure(figsize=(20, 6))
+nx.draw(barbell, pos=barbell_pos, with_labels=True)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://JhuoW.github.io/posts/barbell-graph/barbell.png#center&#34; alt=&#34;你想输入的替代文字&#34;  /&gt;
+&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h3 id="晕了">晕了</h3>
 <pre tabindex="0"><code>import networkx as nx
 import matplotlib.pyplot as plt
@@ -4053,14 +4558,37 @@ nx.draw(barbell, pos=barbell_pos, with_labels=True)
       <pubDate>Sun, 27 Mar 2022 10:45:08 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/mmd/</guid>
-      <description>Mean Discrepancy (MD)均值差异 判断2个分布$p$ 和$q$是否相同。
-$p$分布生成一个样本空间$\mathbb{P}$ (从$p$中采样$m$个样本)
-$q$分布生成一个样本空间$\mathbb{Q}$（从$q$中采样$n$个样本）
-函数$f$的输入为 分布生成的样本空间
-如果 $$ \begin{equation} \begin{aligned} \mathrm{mean}(f(\mathbb{P})) == \mathrm{mean}(f(\mathbb{Q})) \\ i.e., \frac{1}{m}\sum^m_{i=1}f(p_i) = \frac{1}{n}\sum^n_{i=1}f(q_i) \end{aligned} \end{equation} $$
-则$p$和$q$是同一分布。
-MD can be defined as $$ \begin{equation} \begin{aligned} \mathrm{MD}&amp;amp;=|\mathrm{mean}(f(\mathbb{P})) -\mathrm{mean}(f(\mathbb{Q})) | \\ &amp;amp;= |\frac{1}{m}\sum^m_{i=1}f(p_i) - \frac{1}{n}\sum^n_{i=1}f(q_i)| \end{aligned} \end{equation} $$
-Maximum Mean Discrepancy (MMD) 最大均值差异 定义 MMD: 在函数集$\mathcal{F}=\{f_1, f_2, \cdots \}$中， 找到一个函数$f^*$， 使得$|\mathrm{mean}(f^*(\mathbb{P})) -\mathrm{mean}(f^*(\mathbb{Q})) |$ 最大。 这个最大值就是两个分布之间的最大均值差异（MMD）。MMD =0 表示两个分布相同。 $$ \operatorname{MMD}[\mathcal{F}, p, q]:=\sup _{f \in \mathcal{F}}\left(\mathbf{E}_{x \sim p}[f(x)]-\mathbf{E}_{y \sim q}[f(y)]\right) $$ 其中$\mathbf{E}_{x \sim p}[f(x)]$表示分布$p$在函数$f$下的均值， $\sup$为上确界直接理解为max就好。</description>
+      <description>&lt;h1 id=&#34;mean-discrepancy-md均值差异&#34;&gt;Mean Discrepancy (MD)均值差异&lt;/h1&gt;
+&lt;p&gt;判断2个分布$p$ 和$q$是否相同。&lt;/p&gt;
+&lt;p&gt;$p$分布生成一个样本空间$\mathbb{P}$ (从$p$中采样$m$个样本)&lt;/p&gt;
+&lt;p&gt;$q$分布生成一个样本空间$\mathbb{Q}$（从$q$中采样$n$个样本）&lt;/p&gt;
+&lt;p&gt;函数$f$的输入为 分布生成的样本空间&lt;/p&gt;
+&lt;p&gt;如果
+$$
+\begin{equation}
+\begin{aligned}
+\mathrm{mean}(f(\mathbb{P})) == \mathrm{mean}(f(\mathbb{Q})) \\
+i.e., \frac{1}{m}\sum^m_{i=1}f(p_i) = \frac{1}{n}\sum^n_{i=1}f(q_i)
+\end{aligned}
+\end{equation}
+$$&lt;/p&gt;
+&lt;p&gt;则$p$和$q$是同一分布。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MD&lt;/strong&gt; can be defined as
+$$
+\begin{equation}
+\begin{aligned}
+\mathrm{MD}&amp;amp;=|\mathrm{mean}(f(\mathbb{P})) -\mathrm{mean}(f(\mathbb{Q})) | \\
+&amp;amp;= |\frac{1}{m}\sum^m_{i=1}f(p_i) - \frac{1}{n}\sum^n_{i=1}f(q_i)|
+\end{aligned}
+\end{equation}
+$$&lt;/p&gt;
+&lt;h1 id=&#34;maximum-mean-discrepancy-mmd-最大均值差异&#34;&gt;Maximum Mean Discrepancy (MMD) 最大均值差异&lt;/h1&gt;
+&lt;h2 id=&#34;定义&#34;&gt;定义&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;MMD:&lt;/strong&gt;  在函数集$\mathcal{F}=\{f_1, f_2, \cdots \}$中， 找到一个函数$f^*$， 使得$|\mathrm{mean}(f^*(\mathbb{P})) -\mathrm{mean}(f^*(\mathbb{Q})) |$ 最大。 这个最大值就是两个分布之间的&lt;strong&gt;最大均值差异&lt;/strong&gt;（MMD）。MMD =0 表示两个分布相同。
+$$
+\operatorname{MMD}[\mathcal{F}, p, q]:=\sup _{f \in \mathcal{F}}\left(\mathbf{E}_{x \sim p}[f(x)]-\mathbf{E}_{y \sim q}[f(y)]\right)
+$$
+其中$\mathbf{E}_{x \sim p}[f(x)]$表示分布$p$在函数$f$下的均值， $\sup$为上确界直接理解为max就好。&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h1 id="mean-discrepancy-md均值差异">Mean Discrepancy (MD)均值差异</h1>
 <p>判断2个分布$p$ 和$q$是否相同。</p>
 <p>$p$分布生成一个样本空间$\mathbb{P}$ (从$p$中采样$m$个样本)</p>
@@ -4187,8 +4715,14 @@ $$</p>
       <pubDate>Sat, 26 Mar 2022 22:39:20 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/rkhs_kernel/</guid>
-      <description>Hilbert Space Definition 1 (Norm) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):
- For $f \in \mathcal{F}$, $||f||_{\mathcal{F}}=0$ if and only if $f=0$. (norm separates points) $|\lambda f|_{\mathcal{F}}=|\lambda||f|_{\mathcal{F}}$, $\forall \lambda \in \mathbb{R}, \forall f \in \mathcal{F}$ (positive homogeneity). $|f+g|_{\mathcal{F}} \leq|f|_{\mathcal{F}}+|g|_{\mathcal{F}}, \forall f, g \in \mathcal{F}$ (triangle inequality).</description>
+      <description>&lt;h1 id=&#34;hilbert-space&#34;&gt;Hilbert Space&lt;/h1&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Definition 1&lt;/strong&gt;&lt;/em&gt; (&lt;a href=&#34;http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf&#34;&gt;Norm&lt;/a&gt;) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;For $f \in \mathcal{F}$, $||f||_{\mathcal{F}}=0$ if and only if $f=0$. (norm separates points)&lt;/li&gt;
+&lt;li&gt;$|\lambda f|_{\mathcal{F}}=|\lambda||f|_{\mathcal{F}}$, $\forall \lambda \in \mathbb{R}, \forall f \in \mathcal{F}$ (positive homogeneity).&lt;/li&gt;
+&lt;li&gt;$|f+g|_{\mathcal{F}} \leq|f|_{\mathcal{F}}+|g|_{\mathcal{F}}, \forall f, g \in \mathcal{F}$ (triangle inequality).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;向$||\cdot||_{\mathcal{F}}$中输入任意一个向量，只要满足以上条件，那么$||\cdot||_{\mathcal{F}}$是一个valid norm operator.&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h1 id="hilbert-space">Hilbert Space</h1>
 <p><em><strong>Definition 1</strong></em> (<a href="http://www.stats.ox.ac.uk/~sejdinov/teaching/atml14/Theory_2014.pdf">Norm</a>) Let $\mathcal{F}$ be a vector space over $\mathbb{R}$ (For example $\mathcal{F}=\mathbb{R}^n$ is a vector space). A function $||\cdot||_{\mathcal{F}}: \mathcal{F} \to [0, \inf)$ is said to be a norm on $\mathcal{F}$ if ($||\cdot||_{\mathcal{F}}$ 是一个有效norm算子要满足以下条件):</p>
 <ol>
@@ -4269,8 +4803,7 @@ $$
 $$
 If $\mathbf{K}$ is a <strong>positive semi-definite</strong> (<strong>PSD</strong>) matrix, then $\lambda_1, \cdots \lambda_m \geq 0$.</p>
 <blockquote>
-<p><em><strong>Assumption 1</strong></em>. All $\lambda_t$ are nonnegative.</p>
-</blockquote>
+<p><em><strong>Assumption 1</strong></em>. All $\lambda_t$ are nonnegative.</p></blockquote>
 <p>We consider this feature map:
 $$
 \begin{equation}
@@ -4392,21 +4925,38 @@ $$
       <pubDate>Fri, 25 Mar 2022 18:09:58 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/posts/monte-carlo-tree-search/</guid>
-      <description>单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits） 单一状态$s$, $k$种action（$k$个摇臂）。
-在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?
-多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。
-  利用（Exploitation）： 保证在过去决策中得到最佳回报
-  探索（Exploration）：寄希望在未来能够得到更大的汇报
-  例如， $s$摇动10次赌博机，其中第5次获得最大回报，那么下一次摇动赌博机可能选第5个赌博机，即“利用”（根据过去的最佳回报来施展下一次行为），第11次摇动的action为$a_5$。
-但是摇动10次后，可能有的赌博机尚未摇动，未摇动的赌博机可能会有更大回报，即“探索”。
-悔值函数 如果有$k$个赌博机， 这$k$个赌博机产生的操作序列为$X_{i,1}, X_{i,2}, \cdots (i = 1,\cdots, k)$。 在时刻$t=1,2,\cdots$, 选择第$I_t$个赌博机后，可得到的奖励为$X_{I_t,t}$, 则在$n$次操作$I_1,\cdots,I_n$后，可如下定义悔值函数： $$ R_n = \max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}-\sum^n_{t=1}X_{I_t, t} $$ $i$: 第$i$个赌博机
-$I_t$: $t$时刻选择的赌博机
-$\max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}$: 最理想（大）的奖励
-$X_{I_t, t}$: $t$时刻选择赌博机$I_t$的reward
-$\sum^n_{t=1}X_{I_t, t}$: $n$次选择的总奖励。
-$R_n$越大，就代表$n$次决策的结果越差。
-上置信区间（Upper Confidence Bound, UCB） UCB旨在探索和利用间去的平衡
-在UCB方法中，使$X_{i, T_{i}(t-1)}$ 来记录第$i$个赌博机在过去$t-1$时刻内的平均奖励，则在第$t$时刻，选择使如下具有最佳上限置信区间的赌博机： $$ I_{t}=\max_{i \in{1, \ldots, k}}\left\{\overline{X_{i, T_{i}(t-1)}}+C_{t-1, T_{i}(t-1)} \right\}.</description>
+      <description>&lt;h1 id=&#34;单一状态monte-carlo规划多臂赌博机multi-armed-bandits&#34;&gt;单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits）&lt;/h1&gt;
+&lt;p&gt;单一状态$s$, $k$种action（$k$个摇臂）。&lt;/p&gt;
+&lt;p&gt;在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?&lt;/p&gt;
+&lt;p&gt;多臂赌博机问题是一种序列决策问题，这种问题需要在利用（exploitation）和探索（exploration）之间保持平衡。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;利用（Exploitation）： 保证在过去决策中得到最佳回报&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;探索（Exploration）：寄希望在未来能够得到更大的汇报&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;例如， $s$摇动10次赌博机，其中第5次获得最大回报，那么下一次摇动赌博机可能选第5个赌博机，即“利用”（根据过去的最佳回报来施展下一次行为），第11次摇动的action为$a_5$。&lt;/p&gt;
+&lt;p&gt;但是摇动10次后，可能有的赌博机尚未摇动，未摇动的赌博机可能会有更大回报，即“探索”。&lt;/p&gt;
+&lt;h2 id=&#34;悔值函数&#34;&gt;悔值函数&lt;/h2&gt;
+&lt;p&gt;如果有$k$个赌博机， 这$k$个赌博机产生的操作序列为$X_{i,1}, X_{i,2}, \cdots (i = 1,\cdots, k)$。 在时刻$t=1,2,\cdots$, 选择第$I_t$个赌博机后，可得到的奖励为$X_{I_t,t}$, 则在$n$次操作$I_1,\cdots,I_n$后，可如下定义悔值函数：
+$$
+R_n = \max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}-\sum^n_{t=1}X_{I_t, t}
+$$
+$i$: 第$i$个赌博机&lt;/p&gt;
+&lt;p&gt;$I_t$: $t$时刻选择的赌博机&lt;/p&gt;
+&lt;p&gt;$\max_{i=1,\cdots,k} \sum^n_{t = 1} X_{i,t}$: 最理想（大）的奖励&lt;/p&gt;
+&lt;p&gt;$X_{I_t, t}$: $t$时刻选择赌博机$I_t$的reward&lt;/p&gt;
+&lt;p&gt;$\sum^n_{t=1}X_{I_t, t}$: $n$次选择的总奖励。&lt;/p&gt;
+&lt;p&gt;$R_n$越大，就代表$n$次决策的结果越差。&lt;/p&gt;
+&lt;h2 id=&#34;上置信区间upper-confidence-bound-ucb&#34;&gt;上置信区间（Upper Confidence Bound, UCB）&lt;/h2&gt;
+&lt;p&gt;UCB旨在探索和利用间去的平衡&lt;/p&gt;
+&lt;p&gt;在UCB方法中，使$X_{i, T_{i}(t-1)}$ 来记录第$i$个赌博机在过去$t-1$时刻内的平均奖励，则在第$t$时刻，选择使如下具有最佳上限置信区间的赌博机：
+$$
+I_{t}=\max_{i \in{1, \ldots, k}}\left\{\overline{X_{i, T_{i}(t-1)}}+C_{t-1, T_{i}(t-1)} \right\}.
+$$
+其中$I_{t}$为$t$时刻要摇的赌博机，&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h1 id="单一状态monte-carlo规划多臂赌博机multi-armed-bandits">单一状态Monte Carlo规划：多臂赌博机（Multi-armed bandits）</h1>
 <p>单一状态$s$, $k$种action（$k$个摇臂）。</p>
 <p>在摇臂赌博机问题中，$s$每次以随机采样形式采取一种行动$a$。 例如，随机拉动第$k$个赌博机，得到的reward为$R(s, a_k)$。问下一次拉动哪个赌博机，才能获得最大Reward?</p>
@@ -4617,12 +5167,23 @@ $S^{(l)}$是一个$n_l \times n_{l+1}$的全链接矩阵，$S^{(l)}_{ij}$表示�
       <pubDate>Sat, 07 Sep 2019 09:11:09 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2019-09-07-spectral-clustering/</guid>
-      <description>最近在看GNN/GCN的时候遇到谱聚类，学了下，做了些笔记。
-本文主要参考了：[1] https://www.cnblogs.com/pinard/p/6221564.html#!comments
-Introduction 谱聚类是图论中的算法，主要思想是空间中距离较远的两个点之间边的权重值较低， 距离较近的两个点之间边的权重值较高， 通过对所有数据点组成的图（Graph）进行切图， 使不同子图之间边的权重和尽可能低， 子图内边的权重值的和尽可能高，从而达到聚类的目的。
-基础1： 无向权重图 对于边$(v_i,v_j)$, 它的权重$w_{ij} &amp;gt; 0$。对于没有边的节点$v_i$和$v_j$, 他们之间的权重$w_{ij}=0$。图中的节点$v_i$, 它的度$d_i$定义为和它连接的所有边的权重之和，即： $$ d_i = \sum_{j=1}^n w_{ij} $$ 根据所有节点的度值，我们可以得到一个度矩阵$D$: $$ D=\displaystyle \left(\begin{array}{ccc}{d_{1}} &amp;amp; {\ldots} &amp;amp; {\ldots} \\\ {\ldots} &amp;amp; {d_{2}} &amp;amp; {\ldots} \\\ {\vdots} &amp;amp; {\vdots} &amp;amp; {\ddots} \\\ {\ldots} &amp;amp; {\ldots} &amp;amp; {d_{n}}\end{array}\right) ^{n\times n} $$ 是一个$n \times n$的对角阵，对角元素是每个节点的度和。
-定义图的邻接矩阵为$W \in \mathbb{R}^{n \times n}$， 每个元素$W_{ij}$表示节点对$(v_i,v_j)$之间的权重。 对于$V$中的一个子节点集$A \subset V$， 定义： $$|A|=A 中的节点个数 $$
-$$vol(A) = \sum_{i \in A} d_i \quad 表示A中所有节点的权重之和$$</description>
+      <description>&lt;p&gt;最近在看GNN/GCN的时候遇到谱聚类，学了下，做了些笔记。&lt;/p&gt;
+&lt;p&gt;本文主要参考了：[1] &lt;a href=&#34;https://www.cnblogs.com/pinard/p/6221564.html#!comments&#34;&gt;https://www.cnblogs.com/pinard/p/6221564.html#!comments&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;谱聚类是图论中的算法，主要思想是空间中距离较远的两个点之间边的权重值较低， 距离较近的两个点之间边的权重值较高， 通过对所有数据点组成的图（Graph）进行切图， 使不同子图之间边的权重和尽可能低， 子图内边的权重值的和尽可能高，从而达到聚类的目的。&lt;/p&gt;
+&lt;h1 id=&#34;基础1-无向权重图&#34;&gt;基础1： 无向权重图&lt;/h1&gt;
+&lt;p&gt;对于边$(v_i,v_j)$, 它的权重$w_{ij} &amp;gt; 0$。对于没有边的节点$v_i$和$v_j$,  他们之间的权重$w_{ij}=0$。图中的节点$v_i$, 它的度$d_i$定义为和它连接的所有边的权重之和，即：
+$$
+d_i = \sum_{j=1}^n w_{ij}
+$$
+根据所有节点的度值，我们可以得到一个度矩阵$D$:
+$$
+D=\displaystyle \left(\begin{array}{ccc}{d_{1}} &amp;amp; {\ldots} &amp;amp; {\ldots} \\\ {\ldots} &amp;amp; {d_{2}} &amp;amp; {\ldots} \\\ {\vdots} &amp;amp; {\vdots} &amp;amp; {\ddots} \\\ {\ldots} &amp;amp; {\ldots} &amp;amp; {d_{n}}\end{array}\right) ^{n\times n}
+$$
+是一个$n \times n$的对角阵，对角元素是每个节点的度和。&lt;/p&gt;
+&lt;p&gt;定义图的邻接矩阵为$W \in \mathbb{R}^{n \times n}$， 每个元素$W_{ij}$表示节点对$(v_i,v_j)$之间的权重。 对于$V$中的一个子节点集$A \subset V$， 定义：
+$$|A|=A 中的节点个数 $$&lt;/p&gt;
+&lt;p&gt;$$vol(A) = \sum_{i \in A} d_i \quad 表示A中所有节点的权重之和$$&lt;/p&gt;</description>
       <content:encoded><![CDATA[<p>最近在看GNN/GCN的时候遇到谱聚类，学了下，做了些笔记。</p>
 <p>本文主要参考了：[1] <a href="https://www.cnblogs.com/pinard/p/6221564.html#!comments">https://www.cnblogs.com/pinard/p/6221564.html#!comments</a></p>
 <h1 id="introduction">Introduction</h1>
@@ -4933,14 +5494,51 @@ $$
       <pubDate>Mon, 06 May 2019 20:16:17 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2019-05-06-im-conclusion/</guid>
-      <description>影响力传播模型 社交网络上影响力最大化问题需要借助相应的影响力传播模型，影响力传播模型的选择
-LC IT模型（独立级联模型和线性阈值模型） WC（权重级联模型） HD（热传播模型） SIR（传染病模型） MIA模型（路径相关） 投票模型 巴斯模型 影响力最大化算法 目前有的几个影响力最大化的算法
-   基于目标函数的子模性质的算法（一般是贪心算法和贪心算法的改进）
-  A note on maximizing a submodular set function subject to a knapsack constraint 这个文章主要是把问题扩展了，认为选择每个节点是有不同的代价的，而不同于传统的问题，传统的问题中，每个节点的选择大家都是一样的，因此，在总代价一定的情况下，那么问题就是选择固定个数的节点即可，但是如果每个节点的选择代价不一样，在总代价一定的情况下，选择的节点的个数就不一样
-  Cost-effective outbreak detection in networks （CELF算法）
-  Celf ++ : optimizing the greedy algorithm for influence maximization in social networks（CELF++算法） 这个文章就是大名鼎鼎的CELF算法，利用子模性质和边际效益递减对贪心算法进行优化，同理还有CELF++算法也是大致相同的思路
-    基于中心性的启发式算法
-  Efficient influence maximization in social networks W.Chen （DegreeDiscount算法） 这个算法也是启发式算法，主要在于，每当选择一个节点后，认为这个节点不会再被影响，因此，它的邻居节点地度-1</description>
+      <description>&lt;h4 id=&#34;影响力传播模型&#34;&gt;影响力传播模型&lt;/h4&gt;
+&lt;p&gt;社交网络上影响力最大化问题需要借助相应的影响力传播模型，影响力传播模型的选择&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;LC IT模型（独立级联模型和线性阈值模型）
+
+WC（权重级联模型）
+
+HD（热传播模型）
+
+SIR（传染病模型）
+
+MIA模型（路径相关）
+
+投票模型
+
+巴斯模型
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;影响力最大化算法&#34;&gt;影响力最大化算法&lt;/h4&gt;
+&lt;p&gt;目前有的几个影响力最大化的算法&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;基于目标函数的子模性质的算法（一般是贪心算法和贪心算法的改进）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A note on maximizing a submodular set function subject to a knapsack constraint
+这个文章主要是把问题扩展了，认为选择每个节点是有不同的代价的，而不同于传统的问题，传统的问题中，每个节点的选择大家都是一样的，因此，在总代价一定的情况下，那么问题就是选择固定个数的节点即可，但是如果每个节点的选择代价不一样，在总代价一定的情况下，选择的节点的个数就不一样&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Cost-effective outbreak detection in networks （CELF算法）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Celf ++ : optimizing the greedy algorithm for influence maximization in social networks（CELF++算法）
+这个文章就是大名鼎鼎的CELF算法，利用子模性质和边际效益递减对贪心算法进行优化，同理还有CELF++算法也是大致相同的思路&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;基于中心性的启发式算法&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Efficient influence maximization in social networks W.Chen （DegreeDiscount算法）
+这个算法也是启发式算法，主要在于，每当选择一个节点后，认为这个节点不会再被影响，因此，它的邻居节点地度-1&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A potential-based node selection strategy for influence max- imization in a social network （TM算法）
+这个算法也是一种启发式算法，它是以节点地潜在地影响力作为启发的因素去选择初始的节点，同时设置了一个参数c，分为两个阶段，第一个阶段启发式的选择潜在影响力最大的若干个节点，第二阶段用贪心算法对这些第一阶段选择的种子节点进行筛选，当参数c为0，也就是没有第一阶段，那么算法就变成了传统的贪心算法。算法的缺点也很明显，首先参数c的选择依赖于经验判断，其次是启发式，准确率没有保证，再次也需要使用贪心算法，因此时间复杂度很高&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h4 id="影响力传播模型">影响力传播模型</h4>
 <p>社交网络上影响力最大化问题需要借助相应的影响力传播模型，影响力传播模型的选择</p>
 <pre tabindex="0"><code>LC IT模型（独立级联模型和线性阈值模型）
@@ -5032,8 +5630,7 @@ MIA模型（路径相关）
 <p>基于节点的一致性来设计的算法。传播模型中的概率定义为让第一个节点的影响力指标乘以第二个节点的一致性指标作为传播概率。</p>
 <p>当然，基于社区发现的算法也有自己的缺点，首先是在社区内部进行初步的节点的选择，也需要进行蒙特卡洛模拟，因此时间复杂度也会比较大，其次，社区发现的思路，是用节点在社区内的influence spread去模拟它在whole network上的influence spread，近似效果依赖于网络结构，如果社区之间的连接边都比较少，那么近似结果是非常接近的，但是如果社区之间的连接边比较多，及即是hub节点比较多，那么近似效果可想而知</p>
 </li>
-</ul>
-</blockquote>
+</ul></blockquote>
 <pre tabindex="0"><code>1.基于的贪心算法KK（kempe等学者提出的算法）
 2.基于贪心算法的改进算法，利用启发式规则改进的NewGreedyIC，MixedGreedyIC，NewGreedyWC算法
 	相关论文：Efficient influence maximization in social networks 2009
@@ -5057,8 +5654,7 @@ MIA模型（路径相关）
 <li>LPA算法（目前的最快的社区划分算法，几乎是线性时间复杂度）</li>
 </ul>
 </li>
-</ul>
-</blockquote>
+</ul></blockquote>
 <h4 id="论文思考的几个点">论文思考的几个点</h4>
 <p>基于社区发现的影响力最大化算法的分析，论文研究的目的：</p>
 <ol>
@@ -5101,8 +5697,7 @@ MIA模型（路径相关）
 <li>
 <p><strong>种子节点的获取策略</strong>，如何在这些候选节点上选择出最终的种子节点？直接按照贪心策略暴力选择还是参考CELF算法进行选择？或者是涉及其他的方法？</p>
 </li>
-</ul>
-</blockquote>
+</ul></blockquote>
 <h4 id="思路总结">思路总结</h4>
 <blockquote>
 <p>基于社区发现的影响力最大化算法框架：</p>
@@ -5114,8 +5709,7 @@ MIA模型（路径相关）
 <li>种子节点在社区内的影响力只是对种子节点在全局的影响力的近似，那么需要一种方式来弥补这种误差。显然，种子节点的影响力如果想要传播到另外的社区，那么是通过社区之间的边界节点进行传播的，同时和社区本身的重要性有关，那么这部分的误差通过边界节点来弥补。</li>
 <li>最终会得到若干的候选节点，这些节点使用贪心算法进行选择出最终的种子节点，考虑贪心算法的时间复杂度，那么可以考虑使用CELF思路或者是其他的CGA这类的动态规划思路去求解，不过这还是基于蒙特卡罗模拟，时间复杂度仍然相对比较大，对算法进行加速。</li>
 <li>影响力传播模型，基于线性阈值模型进行改变，加上信任度参数，因为每个影响力的叠加不是平权的，和用户之间的互动，观点信息，兴趣爱好是否一直存在着相关的关系，因此在影响力传播模型中加入这个考虑因素。</li>
-</ul>
-</blockquote>
+</ul></blockquote>
 <h4 id="算法的实验部分考虑一些经典的baseline-algorithm">算法的实验部分，考虑一些经典的BaseLine Algorithm</h4>
 <blockquote>
 <ul>
@@ -5125,14 +5719,12 @@ MIA模型（路径相关）
 <li>CIM算法</li>
 <li>启发式算法（度启发式，中心性启发式）DegreeDiscount算法</li>
 <li>本论文的算法</li>
-</ul>
-</blockquote>
+</ul></blockquote>
 <blockquote>
 <ul>
 <li>算法中参数的选择的影响</li>
 <li>控制变量对比实验</li>
-</ul>
-</blockquote>
+</ul></blockquote>
 <h4 id="相关工作总结">相关工作总结</h4>
 <blockquote>
 <ol>
@@ -5145,8 +5737,7 @@ MIA模型（路径相关）
 </ol>
 <p>a）LT IC 模型，并说明了这个问题的NP完全性</p>
 <p>b）给出了贪心算法</p>
-<p>c）说明了影响力递增的边界递减性质，利用子模性质说明了算法的性能保证</p>
-</blockquote>
+<p>c）说明了影响力递增的边界递减性质，利用子模性质说明了算法的性能保证</p></blockquote>
 <h4 id="近期论文阅读总结">近期论文阅读总结</h4>
 <ol>
 <li>
@@ -5161,8 +5752,7 @@ MIA模型（路径相关）
 <li>
 <p>数据集选择</p>
 <blockquote>
-<p>参考宫秀云那篇文章</p>
-</blockquote>
+<p>参考宫秀云那篇文章</p></blockquote>
 </li>
 <li>
 <p>总结：基于PageRank思想的影响力计算，都是在PageRank的基础上进行模型的改进，加入其他的影响因子，给出不同的权重，从而更加符合实际的应用场景。</p>
@@ -5177,11 +5767,13 @@ MIA模型（路径相关）
       <pubDate>Wed, 20 Mar 2019 21:34:08 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/2019-03-20-ic-lt/</guid>
-      <description>The Independent Cascade Model (IC Model) IC模型，即独立级联模型。 $v$表示图$G=（V,E)$中的一个节点（用户），$v$可以被它的传入邻居（incoming neighbor）以一个影响概率$p_{u,v}$的情况下独立激活。
-在时间步为0的时候，给定一个种子集（seed set）$S$,即$k$个已经是激活着的节点。 在时间步$t$时，每一个激活状态的节点$u$将会以一定的概率$p_{u,v}$来激活每一个和它连接的未激活节点$v$。时间步$t$之后，如果$v$依然是未激活状态，那么$v$将无法再次被$v$激活。结束一次上述过程后，$u$保持激活状态并且失去激活其他节点的能力。当网络$G$中没有其他节点可以被激活时，扩散过程结束。
-值得注意的是，当$S$是原始的激活节点集，那么上述随机激活过程完成后，所得到的影响分布（Influence Spread）是所期望的激活节点数。
-The Linear Threshold Model (LT Model) LT模型，即线性阈值模型。基本思想是，如果一个未被激活的节点有足够的传入邻居是激活状态的，那么该节点可以被激活。
-形式上， 在图$G$中每条边$e=(u,v) \in E$有一个权重$b_{u,v}$。 我们定义$\mathcal{N}_I (v)$表示节点$v$的传入节点， 满足$\sum_{u \in \mathcal{N}_I (v)} b_{u,v} \leq 1$, 即所有$v$的传入节点与$v$组成的边的权重只和小于1。 另外，每个节点$v$具有一个阈值$\theta_v$。 LT模型首先为每个节点$v$的阈值$\theta_v$在$[0,1]$上均匀随机采样。在时间步0时，设置$S$中的节点状态为激活，其他节点为未激活，然后迭代的更新每个节点的状态。 在时间步$t$时，所有$t-1$时刻是激活状态的节点依旧保持激活状态，与此同时，其他未激活的节点$v$, 如果任意一个节点$v$的激活传入邻居总权重的值至少为$\theta_v$,那么将$v$激活。 当没有节点将要被激活时，传播结束。</description>
+      <description>&lt;h1 id=&#34;the-independent-cascade-model-ic-model&#34;&gt;The Independent Cascade Model (IC Model)&lt;/h1&gt;
+&lt;p&gt;IC模型，即独立级联模型。 $v$表示图$G=（V,E)$中的一个节点（用户），$v$可以被它的传入邻居（incoming neighbor）以一个影响概率$p_{u,v}$的情况下独立激活。&lt;br&gt;
+在时间步为0的时候，给定一个种子集（seed set）$S$,即$k$个已经是激活着的节点。 在时间步$t$时，每一个激活状态的节点$u$将会以一定的概率$p_{u,v}$来激活每一个和它连接的未激活节点$v$。时间步$t$之后，如果$v$依然是未激活状态，那么$v$将无法再次被$v$激活。结束一次上述过程后，$u$保持激活状态并且失去激活其他节点的能力。当网络$G$中没有其他节点可以被激活时，扩散过程结束。&lt;br&gt;
+值得注意的是，当$S$是原始的激活节点集，那么上述随机激活过程完成后，所得到的影响分布（Influence Spread）是所期望的激活节点数。&lt;/p&gt;
+&lt;h1 id=&#34;the-linear-threshold-model-lt-model&#34;&gt;The Linear Threshold Model (LT Model)&lt;/h1&gt;
+&lt;p&gt;LT模型，即线性阈值模型。基本思想是，如果一个未被激活的节点有足够的传入邻居是激活状态的，那么该节点可以被激活。&lt;br&gt;
+形式上， 在图$G$中每条边$e=(u,v) \in E$有一个权重$b_{u,v}$。 我们定义$\mathcal{N}_I (v)$表示节点$v$的传入节点， 满足$\sum_{u \in \mathcal{N}_I (v)} b_{u,v} \leq 1$, 即所有$v$的传入节点与$v$组成的边的权重只和小于1。 另外，每个节点$v$具有一个阈值$\theta_v$。 LT模型首先为每个节点$v$的阈值$\theta_v$在$[0,1]$上均匀随机采样。在时间步0时，设置$S$中的节点状态为激活，其他节点为未激活，然后迭代的更新每个节点的状态。 在时间步$t$时，所有$t-1$时刻是激活状态的节点依旧保持激活状态，与此同时，其他未激活的节点$v$, 如果任意一个节点$v$的激活传入邻居总权重的值至少为$\theta_v$,那么将$v$激活。 当没有节点将要被激活时，传播结束。&lt;/p&gt;</description>
       <content:encoded><![CDATA[<h1 id="the-independent-cascade-model-ic-model">The Independent Cascade Model (IC Model)</h1>
 <p>IC模型，即独立级联模型。 $v$表示图$G=（V,E)$中的一个节点（用户），$v$可以被它的传入邻居（incoming neighbor）以一个影响概率$p_{u,v}$的情况下独立激活。<br>
 在时间步为0的时候，给定一个种子集（seed set）$S$,即$k$个已经是激活着的节点。 在时间步$t$时，每一个激活状态的节点$u$将会以一定的概率$p_{u,v}$来激活每一个和它连接的未激活节点$v$。时间步$t$之后，如果$v$依然是未激活状态，那么$v$将无法再次被$v$激活。结束一次上述过程后，$u$保持激活状态并且失去激活其他节点的能力。当网络$G$中没有其他节点可以被激活时，扩散过程结束。<br>
@@ -5255,6 +5847,81 @@ $$\mathrm{maximize} \quad L = \alpha \log O_2+\beta \log O_3 - \gamma O_1$$
 </p>
 <h1 id="conclusion">Conclusion</h1>
 <p>这篇文章提出的分布式训练以及负采样策略还是很值得学习的。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>SIGIR2018 《HTNE Embedding Temporal Network via Neighborhood Formation》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/htne/</link>
+      <pubDate>Sun, 17 Feb 2019 22:01:15 +0000</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/htne/</guid>
+      <description>&lt;p&gt;论文地址：&lt;a href=&#34;https://dl.acm.org/citation.cfm?id=3220054&#34;&gt;HTNE&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://JhuoW.github.io/posts/2019-01-17-HTNE/Fig1.png&#34; alt=&#34;你想输入的替代文字&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。&lt;/p&gt;
+&lt;p&gt;因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。&lt;/p&gt;
+&lt;p&gt;通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。&lt;/p&gt;
+&lt;p&gt;另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。&lt;/p&gt;
+&lt;p&gt;值得注意的是，本文目标是优化邻域生成序列的极大似然估计即&lt;strong&gt;条件强度函数&lt;/strong&gt;（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数&lt;/p&gt;
+&lt;h2 id=&#34;model&#34;&gt;Model&lt;/h2&gt;
+&lt;h3 id=&#34;definition&#34;&gt;Definition&lt;/h3&gt;
+&lt;p&gt;本文通过跟踪节点邻域的形成来捕获网络的形成过程。&lt;br&gt;
+&lt;strong&gt;Definition 1&lt;/strong&gt; : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。&lt;/p&gt;
+&lt;p&gt;因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Definition 2&lt;/strong&gt; : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&amp;hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&amp;hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。&lt;/p&gt;
+&lt;h3 id=&#34;hawkes-process&#34;&gt;Hawkes Process&lt;/h3&gt;
+&lt;p&gt;点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。&lt;br&gt;
+对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：&lt;br&gt;
+$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&amp;lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$&lt;br&gt;
+其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&amp;lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：&lt;br&gt;
+$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$&lt;br&gt;
+其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。&lt;br&gt;
+综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。&lt;/p&gt;
+&lt;p&gt;如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。&lt;/p&gt;
+&lt;p&gt;直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。&lt;br&gt;
+因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$. 这就与传统的NE方法差不多了。。。&lt;/p&gt;</description>
+      <content:encoded><![CDATA[<p>论文地址：<a href="https://dl.acm.org/citation.cfm?id=3220054">HTNE</a></p>
+<h2 id="introduction">Introduction</h2>
+<p>本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。</p>
+<p><img loading="lazy" src="/posts/2019-01-17-HTNE/Fig1.png" alt="你想输入的替代文字"  />
+</p>
+<p>另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。</p>
+<p>因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。</p>
+<p>通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。</p>
+<p>另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。</p>
+<p>值得注意的是，本文目标是优化邻域生成序列的极大似然估计即<strong>条件强度函数</strong>（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数</p>
+<h2 id="model">Model</h2>
+<h3 id="definition">Definition</h3>
+<p>本文通过跟踪节点邻域的形成来捕获网络的形成过程。<br>
+<strong>Definition 1</strong> : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。</p>
+<p>因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。</p>
+<p><strong>Definition 2</strong> : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。</p>
+<h3 id="hawkes-process">Hawkes Process</h3>
+<p>点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。<br>
+对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：<br>
+$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$<br>
+其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：<br>
+$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$<br>
+其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。<br>
+综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。</p>
+<p>如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。</p>
+<p>直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。<br>
+因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$. 这就与传统的NE方法差不多了。。。</p>
+<h3 id="attention">Attention</h3>
+<p>根据论文中（3）式，可以看出，$\sum_{t_h&lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$这一部分主要描述了历史邻居对当前邻居的影响，但是完全忽略了源节点$x$，因为源节点$x$的变化也会影响到历史邻居对当前邻居的亲近程度(affinity)。因此，本文引入了<strong>attention model</strong>。as follows：<br>
+$$w_{h,x} = \frac{\exp(-||\mathbf{e}_x-\mathbf{e}_h||^2)}{\sum_{h&rsquo;}{\exp(-||\mathbf{e}_x-\mathbf{e}_{h&rsquo;}||^2)}}$$<br>
+这是一个softmax函数 来根据源节点$x$的不同为它的邻居赋予不同权重。</p>
+<p>最后， 历史邻居与当前邻居的连接紧密程度可以表示为:
+$$\alpha_{h,y}=w_{h,x}f(\mathbf{e}_h,\mathbf{e}_y)$$</p>
+<h3 id="optimization">Optimization</h3>
+<p>目标函数即为给定节点$x$以及基于邻域形成序列的霍克斯过程, 生成节点$y$的条件概率。 公式如下：
+$$p(y|x, \mathcal{H}_x(t)) = \frac{\lambda_{y|x}(t)}{\sum_{y&rsquo;}{\lambda_{y&rsquo;|x}(t)}}$$
+目标函数即为所有节点对的极大似然：
+$$\log \mathcal{L}=\sum_{x\in{\mathcal{V}}}{\sum_{y\in{\mathcal{H}_x}}}{\log{p(y|x,\mathcal{H}(t))}}$$</p>
+<p>最后，由于softmax过程是calculating expensive，所以采用负采样优化损失函数。</p>
 ]]></content:encoded>
     </item>
     
@@ -5528,11 +6195,61 @@ $$
       <pubDate>Mon, 02 Apr 2018 15:43:44 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/pic-closed-edge/</guid>
-      <description>最近遇到一个问题，如果需要计算区域内的面积，比如说要计算下图中类似三角形区域内的面积
-之前的做法是用Canny算子提取边缘，再用HoughLines拟合直线，然后求出交点坐标并计算三角形面积，其中，边缘提取后的图像如下图所示：
-我们可以很明显的看出这不是一个标准的三角形，所以如果想要更精确的获得三角形，就需要对图片进行轮廓提取，然后计算轮廓内区域的面积。这里给出代码：
-{% codeblock %}
-import cv2 import numpy as np # Input image img = cv2.imread(&#39;cut.jpeg&#39;, cv2.IMREAD_GRAYSCALE) # Needed due to JPG artifacts _, temp = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY) # Dilate to better detect contours temp = cv2.dilate(temp, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))) # Find largest contour _, cnts, _ = cv2.findContours(temp, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE) largestCnt = [] for cnt in cnts: if len(cnt) &amp;gt; len(largestCnt): largestCnt = cnt # Determine center of area of largest contour M = cv2.</description>
+      <description>&lt;p&gt;最近遇到一个问题，如果需要计算区域内的面积，比如说要计算下图中类似三角形区域内的面积&lt;br&gt;
+&lt;img loading=&#34;lazy&#34; src=&#34;https://JhuoW.github.io/posts/2019-04-02-Pic-closed-edge/1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;br&gt;
+之前的做法是用Canny算子提取边缘，再用HoughLines拟合直线，然后求出交点坐标并计算三角形面积，其中，边缘提取后的图像如下图所示：&lt;br&gt;
+&lt;img loading=&#34;lazy&#34; src=&#34;https://JhuoW.github.io/posts/2019-04-02-Pic-closed-edge/edge.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;br&gt;
+我们可以很明显的看出这不是一个标准的三角形，所以如果想要更精确的获得三角形，就需要对图片进行轮廓提取，然后计算轮廓内区域的面积。这里给出代码：&lt;br&gt;
+{% codeblock %}&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import cv2
+import numpy as np
+
+# Input image
+img = cv2.imread(&#39;cut.jpeg&#39;, cv2.IMREAD_GRAYSCALE)
+
+# Needed due to JPG artifacts
+_, temp = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY)
+
+# Dilate to better detect contours
+temp = cv2.dilate(temp, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+
+# Find largest contour
+_, cnts, _ = cv2.findContours(temp, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+largestCnt = []
+for cnt in cnts:
+    if len(cnt) &amp;gt; len(largestCnt):
+        largestCnt = cnt
+
+# Determine center of area of largest contour
+M = cv2.moments(largestCnt)
+x = int(M[&amp;quot;m10&amp;quot;] / M[&amp;quot;m00&amp;quot;])
+y = int(M[&amp;quot;m01&amp;quot;] / M[&amp;quot;m00&amp;quot;])
+
+# Initiale mask for flood filling
+width, height = temp.shape
+mask = img2 = np.ones((width + 2, height + 2), np.uint8) * 255
+mask[1:width, 1:height] = 0
+
+# Generate intermediate image, draw largest contour, flood filled
+temp = np.zeros(temp.shape, np.uint8)
+temp = cv2.drawContours(temp, largestCnt, -1, 255, cv2.FILLED)
+_, temp, mask, _ = cv2.floodFill(temp, mask, (x, y), 255)
+temp = cv2.morphologyEx(temp, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+
+# Count pixels in desired region
+area = cv2.countNonZero(temp)
+
+# Put result on original image
+img = cv2.putText(img, str(area), (x, y), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, 255)
+
+cv2.imshow(&#39;Input&#39;, img)
+cv2.imshow(&#39;Temp image&#39;, temp)
+
+cv2.waitKey(0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;{% endcodeblock %}&lt;/p&gt;</description>
       <content:encoded><![CDATA[<p>最近遇到一个问题，如果需要计算区域内的面积，比如说要计算下图中类似三角形区域内的面积<br>
 <img loading="lazy" src="/posts/2019-04-02-Pic-closed-edge/1.png" alt=""  />
 <br>
@@ -5743,24 +6460,29 @@ $$
       <pubDate>Sun, 28 Jan 2018 00:00:00 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/optimizer/</guid>
-      <description>最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。
-Gradient Desent(梯度下降) 目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。
-(1).梯度下降的原理：目标函数（损失函数）$f(x)$关于参数$x$的梯度是损失函数上升最快的方向。所以只要让$x$沿梯度的反方向走，就可以缩小目标函数。
-(2).目标函数关于参数$x$在epoch $t$时的梯度：
-$$g_t = \nabla_x f(x_t)$$
-(3).我们要最小化$f(x)$, 所以参数$x$需要往梯度的反方向移动：
-$$x_{t+1} = x_t-\eta_t g_t$$
-其中$x_{t+1}$为$t+1$时刻的参数值。
-Stochastic Gradient Desent(随机梯度下降) 梯度下降存在的问题有鞍点问题以及无法找到全局最优解的问题。所以引入SGD。
-首先给出无偏估计的定义，稍后会用到：
-无偏估计：估计量的均值等于真实值，即具体每一次估计值可能大于真实值，也可能小于真实值，而不能总是大于或小于真实值（这就产生了系统误差）。
-深度学习中，目标函数通常是训练集中各个样本损失的平均，假设一个batch的大小为$n$，那么训练这个batch的损失就是$f_{batch}(x) = \frac{\displaystyle\sum_{i=1}^{n} f_i(x)}{n}$ , 所以目标函数对$x$的梯度就是：
-$$\nabla f_{batch}(x) = \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x)$$
-如果使用GD来优化：
-$$x_{t+1} = x_{t}- \eta_t \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x) \ = x_t-\eta_t \nabla f_{batch}(x)$$ 上式可以看出，当训练样本非常大时，n也将边的非常大，那么梯度计算的计算开销就比较大。
-随机梯度下降（SGD）的思想是： 以一个batch为例，这个batch中有n个样本，每个样本$i \in {1, \cdots,n}$, 每次从中随机选取一个样本来更新参数$x$。
-$$x_{t+1} = x_{t}-\eta_t \nabla f_i(x)$$
-这样就更新了一个batch的参数。 对比上面两个式子可以看出SGD降低了计算复杂度。上面两个式子是等价的，因为随机梯度$\nabla f_i(x)$是对梯度$\nabla f_{batch}(x)$的无偏估计，因为：</description>
+      <description>&lt;p&gt;最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。&lt;/p&gt;
+&lt;h1 id=&#34;gradient-desent梯度下降&#34;&gt;Gradient Desent(梯度下降)&lt;/h1&gt;
+&lt;p&gt;目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。&lt;br&gt;
+(1).梯度下降的原理：目标函数（损失函数）$f(x)$关于参数$x$的梯度是损失函数上升最快的方向。所以只要让$x$沿梯度的反方向走，就可以缩小目标函数。&lt;br&gt;
+(2).目标函数关于参数$x$在epoch $t$时的梯度：&lt;br&gt;
+$$g_t = \nabla_x f(x_t)$$&lt;br&gt;
+(3).我们要最小化$f(x)$, 所以参数$x$需要往梯度的反方向移动：&lt;br&gt;
+$$x_{t+1} = x_t-\eta_t g_t$$&lt;br&gt;
+其中$x_{t+1}$为$t+1$时刻的参数值。&lt;/p&gt;
+&lt;h2 id=&#34;stochastic-gradient-desent随机梯度下降&#34;&gt;Stochastic Gradient Desent(随机梯度下降)&lt;/h2&gt;
+&lt;p&gt;梯度下降存在的问题有鞍点问题以及无法找到全局最优解的问题。所以引入SGD。&lt;br&gt;
+首先给出无偏估计的定义，稍后会用到：&lt;br&gt;
+&lt;a href=&#34;https://www.cnblogs.com/notwice/p/8538539.html&#34;&gt;无偏估计&lt;/a&gt;：估计量的均值等于真实值，即具体每一次估计值可能大于真实值，也可能小于真实值，而不能总是大于或小于真实值（这就产生了系统误差）。&lt;/p&gt;
+&lt;p&gt;深度学习中，目标函数通常是训练集中各个样本损失的平均，假设一个batch的大小为$n$，那么训练这个batch的损失就是$f_{batch}(x) = \frac{\displaystyle\sum_{i=1}^{n} f_i(x)}{n}$ , 所以目标函数对$x$的梯度就是：&lt;br&gt;
+$$\nabla f_{batch}(x) = \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x)$$&lt;br&gt;
+如果使用GD来优化：&lt;br&gt;
+$$x_{t+1} = x_{t}- \eta_t \frac{1}{n} \displaystyle\sum_{i=1}^n \nabla f_i(x) \ = x_t-\eta_t \nabla f_{batch}(x)$$
+上式可以看出，当训练样本非常大时，n也将边的非常大，那么梯度计算的计算开销就比较大。&lt;/p&gt;
+&lt;p&gt;随机梯度下降（SGD）的思想是： 以一个batch为例，这个batch中有n个样本，每个样本$i \in {1, \cdots,n}$, 每次从中随机选取一个样本来更新参数$x$。&lt;br&gt;
+$$x_{t+1} = x_{t}-\eta_t \nabla f_i(x)$$&lt;br&gt;
+这样就更新了一个batch的参数。 对比上面两个式子可以看出SGD降低了计算复杂度。上面两个式子是等价的，因为随机梯度$\nabla f_i(x)$是对梯度$\nabla f_{batch}(x)$的无偏估计，因为：&lt;br&gt;
+$$E_i \nabla f_i(\boldsymbol{x}) = \frac{1}{n} \sum_{i = 1}^n \nabla f_i(\boldsymbol{x}) = \nabla f_{batch}(\boldsymbol{x})$$&lt;br&gt;
+符合无偏估计的定义。&lt;/p&gt;</description>
       <content:encoded><![CDATA[<p>最近想好好学一学Deep Learning中的优化算法（不能一直Adam了），看了一些文献，用这篇文章做个总结笔记。</p>
 <h1 id="gradient-desent梯度下降">Gradient Desent(梯度下降)</h1>
 <p>目标函数$f(x)$，其中$x$为模型的待优化参数，对于每个epoch $t$, $\eta_t$表示第$t$个epoch的步长。$x_t$第$t$个epoch时的参数。<br>
@@ -5855,75 +6577,6 @@ $$\theta_{new} = \theta - \frac{\eta}{\sqrt{s+\varepsilon}} \odot \nabla J(\thet
 <a href="https://zhuanlan.zhihu.com/p/31630368">https://zhuanlan.zhihu.com/p/31630368</a><br>
 <a href="https://zh.gluon.ai/">https://zh.gluon.ai/</a><br>
 <a href="https://blog.csdn.net/tsyccnh/article/details/76270707">https://blog.csdn.net/tsyccnh/article/details/76270707</a></p>
-]]></content:encoded>
-    </item>
-    
-    <item>
-      <title>SIGIR2018 《HTNE Embedding Temporal Network via Neighborhood Formation》 Reading Notes</title>
-      <link>https://JhuoW.github.io/posts/htne/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://JhuoW.github.io/posts/htne/</guid>
-      <description>论文地址：HTNE
-Introduction 本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。
-另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。
-因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。
-通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。
-另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。
-值得注意的是，本文目标是优化邻域生成序列的极大似然估计即条件强度函数（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数
-Model Definition 本文通过跟踪节点邻域的形成来捕获网络的形成过程。
-Definition 1 : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。
-因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。
-Definition 2 : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&amp;hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&amp;hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。
-Hawkes Process 点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。
-对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：
-$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&amp;lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$
-其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&amp;lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：
-$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$
-其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。
-综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。
-如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。
-直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。
-因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$.</description>
-      <content:encoded><![CDATA[<p>论文地址：<a href="https://dl.acm.org/citation.cfm?id=3220054">HTNE</a></p>
-<h2 id="introduction">Introduction</h2>
-<p>本文出发点在于捕获动态网络中节点和边的变化来在embedding中保持网络结构，举个简单的例子来说，如Fig. 1所示，是一个共同作者网络图。数字标注的节点是author，方框内是co-authored paper. 可以看到图中每个节点每条边加入网络中的时间是不同的。根据图中的信息，可以分析出例如前期1和2，3合作较紧密，后期转为了6,7。 并且(b)中所示，同一条边可能多次出现，这就比传统的单条边拥有更多语义信息。</p>
-<p><img loading="lazy" src="/posts/2019-01-17-HTNE/Fig1.png" alt="你想输入的替代文字"  />
-</p>
-<p>另外，最近也有方法对动态网络的embedding做了研究，比如[29][30]的方法。但是他们的目的是将时间线分段为固定时间窗来对动态建模，但是这些方法依然没有考虑动态过程也就是网络随时序动态变化的信息。</p>
-<p>因此，本文提出了基于霍克斯过程（Hawkes process）的时序网络表示学习方法，该方法是由序列事件驱动的（也就是序列的变化） 如Fig .1(b)所示 (b)图为节点1的邻域生成序列。霍克斯过程的思路是说历史上发生的事情对未来的概率密度函数有影响，只是随着时间流逝这种影响会逐渐减弱（Decay）。本文提出用霍克斯过程来捕获时间序列（也就是邻域生成序列）的激励效应。 尤其是历史事件对当前事件的影响。</p>
-<p>通过把成对的向量映射到基本速率和历史影响，从而把低维向量被输入Hawkes过程。</p>
-<p>另外历史邻居当前邻居的影响，不同节点是不同的，所以本文使用attention model来学习历史邻居对当前邻居影响的量化表示。</p>
-<p>值得注意的是，本文目标是优化邻域生成序列的极大似然估计即<strong>条件强度函数</strong>（conditional intensity function）来邻域生成序列的到达率，而不是条件概率函数</p>
-<h2 id="model">Model</h2>
-<h3 id="definition">Definition</h3>
-<p>本文通过跟踪节点邻域的形成来捕获网络的形成过程。<br>
-<strong>Definition 1</strong> : 时序网络 $G=(V,E,A)$, $A$ 是事件集， 边$(x,y) \in E$ 被表示为按时间顺序的时间序列，例如， $\mathbf{a}_{x,y}={a_1\to{a_2}\to{…}}\subset\mathcal{A}$, $a_i$ 表示时间$t_i$时刻的一个事件。</p>
-<p>因此，网络中节点的相邻邻居可以根据与邻居的交互事件的时序被组织为序列，表示邻域形成过程。</p>
-<p><strong>Definition 2</strong> : 对于给定节点$x$,邻域表示为$N(x)={y_i|i=1,2&hellip;}$.$x$的目标邻居到达事件可以表示为${x:(y_1,t_1)\to(y_2,t_2)\to&hellip;\to(y_n,t_n)}$,即邻域形成序列。每个元组表示在时间戳$t_i$时，$x$与$y_i$建立边。</p>
-<h3 id="hawkes-process">Hawkes Process</h3>
-<p>点过程（Point Process）通过假设t时刻前的历史事件可以影响当前事件的发生，来对离散序列事件建模。<br>
-对于一个给定的节点$x \in V$, 在$x$的邻域生成序列中，到达目标邻居$y$的条件强度函数（或者可以说是$x$与$y$有边的可能性强度）可以表示为：<br>
-$$ \tilde{\lambda}_{y|x}(t)=\mu_{x,y}+\sum_{t_h&lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$$<br>
-其中，$\mu_{x,y}$表示构建一条连接节点$x$和$y$的基本率(base rate)，$h$是t时刻前的历史目标节点，$\alpha_{h,y}$表示一个$t_h$时刻的历史目标节点$h$（该节点是$x$的邻居）对当前邻居$y$的影响强度。$\sum_{t_h&lt;t}$表示遍历t时刻前$x$的所有邻居。$\kappa(t-t_{h})$表示随时间的衰减，可以表示成指数函数：<br>
-$$\kappa(t-t_h)=\exp(-\delta_s(t-t_h))$$<br>
-其中，减少率 $\delta$是一个源依赖参数，对于每一个源节点（每个序列的根），历史邻居对当前邻居形成的影响强度是不同的。具体来说，如果$\kappa$越大，说明$t_h$时刻的邻居对当前邻居的影响越大，即 $-\delta_s(t-t_h)$越大, $\delta_s(t-t_h)$越小，因为$t$是当前时刻的邻居，所以当$t_h$越接近当前邻居时刻时，$\kappa$越大，这就说明了里当前时刻之前越近的邻居，对当前时刻邻居的影响越大。<br>
-综上所述，$\kappa$的具体意义是随时间衰减的影响，其中$\delta_s$参数表示对于不同的源节点，影响是不同的。</p>
-<p>如果$\tilde{\lambda}_{y|x}(t)$ 越大，说明x和y有边的可能性也越大。</p>
-<p>直观的来看，基本率（base rate）$\mu_{x,y}$揭示了节点x和节点y之间的连接可能性。为了简洁，本文使用了**负平方欧式距离（negative squared Euclidean）**来反映表示向量间的相似度: $\mu_{x,y}=f(\mathbf{e}_x,\mathbf{e}_y)=-||\mathbf{e}_x-\mathbf{e}_y||^2$。同样的，在计算历史邻居$h$对当前邻居$y$的影响时，也采用这个方法，即： $\alpha_{h,y}=f(\mathbf{e}_h,\mathbf{e}_y)=-||\mathbf{e}_h-\mathbf{e}_y||^2$。<br>
-因为条件强度函数必须为正，所以使用如下公式: $\lambda_{y|x}(t)=\exp(\tilde\lambda_{y|x}(t))$。$exp()$对原函数进行了归一化，所以问题就转化为了given $x$, maximize likelihood: $p(y|x)$. 这就与传统的NE方法差不多了。。。</p>
-<h3 id="attention">Attention</h3>
-<p>根据论文中（3）式，可以看出，$\sum_{t_h&lt;t}{\alpha_{h,y}\kappa(t-t_{h})}$这一部分主要描述了历史邻居对当前邻居的影响，但是完全忽略了源节点$x$，因为源节点$x$的变化也会影响到历史邻居对当前邻居的亲近程度(affinity)。因此，本文引入了<strong>attention model</strong>。as follows：<br>
-$$w_{h,x} = \frac{\exp(-||\mathbf{e}_x-\mathbf{e}_h||^2)}{\sum_{h&rsquo;}{\exp(-||\mathbf{e}_x-\mathbf{e}_{h&rsquo;}||^2)}}$$<br>
-这是一个softmax函数 来根据源节点$x$的不同为它的邻居赋予不同权重。</p>
-<p>最后， 历史邻居与当前邻居的连接紧密程度可以表示为:
-$$\alpha_{h,y}=w_{h,x}f(\mathbf{e}_h,\mathbf{e}_y)$$</p>
-<h3 id="optimization">Optimization</h3>
-<p>目标函数即为给定节点$x$以及基于邻域形成序列的霍克斯过程, 生成节点$y$的条件概率。 公式如下：
-$$p(y|x, \mathcal{H}_x(t)) = \frac{\lambda_{y|x}(t)}{\sum_{y&rsquo;}{\lambda_{y&rsquo;|x}(t)}}$$
-目标函数即为所有节点对的极大似然：
-$$\log \mathcal{L}=\sum_{x\in{\mathcal{V}}}{\sum_{y\in{\mathcal{H}_x}}}{\log{p(y|x,\mathcal{H}(t))}}$$</p>
-<p>最后，由于softmax过程是calculating expensive，所以采用负采样优化损失函数。</p>
 ]]></content:encoded>
     </item>
     

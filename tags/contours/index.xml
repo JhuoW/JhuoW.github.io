@@ -17,11 +17,61 @@
       <pubDate>Mon, 02 Apr 2018 15:43:44 +0000</pubDate>
       
       <guid>https://JhuoW.github.io/posts/pic-closed-edge/</guid>
-      <description>最近遇到一个问题，如果需要计算区域内的面积，比如说要计算下图中类似三角形区域内的面积
-之前的做法是用Canny算子提取边缘，再用HoughLines拟合直线，然后求出交点坐标并计算三角形面积，其中，边缘提取后的图像如下图所示：
-我们可以很明显的看出这不是一个标准的三角形，所以如果想要更精确的获得三角形，就需要对图片进行轮廓提取，然后计算轮廓内区域的面积。这里给出代码：
-{% codeblock %}
-import cv2 import numpy as np # Input image img = cv2.imread(&#39;cut.jpeg&#39;, cv2.IMREAD_GRAYSCALE) # Needed due to JPG artifacts _, temp = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY) # Dilate to better detect contours temp = cv2.dilate(temp, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))) # Find largest contour _, cnts, _ = cv2.findContours(temp, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE) largestCnt = [] for cnt in cnts: if len(cnt) &amp;gt; len(largestCnt): largestCnt = cnt # Determine center of area of largest contour M = cv2.</description>
+      <description>&lt;p&gt;最近遇到一个问题，如果需要计算区域内的面积，比如说要计算下图中类似三角形区域内的面积&lt;br&gt;
+&lt;img loading=&#34;lazy&#34; src=&#34;https://JhuoW.github.io/posts/2019-04-02-Pic-closed-edge/1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;br&gt;
+之前的做法是用Canny算子提取边缘，再用HoughLines拟合直线，然后求出交点坐标并计算三角形面积，其中，边缘提取后的图像如下图所示：&lt;br&gt;
+&lt;img loading=&#34;lazy&#34; src=&#34;https://JhuoW.github.io/posts/2019-04-02-Pic-closed-edge/edge.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;br&gt;
+我们可以很明显的看出这不是一个标准的三角形，所以如果想要更精确的获得三角形，就需要对图片进行轮廓提取，然后计算轮廓内区域的面积。这里给出代码：&lt;br&gt;
+{% codeblock %}&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import cv2
+import numpy as np
+
+# Input image
+img = cv2.imread(&#39;cut.jpeg&#39;, cv2.IMREAD_GRAYSCALE)
+
+# Needed due to JPG artifacts
+_, temp = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY)
+
+# Dilate to better detect contours
+temp = cv2.dilate(temp, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+
+# Find largest contour
+_, cnts, _ = cv2.findContours(temp, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+largestCnt = []
+for cnt in cnts:
+    if len(cnt) &amp;gt; len(largestCnt):
+        largestCnt = cnt
+
+# Determine center of area of largest contour
+M = cv2.moments(largestCnt)
+x = int(M[&amp;quot;m10&amp;quot;] / M[&amp;quot;m00&amp;quot;])
+y = int(M[&amp;quot;m01&amp;quot;] / M[&amp;quot;m00&amp;quot;])
+
+# Initiale mask for flood filling
+width, height = temp.shape
+mask = img2 = np.ones((width + 2, height + 2), np.uint8) * 255
+mask[1:width, 1:height] = 0
+
+# Generate intermediate image, draw largest contour, flood filled
+temp = np.zeros(temp.shape, np.uint8)
+temp = cv2.drawContours(temp, largestCnt, -1, 255, cv2.FILLED)
+_, temp, mask, _ = cv2.floodFill(temp, mask, (x, y), 255)
+temp = cv2.morphologyEx(temp, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
+
+# Count pixels in desired region
+area = cv2.countNonZero(temp)
+
+# Put result on original image
+img = cv2.putText(img, str(area), (x, y), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, 255)
+
+cv2.imshow(&#39;Input&#39;, img)
+cv2.imshow(&#39;Temp image&#39;, temp)
+
+cv2.waitKey(0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;{% endcodeblock %}&lt;/p&gt;</description>
       <content:encoded><![CDATA[<p>最近遇到一个问题，如果需要计算区域内的面积，比如说要计算下图中类似三角形区域内的面积<br>
 <img loading="lazy" src="/posts/2019-04-02-Pic-closed-edge/1.png" alt=""  />
 <br>

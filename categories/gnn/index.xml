@@ -10,7 +10,204 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 May 2024 01:04:50 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/gnn/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 20 May 2025 14:22:08 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/gnn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>KDD2023《All in One：Multi-Task Prompting for Graph Neural Networks》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/allinone/</link>
+      <pubDate>Tue, 20 May 2025 14:22:08 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/allinone/</guid>
+      <description>KDD2023 &amp;#34;All in One：Multi-Task Prompting for Graph Neural Networks&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p>图神经网络的预训练任务和下游任务之间可能存在较大gap，直接将预训练模型应用在下游任务上可能会产生负迁移现象（“negative transfer”）。例如，binary edge prediction经常用于pretrain graph model。这样的预训练模型使得有边连接的节点在representation space中接近。但是下游任务可能是node-level 或graph-level tasks，下游的任务如果是节点分类任务，那么预训练模型需要针对额外的节点类别标签搜索更高维度的参数空间。如果图中相连节点的类别不同（heterophilic），那么基于edge prediction pretrained的模型会对下游任务参数负面效果。</p>
+<p>为了解决上述问题，一个潜在的方向是将“pretraining and fine-tuning”拓展为“pretraining, <strong>prompting</strong>, and fine-tuning”。例如在自然语言处理中，如果要赋予预训练语言模型预测句子情感的能力（sentiment analysis），可以通过prompt来完成，而不需要优化pretrained model。</p>
+<p><img loading="lazy" src="/posts/2025-05-20-AllinOne/image.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>以上图为例，对于一个fronzen LLM（参数固定），如果要为这个模型赋予情感分析的能力，我们可以额外训练一个最佳的prompt，训练数据为prompt parameters，要求这个prompt tokens在tasker $\phi$的优化下，生成的下一个token是正确的情感（label为excited）。即训练得到一个最佳的prompt tokens，比如训练得到的最佳prompt tokens是“I feel so [mask]”，使得frozen LLM应用在“KDD2023 will witness many high-quality papers. I feel so ” 这个句子上时，可以将下一个词预测为情感词，这样LLM在输入包含prompt tokens的情况下，可以具备预测句子情感的能力。也就是说， <strong>Prompt Learning的目的是训练得到一堆tokens，使得这些tokens与原来的context拼起来可以使得LLM具备新的能力。</strong></p>
+<p><img loading="lazy" src="/posts/2025-05-20-AllinOne/1.png#center" alt="你想输入的替代文字"  />
+</p>
+<p><strong>这篇文章的目的是在图上做Prompt Learning，也就是在训练一个prompt graph，使得现有图拼上这个prompt graph后，预训练的GNN可以在新的任务上（预训练阶段没有接触过的任务上）也表现的较好。</strong> 但是在graph上做Prompt Learning存在以下挑战：</p>
+<ul>
+<li>自然语言处理中，prompt tokens是一个一维线性的句子，可以放在content的开头或结尾，但是在graph中，节点是非欧结构，因此如何组织prompt tokens，以及如何将graph prompts与input graph结合是一个挑战。</li>
+<li>在自然语言处理中，类似于情感分析，和问答任务，这些任务都可以简单的重构为next token prediction（单词预测）的任务，所以只需要使用单词预测来训练prompt就可以。但是在图中，节点级任务、边级任务和图级任务难以统一成一种形式。因此如何将各种prompt任务统一来训练graph prompt也是一个挑战。</li>
+</ul>
+<p>训练好prompt token的向量化信息、连接结构、以及插入到原图的方式，然后Frozen Pretrained Model应用在这个combined graph上后，就可以为Pretrained Model赋予处理新任务的能力。</p>
+<h2 id="reformulating-downstream-tasks">Reformulating Downstream Tasks</h2>
+<p>将节点级和边级的下游任务统一为induced graph的标签预测问题。</p>
+<p>对于节点预测任务，将它重构为图分类任务：</p>
+<p><img loading="lazy" src="/posts/2025-05-20-AllinOne/2.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>将节点标签设置为它的 $k$-hop诱导子图的标签。</p>
+<p>将边预测（存在性预测和类别预测都可以，即二分类和多分类）任务也重构为图分类任务，如下：</p>
+<p><img loading="lazy" src="/posts/2025-05-20-AllinOne/3.png#center" alt="你想输入的替代文字"  />
+</p>
+<h2 id="prompt-graph-design">Prompt Graph Design</h2>
+<p><img loading="lazy" src="/posts/2025-05-20-AllinOne/4.png#center" alt="你想输入的替代文字"  />
+</p>
+<p><strong>Prompt Tokens</strong> 首先Prompt graph 定义为 $\mathcal{G}_p(\mathcal{P},\mathcal{S})$，其中每个token $p_i \in \mathcal{P}$是Prompt graph中的节点，它的特征是 $\mathbf{p}_i$，维度与node features相同。</p>
+<p><strong>Token Structures</strong> 每个tokens的特征 $\mathbf{p}_i$是随机初始化可学习的，然后可以通过计算相似度并用sigmoid和相应的阈值来控制 $\mathcal{G}_p$的结构。然后可以计算 $\mathbf{p}_k$和节点 $\mathbf{x}_i$之间的相似度来确定该prompt node如何将自身信息与节点 $\mathbf{x}_i$的信息结合，来赋予预训练模型处理节点 $i$相应任务的能力。
+$$
+w_{i k}= \begin{cases}\sigma\left(\mathrm{p}_k \cdot \mathrm{x}_i^T\right) &amp; \sigma\left(\mathrm{p}_k \cdot \mathrm{x}_i^T\right)&gt;\delta \\ 0 &amp; \text { otherwise }\end{cases}
+$$</p>
+<p>通过 $\hat{\mathbf{x}}_i=\mathbf{x}_i+\sum_{k=1}^{|\mathcal{P}|} w_{i k} \mathbf{p}_k$ 来为节点 $i$添加提示。</p>
+<h2 id="如何训练-prompt-graph使其可以作为预训练模型的有效提示multi-task-prompting-via-meta-learning">如何训练 Prompt Graph，使其可以作为预训练模型的有效提示：Multi-task Prompting via Meta Learning</h2>
+<p>学习最好的Prompt，使得该Prompt可以帮助Pretrained Model更好的适应下游任务。</p>
+<p><strong>Phase 1</strong> 有一些 Source Task去训练Prompt 的初始值。</p>
+<p><strong>Phase 2</strong> 对Target Task做测试。</p>
+<p>具体来说，首先对于要训练的prompt graph $\theta$ （即所有token的特征）让它在多个training task上训练，如下图所示，又3个节点分类的tasks，每个tasks里又自己的训练集（support set）和测试集（query set）。每个task都有一个共同的起点，在几个tasks上训练上训练后，每个tasks上有个优化后的task-specific prompt (Prompt 1, Prompt 2, Prompt 3)。</p>
+<p><img loading="lazy" src="/posts/2025-05-20-AllinOne/5.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>在更新了之后，评估组合起来的Prompt是否会让整体的性能更好，如下图所示，把所有task-specific prompt组合起来，来看组合后的prompt是不是足够好。</p>
+<p><img loading="lazy" src="/posts/2025-05-20-AllinOne/6.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>如果当前的Initial prompt训练出来的模型在三个tasks上不够好，那么换一个Initial Prompt，直到某个Initial Prompt在所有training tasks经过训练后都表现的较好时，就说明这是一个 <strong>较好的初始prompt (训练起点)</strong>，它适合做training tasks的初始化prompt。</p>
+<p>在Meta Training 结束后，我们可以得到一个较好的prompt初始化值，即上图中的Adapt prompt initialization。</p>
+<p>在Meta Testing阶段，将我们通过Training Tasks学到的最佳初始Prompt在Test tasks的support set上做微调，然后在Test Task的query set上验证prompt initialization的效果。</p>
+<p><img loading="lazy" src="/posts/2025-05-20-AllinOne/7.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>通过上面方式得到的prompt可以作为graph prompt与input graph 结合，使其具备link prediction和node classification的能力。</p>
+<p><strong>可以看作时学习一个图增强，使得预训练的图模型在这个增强图上可以适用于更多任务。</strong></p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>NeurIPS2023《Evaluating GNN Performance On Unseen Graphs Without Labels》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/gnn-evaluator/</link>
+      <pubDate>Tue, 20 May 2025 13:45:31 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/gnn-evaluator/</guid>
+      <description>NeurIPS2023 &amp;#34;Evaluating GNN Performance On Unseen Graphs Without Labels&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p><a href="https://arxiv.org/abs/2310.14586">Paper</a></p>
+<p>目的：在一个图上训练好的GNN，在未知的testing graph上的结果由于training和test数据分布的不同，可能存在很大的不确定性。通常来说，in-service的GNN在已知graph with labels的图上训练好后，需要部署在label未知的testing graph上，但是由于label未知，无法估计GNN在testing graph上的效果。</p>
+<p><img loading="lazy" src="/posts/2025-05-20-GNNEvaluator/1.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>如上图所示，对于一个已经在训练图 $\mathcal{S}=(\mathbf{X}, \mathbf{A}, \mathbf{Y})$上well-trained &amp; fixed GNN model  $\mathrm{GNN}_{\mathcal{S}}^\star$，并且将它deploy in service。对于一个不知道label的测试图 $\mathcal{T}$，由于不知道label，如何评估GNN在该测试图上的性能是一个挑战。由于可见的训练graph和不可见的test graph的分布差异可能很大，因此GNN评估器<strong>GNNEvaluator</strong>需要充分学习多样化的图结构with diverse node context and graph structure distributions，从而可以评估不同数据分布的测试图潜在的效果。</p>
+<p>假设：<strong>Covariate shift</strong> between the training graph $\mathcal{S}$ and the label-unlabeled graph $\mathcal{T}$ with respect to the label space。 即无论输入图是什么样的，输出的label space相同。</p>
+<h3 id="如何生成数量足够的graph-set来训练gnnevaluator-f_theta">如何生成数量足够的graph set来训练GNNEvaluator $f_\theta$?</h3>
+<p>Solution：采样一个seed subgraph $\mathcal{S}_{seed}$ from the observed training graph $\mathcal{S}$。采样原则是seed graph 要和 training graph之间满足相同的label space，所以原图中采样可以使采样图$\mathcal{S}_{seed}$的分布尽可能少的偏离原图，从而满足Covariate shift。如下图左边所示。</p>
+<p><img loading="lazy" src="/posts/2025-05-20-GNNEvaluator/2.png#center" alt="你想输入的替代文字"  />
+</p>
+<p>在得到采样seed graph $\mathcal{S}_{seed}$后，对 $\mathcal{S}_{seed}$做 $K$次增强，其中涉及的增强包括 $\texttt{EdgeDrop}$， $\texttt{NodeDrop(Subgraph)}$， $\texttt{AttrMask}$和 $\texttt{NodeMix}$。选择哪种增强有特定的概率 $\epsilon$。基于seed graph  $\mathcal{S}_{seed}$，可以得到一个 meta-graph集合 $\mathcal{G}_{\text{meta}}=\left\{g_{\text {meta }}^i\right\}_{i=1}^K$，其中的每个meta-graph都是由seed graph 扰动而来，和原图具有相同的label space。每个meta-graph $g_{\text {meta }}^i=\left\{\mathbf{X}_{\text {meta }}^i, \mathbf{A}_{\text {meta }}^i, \mathbf{Y}_{\text {meta }}^i\right\}$，分别表示meta-graph的节点特征，结构和标签。通过这种方式可以为原图生成label space相同，但结构/特征都不相同图，拓展了差异性，基于这些图学习到的GNNEvaluator可以评估不同分布图的效果。</p>
+<h3 id="如何学习well-trained-gnn在不同分布图上的差异">如何学习well-trained GNN在不同分布图上的差异？</h3>
+<p>给定一个在 training graph $\mathcal{S}$上 well-trained的GNN模型 $\mathbf{Z}_{\mathcal{S}}^\star=\operatorname{GNN}_{\mathcal{S}}^\star(\mathbf{X}, \mathbf{A})$， $\mathbf{Z}_{\mathcal{S}}^\star$是学习到的原图embeddings。将这个well-trained GNN  $\operatorname{GNN}_{\mathcal{S}}^\star(\cdot, \cdot)$直接应用在每个meta graph $g_{\text {meta }}^i$上：</p>
+<p>$$ \mathbf{Z}_{\text {meta }}^{(i, \star)}, \hat{\mathbf{Y}}_{\text {meta }}^{(i, \star)}=\operatorname{GNN}_{\mathcal{S}}^\star\left(\mathbf{X}_{\text {meta }}^i, \mathbf{A}_{\text {meta }}^i\right)$$</p>
+<p>可以得到$\operatorname{GNN}_{\mathcal{S}}^\star(\cdot, \cdot)$为meta graph $g_{\text{meta}}^i$学习到的节点embedding和预测值，可以用来评估在$\operatorname{GNN}_{\mathcal{S}}^\star(\cdot, \cdot)$该分布的图上的效果。若 $g_{\text {meta }}^i$中有 $M_i$个节点，那么 $\operatorname{GNN}_{\mathcal{S}}^\star(\cdot, \cdot)$对该图的准确率为：
+$$
+y_{\mathrm{disc}}^i=\operatorname{Acc}\left(g_{\text {meta }}^i\right)=\frac{\sum_{j=1}^{M_i}\left(\hat{y}_{\operatorname{meta}(i, *)}^j==y_{\operatorname{meta}(i)}^j\right)}{M_i},
+$$
+表示 $\operatorname{GNN}_{\mathcal{S}}^\star(\cdot, \cdot)$为该图中节点预测的平均准确率。</p>
+<p>那么对于meta graph集合  $\mathcal{G}_{\text {meta }}=\left\{g_{\text {meta }}^i\right\}_{i=1}^K$中的所有图，由于这些图来组training graph，有明确的节点标签信息，因此$\operatorname{GNN}_{\mathcal{S}}^\star(\cdot, \cdot)$可以计算在每个meta graph上的准确率。由于不同的meta graph的数据分布不同，所以我们可以得到 $\operatorname{GNN}_{\mathcal{S}}^*(\cdot, \cdot)$对不同数据分布图的适用性。</p>
+<p>此外，在well-trained模型下，meta graph $g_{meta}^i$的表示 $\mathbf{Z}_{\text {meta }}^{(i, \star)}$和训练图表示 $\mathbf{Z}_{\mathcal{S}}^\star$之间差异用下式衡量：
+$$
+\mathbf{X}_{\mathrm{disc}}^i=D\left(\mathbf{Z}_{\text {meta }}^{(i, \star)}, \mathbf{Z}_{\mathcal{S}}^\star\right)=\frac{\mathbf{Z}_{\text {meta }}^{(i, \star)} \mathbf{Z}_{\mathcal{S}}^{\star \mathrm{~T}}}{\left|\left|\mathbf{Z}_{\text {meta }}^{(i, \star)}\right|\right|_2 \cdot\left|\left|\mathbf{Z}_{\mathcal{S}}^\star\right|\right|_2}
+$$</p>
+<h3 id="gnnevaluator如何估计无标签图的准确率">GNNEvaluator如何估计无标签图的准确率？</h3>
+<p>训练GNNEvaluator:
+$$
+\min_\phi \sum_{i=1}^K \mathcal{L}_{\mathrm{reg}}\left(f_{\boldsymbol{\phi}}\left(\mathbf{X}_{\mathrm{disc}}^i, \mathbf{A}_{\mathrm{disc}}^i\right), y_{\mathrm{disc}}^i\right)
+$$
+对于每个meta graph $g_{\text {meta }}^i=\left\{\mathbf{X}_{\text {meta }}^i, \mathbf{A}_{\text {meta }}^i, \mathbf{Y}_{\text {meta }}^i\right\}$，基于结构 $\mathbf{A}_{\text {meta }}^i$和差异属性 $\mathbf{X}_{\text {meta }}^i$使用逻辑回归来预测准确率 $y_{\mathrm{disc}}^i$。损失函数采用MSE回归损失。</p>
+<p>测试阶段，对于一个label不可见的预测图 $\mathcal{T} = (\mathbf{X}^\prime, \mathbf{A}^\prime)$，将其带入 $\operatorname{GNN}_{\mathcal{S}}^\star(\cdot, \cdot)$得到它的表示 $\mathbf{Z}_{\mathcal{T}}^\star$，并与 $\mathbf{Z}_{\mathcal{S}}^\star$一同计算得到差异节点特征$\mathbf{X}_{\text {disc }}^{\mathcal{T}}$。再将$\mathbf{X}_{\text {disc }}^{\mathcal{T}}$和 $\mathbf{A}^\prime$带入 $f_\phi (\cdot,\cdot)$中，得到估计准确率 $\operatorname{Acc}(\mathcal{T})=\hat{y}_{\text {dist }}^{\mathcal{T}}$。该过程无需任何测试集标签参与评估。</p>
+<p>图的差异与图的准确率匹配，所以可以用图差异来衡量与真实准确率的差异。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>ICML2023《Personalized Subgraph Federated Learning》Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/fedpub/</link>
+      <pubDate>Mon, 19 May 2025 13:42:56 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/fedpub/</guid>
+      <description>ICML2023 &amp;#34;Personalized Subgraph Federated Learning&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p>本文旨在解决不同子图作为不同的client，由于client是locally accessible，所以client间存在的missing edges无法被server捕获的情况。与FedSage仅仅基于自身连接来expand missing neighbors（并且最小化生成neighbor和其他所有子图的距离） 的missing neighbors生成方式不同，本文提出的FedPub考虑了子图的社区结构，即不同社区的子图相互之间的边连接关系应该较弱，处于同一个社区的子图应存在更强的边连接关系。</p>
+<h2 id="personalized-subgraph-fl-overall">Personalized Subgraph FL (Overall)</h2>
+<p>对于每个子图 $G_i \in \mathcal{G}$，传统的方法优化方式是学习global optimal parameters $\bar{\theta}$，使得该参数在所有clients上的总loss最小： $\min_{\overline{\theta}} \sum_{G_i \subset \mathcal{G}} \mathcal{L}\left(G_i ; \overline{\theta}\right)$。但是由于处在不同社区中的子图异质性很严重，并且不同社区的子图间的edges也很稀疏，这种强异质性很难学习到一个对所有子图都最优的 $\bar{\theta}$。因此本文提出，在同一个community的子图间共享参数，不同community的子图不共享参数，而不是使用全局通用参数 $\bar{\theta}$。因此，Personalized Subgraph FL的形式如下：</p>
+<p>$$
+\begin{aligned}
+&amp; \min_{\left\{\boldsymbol{\theta}_i, \boldsymbol{\mu}_i\right\}_{i=1}^K} \sum_{G_i \subseteq \mathcal{G}} \mathcal{L}\left(G_i ; \boldsymbol{\theta}_i, \boldsymbol{\mu}_i\right), \quad \boldsymbol{\theta}_i \leftarrow \boldsymbol{\mu}_i \odot\left(\sum_{j=1}^K \alpha_{i j} \boldsymbol{\theta}_j\right) \\
+&amp; \text { with } \alpha_{i k} \gg \alpha_{i l} \text { for } G_k \subseteq C \text { and } G_l \nsubseteq C
+\end{aligned}
+$$
+其中 $K$是client数量， $\theta_i$是属于community $C$ 的client $G_i$的可训练权重， $\alpha_{ij}$是client $i$ 和 $j$的权重聚合coefficient。如果client $k$和 $i$属于同一个community，而client $l$和 $i$不属于同一个community，那么它们关于 $i$的参数聚合系数 $\alpha_{i k} \gg \alpha_{i l}$。通过这种方式模型可以隐式地考虑不同subgraph之间的关系。</p>
+<p>虽然 $\alpha_{i,:}$指示了client之间的相关程度，但是未能指示那些参数与 $i$ 相关，这里用一个size和 GNN 权重相同的mask矩阵 $\mu_i$来过滤无关权重。</p>
+<h2 id="fedpub-detailed">FedPub (Detailed)</h2>
+<p>为了实现上式，首先要基于子图之间的相似度为图中的子图分配communities。由于每个子图是local accessibility的，服务器只能接收到每个client的GNN参数，所以需要从子图的GNN模型参数中获得辅助信息来计算子图之间的相似度。</p>
+<h3 id="functional-embeddings-for-subgraph-similarities"><strong>Functional Embeddings for Subgraph Similarities</strong></h3>
+<p>为了解决上述问题，本文通过向所有 local GNN 模型提供相同的输入，然后使用它们的输出计算相似度来测量 GNN 的functional similarity。基于stochastic block model构建一个有5个communities，每个community 100个节点的random community graph $\tilde{G}=(\tilde{\mathcal{V}}, \tilde{\mathcal{E}})$。令 $\tilde{\boldsymbol{h}}_i=\operatorname{AVG}\left(f\left(\tilde{G} ; \boldsymbol{\theta}_i\right)\right)$表示client $i$上的局部模型对 $\tilde{G}$的所有node embedding输出的均值。那么client $i$和 $j$之间的GNN functional similarity 可以用下式表示：</p>
+<p>$$ S(i, j)=\frac{\tilde{\boldsymbol{h}}_i \cdot \tilde{\boldsymbol{h}}_j}{\left|\left|\tilde{\boldsymbol{h}}_i\right|\right|\left|\left|\tilde{\boldsymbol{h}}_j\right|\right|} $$</p>
+<h3 id="personalized-weight-aggregation"><strong>Personalized Weight Aggregation</strong></h3>
+<p>在得到子图之间的相似度衡量标准后，对于client $i$，可以计算client $j$与它的normalized subgraph similarity：</p>
+<p>$$ \alpha_{i j}=\frac{\exp (\tau \cdot S(i, j))}{\sum_k \exp (\tau \cdot S(i, k))} $$</p>
+<p>其中 $\tau$是一个相似度放缩参数。然后在同一个社区中的client尽可能共享更多的参数：</p>
+<p>$$\overline{\boldsymbol{\theta}}_i \leftarrow \sum_{j=1}^K \alpha_{i j} \cdot \boldsymbol{\theta}_j$$</p>
+<h3 id="adaptive-weight-masking">Adaptive Weight Masking</h3>
+<p>上面加权聚合所有client local GNN参数的方式得到 $\overline{\boldsymbol{\theta}}_i$只考虑到how much each local model from other clients is relevant to $i$，因为 $\alpha_{i j}$仅用来衡量client $j$与client $i$在社区层面的相关程度，然后就依据相关性聚合来自client $j$的所有参数 $\boldsymbol{\theta}_j$。并没有考虑到聚合而来的参数 $\overline{\boldsymbol{\theta}}_i$中，哪些与client $i$是相关的。因此这里用一个可学习的参数mask $\boldsymbol{\mu}_i$来从 $\overline{\boldsymbol{\theta}}_i$中过滤出与client $i$有关的参数：</p>
+<p>$$ \boldsymbol{\theta}_i=\overline{\boldsymbol{\theta}}_i \odot \boldsymbol{\mu}_i $$</p>
+<p>这里得到的 $\boldsymbol{\theta}_i$作为client $i$上local GNN的参数。对于local client的训练过程，由于 $\boldsymbol{\mu}_i$仅在本地数据上训练，并不与其他client共享参数，因此容易与本地数据过拟合，即完全mask掉所有其他client的信息。为了缓解该问题，在局部损失函数上添加一个proximal term来使得 $\boldsymbol{\theta}_i$保留更多全局模型信息：
+$$
+\min _{\left(\boldsymbol{\theta}_i, \boldsymbol{\mu}_i\right)} \mathcal{L}\left(G_i ; \boldsymbol{\theta}_i, \boldsymbol{\mu}_i\right)+\lambda_1\left|\left|\boldsymbol{\mu}_i\right|\right|_1+\lambda_2\left|\left|\boldsymbol{\theta}_i-\overline{\boldsymbol{\theta}}_i\right|\right|_2^2
+$$</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>NeurIPS2021《Subgraph Federated Learning with Missing Neighbor Generation》Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/fedsage/</link>
+      <pubDate>Sun, 18 May 2025 14:59:38 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/fedsage/</guid>
+      <description>NeurIPS2021 &amp;#34;Subgraph Federated Learning with Missing Neighbor Generation&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>Subgraph Federated Learning旨在多个分布式的子图上训练一个图模型，并且子图之间没有数据共享。面临2个挑战：</p>
+<p><strong>Q1:</strong> 如何将各个子图上的模型融合成一个全局可用的模型，使其可以处理来自全局图的任何请求？</p>
+<p><strong>A1:</strong> 针对该挑战，本文提出FedSage将GraphSage和FedAvg结合。</p>
+<p><strong>Q2:</strong> 如何处理local subgraph之间缺失的边？</p>
+<p><strong>A2:</strong> 在FedSage的基础上添加一个<strong>邻居生成器</strong>。具体来说，为了得到missing neighbor generator，每个client首先通过随机移除一些节点和他们的边来<strong>损坏subgraph</strong>，然后基于损坏的图来和移除的节点来训练邻居生成器。邻居生成器不仅为子图中的每个节点生成missing neighbor number，也为每个节点生产missing neighbor features。然后用生成的节点邻居去修补subgraph，所谓模拟的跨子图交互。最后在修补好的子图上使用FedSage。</p>
+<h2 id="collaborative-learning-on-isolated-subgraphsfedsage">Collaborative Learning on Isolated Subgraphs：FedSage</h2>
+<p>对于一个被查询节点 $v\in V$，一个全局 $K$层GraphSage分类器 $F$通过融合 $v$和它的 $K$跳邻居来得到节点的预测值，其中每层的可学习参数为 $\phi = \{\phi^k\}^K_{k = 1}$，其中 $\phi^k$表示第 $k$层的权重矩阵。考虑一个子图 $G_i = \{V_i, E_i, X_i\}$， GraphSage通过一下式子计算节点 $v \in V_i$的第 $k \in [K]$层表示：</p>
+<p>$$
+h_v^k=\sigma\left(\phi^k \cdot\left(h_v^{k-1} || \operatorname{Agg}\left(\left\{h_u^{k-1}, \forall u \in \mathcal{N}_{G_i}(v)\right\}\right)\right)\right)
+$$</p>
+<p>其中 $\mathcal{N}_{G_i}(v)$表示节点 $v$在子图 $G_i$中的邻居，上式表示邻居节点聚合后和中心节点拼接，然后再用参数 $\phi^k$做变换后得到中心节点的表示。</p>
+<p>在FedSage中，全局模型 $F$的参数 $\phi$通过 $e_c$次训练迭代得到。在每次训练迭代 $t$中，每个client $D_i$首先拷贝全局参数 $\phi$到本地，作为本地模型的初始参数，再基于自身的数据更新参数 $\phi_i$：</p>
+<p>$$
+\phi_i \leftarrow\phi-\eta \nabla \ell\left(\phi \mid\left\{\left(G_i(v), y_v\right) \mid v \in V_i^t\right\}\right)
+$$</p>
+<p>其中 $\eta$是学习率。然后中心服务器 $S$将所有 $M$个客户端上的最新参数 $\{\phi_i | i \in [M]\}$聚合并做平均，作为中心服务器上的模型参数。再下一次迭代时，将新的参数广播到所有客户端上进行新一轮的优化。</p>
+<h2 id="fedsage">FedSage+</h2>
+<h3 id="missing-neighbor-generator-neighgen">Missing Neighbor Generator (NeighGen)</h3>
+<p><img loading="lazy" src="/posts/2025-05-18-Fedsage/image.png#center" alt=""  />
+</p>
+<p>邻居生成器NeighGen由编码器 $H^e$和生成器 $H^g$组成：</p>
+<p><strong>编码器 $H^e$</strong>: 对于一个输入subgraph  $G_i = (V_i, E_i, X_i)$，一个由 $\theta^e$参数化的GNN模型为子图中的每个节点学习embeddings $Z_i = \{z_v | v \in V_i\}$ 。</p>
+<p><strong>生成器 $H^g$</strong>: 基于node embedding生成它的missing neighbors。如图2所示， $H^g$包含两个模块dGen和fGen。其中dGen是一个由 $\theta^d$参数化的线性回归模型，用来预测给定节点的missing neighbors数量：
+$$
+\tilde{n}_v=\sigma\left(MLP_{\theta^d} ( z_v)\right) \in \mathbb{R}
+$$</p>
+<p>基于子图中的节点 $v$的embedding $z_v$生成它的预测missing neighbors数量 $\tilde{n}_v$。</p>
+<p>fGen是一个由 $\theta^f$参数化的MLP用来基于节点 $v$的embedding $z_v$生成它的missing neighbor features。由于fGen为节点 $v$生成missing neighbor特征的个数取决于 $v$由多少个predicted missing neighbors，因此这里用变分的方式来基于 $z_v$生成它的missing neighbor features。具体来说，fGen有一个Gaussian noise生成器 $\mathbf{N}(0,1)$来生成随机噪声，以及一个随机采样器 $R$来从生成的邻居中采样 $\tilde{n}_v$个邻居特征：</p>
+<p>$$
+\widetilde{x}_v=R\left(\sigma\left(MLP_{\theta^f}\left(z_v+\mathbf{N}(0,1)\right)\right), \widetilde{n}_v\right)
+$$</p>
+<p>通过这种方式，可以基于 $z_v$定义一个随机邻居生成器。</p>
+<p>图修补仿真：假设一个client中只有一个特定集合的节点具有跨subgraph missing neighbors，因此可以通过图损坏（impairing）和修复（mending）过程来模拟missing neighbor的情况。具体来说，为了训练NeighGen，对于每个subgraph $G_i$，随机取出 $h%$的节点和与这些节点相关联的边作为simulated missing neighbors of $G_i$，由此可以得到一个损坏后的图 $\bar{G}_i=\left\{\bar{V}_i, \bar{E}_i, \bar{X}_i\right\}$。对于 $\bar{G}_i$中的每个节点 $v$，它的真实被移除的邻居数量为 $n_v$， 使用NeighGen预测它的missing neighbor数量表示为 $\tilde{n}_v$，NeighGen的优化目标是使得预测的missing neighbors数量和被移除的neighbors数量相似：</p>
+<p>$$
+\mathcal{L}^d = \frac{1}{|\bar{V}_i|} \sum_{v \in \bar{V}_i} L_1^S(\tilde{n}_v - n_v)
+$$</p>
+<p>其中 $L_1^S (\cdot, \cdot)$是 L1 distance。对于特征，要求对于每个节点 $v \in \bar{V}_i$，它在 $G_i$中被移除的邻居表示为 $\mathcal{N}_{G_i}(v) \cap V_i^h$，其中 $\mathcal{N}_{G_i}(v)$表示 $v$在 $G_i$中的真实邻居集合， $V_i^h$表示impair后的邻居集合，因此 $\mathcal{N}_{G_i}(v) \cap V_i^h$共有 $n_v$个被移除邻居，对于节点 $v$的所有被移除邻居 $u \in \mathcal{N}_{G_i}(v) \cap V_i^h$， 要求真实被移除的邻居特征 $x_u$与为 $v$生成的邻居 $\widetilde{x}_v$之间的距离应该最小：</p>
+<p>$$
+\mathcal{L}^f = \frac{1}{\left|\bar{V}_i\right|} \sum_{v \in \bar{V}_i} \sum_{p \in\left[\widetilde{n}_v\right]} \min _{u \in \mathcal{N}_{G_i}(v) \cap V_i^h}\left(\left|\left|\widetilde{x}_v^p-x_u\right|\right|_2^2\right)
+$$</p>
+<p>其中 $\widetilde{x}_v^p$表示NeighGen为节点 $v$生成的第 $p$个missing neighbor。</p>
+<p>为了使模型生成的邻居特征可以模拟跨subgraph的特性，因此将特征loss $\mathcal{L}^f$改写为如下形式：</p>
+<p>$$
+\mathcal{L}_i^f=\frac{1}{\left|\bar{V}_i\right|} \sum_{v \in \bar{V}_i} \sum_{p \in\left[\tilde{n}_v\right]}\left(\min_{u \in \mathcal{N}_{G_i}(v) \cap V_i^h}\left(\left|\left|\widetilde{x}_v^p-x_u\right|\right|_2^2\right)+\alpha \sum_{j \in[M] / i} \min_{u \in V_j}\left(\left|\left|H_i^g\left(z_v\right)^p-x_u\right|\right|_2^2\right)\right)
+$$</p>
+<p>其中后面一项 $\min _{u \in V_j}\left(\left|\left|H_i^g\left(z_v\right)^p-x_u\right|\right|_2^2\right)$中的 $x_u$表示另一个子图 $G_j$中的节点特征 $H_i^g\left(z_v\right)^p$表示NeighGen为 $G_i$中的节点 $v$生成的missing neighbor feature。<strong>因此这一项表示生成的新邻居要和其他子图中与它最相似的邻居尽可能一致，也就是生成的邻居要尽可能接近其他子图中的节点特征。</strong></p>
+<p>但是这存在另一个问题， $x_u$在 $G_j$中，不符合FL的设定。为了解决该问题，这里将 $z_v$ send到client $D_j$中来计算 $\min _{u \in V_j}\left(\left|\left|H_i^g\left(z_v\right)^p-x_u\right|\right|_2^2\right)$，并计算生成器的梯度，然后将梯度send back到 $D_i$。因为编码器 $H_i^e$在 $D_i$上是local的，所以 $D_j$无法通过 $z_v$恢复出 $v$的原始特征。</p>
+<p><strong>注意：<strong>从上面的 $\mathcal{L}^f$的式子第二项可以看出，由 $z_v$生成的邻居embedding $H_i^g\left(z_v\right)$要和</strong>所有其他子图中的所有节点</strong>的相似度尽可能高。也就是认为 $v$的missing neighbors需要来自于其他所有subgraphs。</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>LLMs and Graphs</title>
       <link>https://JhuoW.github.io/posts/graphllm/</link>

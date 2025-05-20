@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Federated Learning on JhuoW‘s Notes</title>
+    <link>https://JhuoW.github.io/categories/federated-learning/</link>
+    <description>Recent content in Federated Learning on JhuoW‘s Notes</description>
+    <image>
+      <url>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://JhuoW.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 19 May 2025 13:42:56 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/categories/federated-learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ICML2023《Personalized Subgraph Federated Learning》Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/fedpub/</link>
+      <pubDate>Mon, 19 May 2025 13:42:56 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/fedpub/</guid>
+      <description>ICML2023 &amp;#34;Personalized Subgraph Federated Learning&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p>本文旨在解决不同子图作为不同的client，由于client是locally accessible，所以client间存在的missing edges无法被server捕获的情况。与FedSage仅仅基于自身连接来expand missing neighbors（并且最小化生成neighbor和其他所有子图的距离） 的missing neighbors生成方式不同，本文提出的FedPub考虑了子图的社区结构，即不同社区的子图相互之间的边连接关系应该较弱，处于同一个社区的子图应存在更强的边连接关系。</p>
+<h2 id="personalized-subgraph-fl-overall">Personalized Subgraph FL (Overall)</h2>
+<p>对于每个子图 $G_i \in \mathcal{G}$，传统的方法优化方式是学习global optimal parameters $\bar{\theta}$，使得该参数在所有clients上的总loss最小： $\min_{\overline{\theta}} \sum_{G_i \subset \mathcal{G}} \mathcal{L}\left(G_i ; \overline{\theta}\right)$。但是由于处在不同社区中的子图异质性很严重，并且不同社区的子图间的edges也很稀疏，这种强异质性很难学习到一个对所有子图都最优的 $\bar{\theta}$。因此本文提出，在同一个community的子图间共享参数，不同community的子图不共享参数，而不是使用全局通用参数 $\bar{\theta}$。因此，Personalized Subgraph FL的形式如下：</p>
+<p>$$
+\begin{aligned}
+&amp; \min_{\left\{\boldsymbol{\theta}_i, \boldsymbol{\mu}_i\right\}_{i=1}^K} \sum_{G_i \subseteq \mathcal{G}} \mathcal{L}\left(G_i ; \boldsymbol{\theta}_i, \boldsymbol{\mu}_i\right), \quad \boldsymbol{\theta}_i \leftarrow \boldsymbol{\mu}_i \odot\left(\sum_{j=1}^K \alpha_{i j} \boldsymbol{\theta}_j\right) \\
+&amp; \text { with } \alpha_{i k} \gg \alpha_{i l} \text { for } G_k \subseteq C \text { and } G_l \nsubseteq C
+\end{aligned}
+$$
+其中 $K$是client数量， $\theta_i$是属于community $C$ 的client $G_i$的可训练权重， $\alpha_{ij}$是client $i$ 和 $j$的权重聚合coefficient。如果client $k$和 $i$属于同一个community，而client $l$和 $i$不属于同一个community，那么它们关于 $i$的参数聚合系数 $\alpha_{i k} \gg \alpha_{i l}$。通过这种方式模型可以隐式地考虑不同subgraph之间的关系。</p>
+<p>虽然 $\alpha_{i,:}$指示了client之间的相关程度，但是未能指示那些参数与 $i$ 相关，这里用一个size和 GNN 权重相同的mask矩阵 $\mu_i$来过滤无关权重。</p>
+<h2 id="fedpub-detailed">FedPub (Detailed)</h2>
+<p>为了实现上式，首先要基于子图之间的相似度为图中的子图分配communities。由于每个子图是local accessibility的，服务器只能接收到每个client的GNN参数，所以需要从子图的GNN模型参数中获得辅助信息来计算子图之间的相似度。</p>
+<h3 id="functional-embeddings-for-subgraph-similarities"><strong>Functional Embeddings for Subgraph Similarities</strong></h3>
+<p>为了解决上述问题，本文通过向所有 local GNN 模型提供相同的输入，然后使用它们的输出计算相似度来测量 GNN 的functional similarity。基于stochastic block model构建一个有5个communities，每个community 100个节点的random community graph $\tilde{G}=(\tilde{\mathcal{V}}, \tilde{\mathcal{E}})$。令 $\tilde{\boldsymbol{h}}_i=\operatorname{AVG}\left(f\left(\tilde{G} ; \boldsymbol{\theta}_i\right)\right)$表示client $i$上的局部模型对 $\tilde{G}$的所有node embedding输出的均值。那么client $i$和 $j$之间的GNN functional similarity 可以用下式表示：</p>
+<p>$$ S(i, j)=\frac{\tilde{\boldsymbol{h}}_i \cdot \tilde{\boldsymbol{h}}_j}{\left|\left|\tilde{\boldsymbol{h}}_i\right|\right|\left|\left|\tilde{\boldsymbol{h}}_j\right|\right|} $$</p>
+<h3 id="personalized-weight-aggregation"><strong>Personalized Weight Aggregation</strong></h3>
+<p>在得到子图之间的相似度衡量标准后，对于client $i$，可以计算client $j$与它的normalized subgraph similarity：</p>
+<p>$$ \alpha_{i j}=\frac{\exp (\tau \cdot S(i, j))}{\sum_k \exp (\tau \cdot S(i, k))} $$</p>
+<p>其中 $\tau$是一个相似度放缩参数。然后在同一个社区中的client尽可能共享更多的参数：</p>
+<p>$$\overline{\boldsymbol{\theta}}_i \leftarrow \sum_{j=1}^K \alpha_{i j} \cdot \boldsymbol{\theta}_j$$</p>
+<h3 id="adaptive-weight-masking">Adaptive Weight Masking</h3>
+<p>上面加权聚合所有client local GNN参数的方式得到 $\overline{\boldsymbol{\theta}}_i$只考虑到how much each local model from other clients is relevant to $i$，因为 $\alpha_{i j}$仅用来衡量client $j$与client $i$在社区层面的相关程度，然后就依据相关性聚合来自client $j$的所有参数 $\boldsymbol{\theta}_j$。并没有考虑到聚合而来的参数 $\overline{\boldsymbol{\theta}}_i$中，哪些与client $i$是相关的。因此这里用一个可学习的参数mask $\boldsymbol{\mu}_i$来从 $\overline{\boldsymbol{\theta}}_i$中过滤出与client $i$有关的参数：</p>
+<p>$$ \boldsymbol{\theta}_i=\overline{\boldsymbol{\theta}}_i \odot \boldsymbol{\mu}_i $$</p>
+<p>这里得到的 $\boldsymbol{\theta}_i$作为client $i$上local GNN的参数。对于local client的训练过程，由于 $\boldsymbol{\mu}_i$仅在本地数据上训练，并不与其他client共享参数，因此容易与本地数据过拟合，即完全mask掉所有其他client的信息。为了缓解该问题，在局部损失函数上添加一个proximal term来使得 $\boldsymbol{\theta}_i$保留更多全局模型信息：
+$$
+\min _{\left(\boldsymbol{\theta}_i, \boldsymbol{\mu}_i\right)} \mathcal{L}\left(G_i ; \boldsymbol{\theta}_i, \boldsymbol{\mu}_i\right)+\lambda_1\left|\left|\boldsymbol{\mu}_i\right|\right|_1+\lambda_2\left|\left|\boldsymbol{\theta}_i-\overline{\boldsymbol{\theta}}_i\right|\right|_2^2
+$$</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>NeurIPS2021《Subgraph Federated Learning with Missing Neighbor Generation》Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/fedsage/</link>
+      <pubDate>Sun, 18 May 2025 14:59:38 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/fedsage/</guid>
+      <description>NeurIPS2021 &amp;#34;Subgraph Federated Learning with Missing Neighbor Generation&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>Subgraph Federated Learning旨在多个分布式的子图上训练一个图模型，并且子图之间没有数据共享。面临2个挑战：</p>
+<p><strong>Q1:</strong> 如何将各个子图上的模型融合成一个全局可用的模型，使其可以处理来自全局图的任何请求？</p>
+<p><strong>A1:</strong> 针对该挑战，本文提出FedSage将GraphSage和FedAvg结合。</p>
+<p><strong>Q2:</strong> 如何处理local subgraph之间缺失的边？</p>
+<p><strong>A2:</strong> 在FedSage的基础上添加一个<strong>邻居生成器</strong>。具体来说，为了得到missing neighbor generator，每个client首先通过随机移除一些节点和他们的边来<strong>损坏subgraph</strong>，然后基于损坏的图来和移除的节点来训练邻居生成器。邻居生成器不仅为子图中的每个节点生成missing neighbor number，也为每个节点生产missing neighbor features。然后用生成的节点邻居去修补subgraph，所谓模拟的跨子图交互。最后在修补好的子图上使用FedSage。</p>
+<h2 id="collaborative-learning-on-isolated-subgraphsfedsage">Collaborative Learning on Isolated Subgraphs：FedSage</h2>
+<p>对于一个被查询节点 $v\in V$，一个全局 $K$层GraphSage分类器 $F$通过融合 $v$和它的 $K$跳邻居来得到节点的预测值，其中每层的可学习参数为 $\phi = \{\phi^k\}^K_{k = 1}$，其中 $\phi^k$表示第 $k$层的权重矩阵。考虑一个子图 $G_i = \{V_i, E_i, X_i\}$， GraphSage通过一下式子计算节点 $v \in V_i$的第 $k \in [K]$层表示：</p>
+<p>$$
+h_v^k=\sigma\left(\phi^k \cdot\left(h_v^{k-1} || \operatorname{Agg}\left(\left\{h_u^{k-1}, \forall u \in \mathcal{N}_{G_i}(v)\right\}\right)\right)\right)
+$$</p>
+<p>其中 $\mathcal{N}_{G_i}(v)$表示节点 $v$在子图 $G_i$中的邻居，上式表示邻居节点聚合后和中心节点拼接，然后再用参数 $\phi^k$做变换后得到中心节点的表示。</p>
+<p>在FedSage中，全局模型 $F$的参数 $\phi$通过 $e_c$次训练迭代得到。在每次训练迭代 $t$中，每个client $D_i$首先拷贝全局参数 $\phi$到本地，作为本地模型的初始参数，再基于自身的数据更新参数 $\phi_i$：</p>
+<p>$$
+\phi_i \leftarrow\phi-\eta \nabla \ell\left(\phi \mid\left\{\left(G_i(v), y_v\right) \mid v \in V_i^t\right\}\right)
+$$</p>
+<p>其中 $\eta$是学习率。然后中心服务器 $S$将所有 $M$个客户端上的最新参数 $\{\phi_i | i \in [M]\}$聚合并做平均，作为中心服务器上的模型参数。再下一次迭代时，将新的参数广播到所有客户端上进行新一轮的优化。</p>
+<h2 id="fedsage">FedSage+</h2>
+<h3 id="missing-neighbor-generator-neighgen">Missing Neighbor Generator (NeighGen)</h3>
+<p><img loading="lazy" src="/posts/2025-05-18-Fedsage/image.png#center" alt=""  />
+</p>
+<p>邻居生成器NeighGen由编码器 $H^e$和生成器 $H^g$组成：</p>
+<p><strong>编码器 $H^e$</strong>: 对于一个输入subgraph  $G_i = (V_i, E_i, X_i)$，一个由 $\theta^e$参数化的GNN模型为子图中的每个节点学习embeddings $Z_i = \{z_v | v \in V_i\}$ 。</p>
+<p><strong>生成器 $H^g$</strong>: 基于node embedding生成它的missing neighbors。如图2所示， $H^g$包含两个模块dGen和fGen。其中dGen是一个由 $\theta^d$参数化的线性回归模型，用来预测给定节点的missing neighbors数量：
+$$
+\tilde{n}_v=\sigma\left(MLP_{\theta^d} ( z_v)\right) \in \mathbb{R}
+$$</p>
+<p>基于子图中的节点 $v$的embedding $z_v$生成它的预测missing neighbors数量 $\tilde{n}_v$。</p>
+<p>fGen是一个由 $\theta^f$参数化的MLP用来基于节点 $v$的embedding $z_v$生成它的missing neighbor features。由于fGen为节点 $v$生成missing neighbor特征的个数取决于 $v$由多少个predicted missing neighbors，因此这里用变分的方式来基于 $z_v$生成它的missing neighbor features。具体来说，fGen有一个Gaussian noise生成器 $\mathbf{N}(0,1)$来生成随机噪声，以及一个随机采样器 $R$来从生成的邻居中采样 $\tilde{n}_v$个邻居特征：</p>
+<p>$$
+\widetilde{x}_v=R\left(\sigma\left(MLP_{\theta^f}\left(z_v+\mathbf{N}(0,1)\right)\right), \widetilde{n}_v\right)
+$$</p>
+<p>通过这种方式，可以基于 $z_v$定义一个随机邻居生成器。</p>
+<p>图修补仿真：假设一个client中只有一个特定集合的节点具有跨subgraph missing neighbors，因此可以通过图损坏（impairing）和修复（mending）过程来模拟missing neighbor的情况。具体来说，为了训练NeighGen，对于每个subgraph $G_i$，随机取出 $h%$的节点和与这些节点相关联的边作为simulated missing neighbors of $G_i$，由此可以得到一个损坏后的图 $\bar{G}_i=\left\{\bar{V}_i, \bar{E}_i, \bar{X}_i\right\}$。对于 $\bar{G}_i$中的每个节点 $v$，它的真实被移除的邻居数量为 $n_v$， 使用NeighGen预测它的missing neighbor数量表示为 $\tilde{n}_v$，NeighGen的优化目标是使得预测的missing neighbors数量和被移除的neighbors数量相似：</p>
+<p>$$
+\mathcal{L}^d = \frac{1}{|\bar{V}_i|} \sum_{v \in \bar{V}_i} L_1^S(\tilde{n}_v - n_v)
+$$</p>
+<p>其中 $L_1^S (\cdot, \cdot)$是 L1 distance。对于特征，要求对于每个节点 $v \in \bar{V}_i$，它在 $G_i$中被移除的邻居表示为 $\mathcal{N}_{G_i}(v) \cap V_i^h$，其中 $\mathcal{N}_{G_i}(v)$表示 $v$在 $G_i$中的真实邻居集合， $V_i^h$表示impair后的邻居集合，因此 $\mathcal{N}_{G_i}(v) \cap V_i^h$共有 $n_v$个被移除邻居，对于节点 $v$的所有被移除邻居 $u \in \mathcal{N}_{G_i}(v) \cap V_i^h$， 要求真实被移除的邻居特征 $x_u$与为 $v$生成的邻居 $\widetilde{x}_v$之间的距离应该最小：</p>
+<p>$$
+\mathcal{L}^f = \frac{1}{\left|\bar{V}_i\right|} \sum_{v \in \bar{V}_i} \sum_{p \in\left[\widetilde{n}_v\right]} \min _{u \in \mathcal{N}_{G_i}(v) \cap V_i^h}\left(\left|\left|\widetilde{x}_v^p-x_u\right|\right|_2^2\right)
+$$</p>
+<p>其中 $\widetilde{x}_v^p$表示NeighGen为节点 $v$生成的第 $p$个missing neighbor。</p>
+<p>为了使模型生成的邻居特征可以模拟跨subgraph的特性，因此将特征loss $\mathcal{L}^f$改写为如下形式：</p>
+<p>$$
+\mathcal{L}_i^f=\frac{1}{\left|\bar{V}_i\right|} \sum_{v \in \bar{V}_i} \sum_{p \in\left[\tilde{n}_v\right]}\left(\min_{u \in \mathcal{N}_{G_i}(v) \cap V_i^h}\left(\left|\left|\widetilde{x}_v^p-x_u\right|\right|_2^2\right)+\alpha \sum_{j \in[M] / i} \min_{u \in V_j}\left(\left|\left|H_i^g\left(z_v\right)^p-x_u\right|\right|_2^2\right)\right)
+$$</p>
+<p>其中后面一项 $\min _{u \in V_j}\left(\left|\left|H_i^g\left(z_v\right)^p-x_u\right|\right|_2^2\right)$中的 $x_u$表示另一个子图 $G_j$中的节点特征 $H_i^g\left(z_v\right)^p$表示NeighGen为 $G_i$中的节点 $v$生成的missing neighbor feature。<strong>因此这一项表示生成的新邻居要和其他子图中与它最相似的邻居尽可能一致，也就是生成的邻居要尽可能接近其他子图中的节点特征。</strong></p>
+<p>但是这存在另一个问题， $x_u$在 $G_j$中，不符合FL的设定。为了解决该问题，这里将 $z_v$ send到client $D_j$中来计算 $\min _{u \in V_j}\left(\left|\left|H_i^g\left(z_v\right)^p-x_u\right|\right|_2^2\right)$，并计算生成器的梯度，然后将梯度send back到 $D_i$。因为编码器 $H_i^e$在 $D_i$上是local的，所以 $D_j$无法通过 $z_v$恢复出 $v$的原始特征。</p>
+<p><strong>注意：<strong>从上面的 $\mathcal{L}^f$的式子第二项可以看出，由 $z_v$生成的邻居embedding $H_i^g\left(z_v\right)$要和</strong>所有其他子图中的所有节点</strong>的相似度尽可能高。也就是认为 $v$的missing neighbors需要来自于其他所有subgraphs。</p>
+]]></content:encoded>
+    </item>
+    
+  </channel>
+</rss>

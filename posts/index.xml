@@ -10,7 +10,238 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 21 May 2025 12:13:13 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 28 Jul 2025 15:19:07 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NeurIPS2023《Prodigy：Enabling In-context Learning Over Graphs》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/prodigy-icl/</link>
+      <pubDate>Mon, 28 Jul 2025 15:19:07 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/prodigy-icl/</guid>
+      <description>NeurIPS2023 &amp;#34;Prodigy：Enabling In-context Learning Over Graphs&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p>在llm里面，In-Context Learning就是用一些新任务的问答例子来提示LLM，使得LLM不需要更新参数，也能基于这些例子来对新的任务生成输出。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-prodigy/1.png#center" alt="icl"  />
+</p>
+<p>为LM的预训练任务实际上是next token prediction的任务，由于prompt和回答只是相邻的tokens，因此 Transformer 的自注意力可以计算要补全的句子和之前token之间的关系，从而让模型动态推断出新的决策规则。In-Context Learning实际上也是一种next token prediction的任务，所以In-Context Learning是和预训练任务相关的。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-prodigy/2.png#center" alt="icl"  />
+</p>
+<p>Prodigy和All in One (KDD 2023)是同期工作，目的都是为了去提示Pretrained graph model。 All in One 是已经有一个Pretrained graph model，然后用meta learning基于冻结的pretrained model，去学一个prompt graph，使得这个prompt graph和原图结合起来之后可以使预训练模型泛化到新的任务上。</p>
+<p>All in One 存在的问题是，All in one要对测试图做finetune。但实际上我们知道foundation model是不需要fine tune的。遇到一个新任务，因为支持in-context learning，可以基于给出的prompt example 来对新任务直接做出预测。而Prodigy就是不需要fine tune的graph prompt方法，它是直接以in-context learning的方式来预训练模型。Prodigy在预训练图上构造一堆prompt example和queries，预训练的优化目标是使在给定prompt examples和query set的情况下，query set的预测损失最小，也就是说<strong>模型的参数由prompt examples来调整，优化目标是使得query set的损失最小</strong>。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-prodigy/3.png#center" alt="icl"  />
+</p>
+<h2 id="prompt-graph-representation">Prompt Graph Representation</h2>
+<p>首先要基于预训练的图构造一个支持in-context learning的prompt graph。然后在这个prompt graph上以in-context learning的方式来预训练模型。具体来说，在预训练图上构造一个 $m$-way $k$-shot的分类任务。预训练图为MAG240M，该图中有122M个节点，1.3B条边，153个类。 在每次训练epoch中，采样 $m=30$个class，每个class选择 $k=3$个样本作为prompt examples $\mathcal{S}$，也就是每个epoch有90个prompt examples。每个类别取4个样本作为query set $\mathcal{Q}$。也就是 $\mathcal{S} = \{(x_i, y_i)\}^{mk}_{i = 1}$ 作为预训练阶段的support set。 $\mathcal{Q} = \{x_i\}^n_{i = 1}$作为预训练阶段的query set，也就是预训练阶段的优化目标是要在query set上的损失最小。</p>
+<p><strong>Data Graphs</strong>：若预训练任务是node-level的任务，那么每个数据点集 $\mathcal{V}_i$是一个目标节点，如果是edge level的任务，那么每个数据点集 $\mathcal{V}_i$是一对节点。然后，通过采样每个数据点集的 $k$跳局部子图来contextualize每个数据点集，从而为所有prompt examples和query set构造Data Graphs：
+$$
+\mathcal{G}_i^{\mathrm{D}}=\left(\mathcal{V}_i^{\mathrm{D}}, \mathcal{E}_i^{\mathrm{D}}\right) \sim \bigoplus_{i=0}^k \operatorname{Neighbor}\left(\mathcal{V}_i, \mathcal{G}, i\right)
+$$</p>
+<p><strong>Message Passing on Data Graphs</strong>：然后每个Data Graph有一个Super Node $v_{x_i}$，来得到上下文化的目标节点表示。具体来说，在Data Graph上做message，然后把目标节点的embedding拿出来作为super node的node feature。</p>
+<p><strong>Task Graph</strong>：在每次预训练迭代中，有30个class参与预训练，那么就有30个label nodes $v_y$。然后将所有super nodes和label nodes 连接起来，用边来反映数据点和label之间的关系，具体来说，每条边的特征有2个binary value构成，如果目标数据点是来自prompt set的节点，那么第一个属性为 $0$，如果是来自query set的数据点，那么第一个属性为 $1$。在task graph中，每个超节点和所有label node连接，如果prompt example的超节点连接到正确的label node，那么第二个属性为 $1$，如果连到错误的label，那么边的第二个属性为 $-1$。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-prodigy/4.png#center" alt="icl"  />
+</p>
+<p><strong>Message Passing on Task Graph</strong>：在得到每条边的feature $e_{ij}$后，在Task Graph上做attention-based message passing。也就是每个label node要聚合所有super nodes，每个super nodes也要聚合所有label nodes。
+$$
+\begin{aligned}\beta_{i j} &amp; =M L P\left(W_q^T H_i^l\left|\left|W_k^T H_j^l\right|\right| e_{i j}\right) \\ \alpha_{i j} &amp; =\frac{\exp \left(\beta_{i j}\right)}{\sum_{k \in \mathcal{N}(i) \cup{i}} \exp \left(\beta_{i k}\right)} \\ H_i^{l+1} &amp; =\operatorname{ReLU}\left(B N\left(H_i^l+W_o^T \sum_{j \in \mathcal{N}(i) \cup{i}} \alpha_{i j} W_v^T H_j^l\right)\right)\end{aligned}
+$$</p>
+<h2 id="pretraining-task-generation">Pretraining Task Generation</h2>
+<p>2个预训练任务：<strong>Neighbor Matching</strong>和<strong>Multi-Class Classification</strong>。</p>
+<p><strong>Neighbor Matching</strong>：在每次training epoch，随机采样 $m=30$个节点作为 $30$个way，然后每个采样的节点选择 $k=3$个邻域内节点作为这个类的prompt examples。然后所有label nodes的特征从Uniform distribution上初始化：</p>
+<p>$$
+\begin{gathered}\mathcal{C}=\left\{c_i\right\}_{i=1}^m \quad c_i \sim \operatorname{Uniform}\left(\mathcal{V}_{\text {pretrain }}\right) \\ N_i=\text { Neighbor }\left(c_i, \mathcal{G}_{\text {pretrain }}, l\right) \\ \mathcal{S}_i=\left\{\left(x_j, y_j=c_i\right)\right\}_{j=1}^k \quad x_j \sim \operatorname{Uniform}\left(N_i\right) \\ \mathcal{Q}_i=\left\{\left(x_j, y_j=c_i\right)\right\}_{j=1}^{\left\lceil\frac{n}{m}\right\rceil} \quad x_j \sim \operatorname{Uniform}\left(N_i\right)\end{gathered}
+$$</p>
+<p><strong>Multi-Class Classification</strong>：用原始label来构造预训练任务，label node的feature依旧从uniform distribution中采样：</p>
+<p>$$
+\begin{gathered}\mathcal{C}=\left\{c_i\right\}_{i=1}^m \quad c_i \sim \operatorname{Uniform}(\mathcal{Y}) \\ \mathcal{S}_i=\left\{\left(x_j, y_j=c_i\right)\right\}_{j=1}^k \quad x_j \sim \operatorname{Uniform}\left(\left\{x_i \mid f\left(x_i\right)=c_i\right\}\right) \\ \mathcal{Q}_i=\left\{\left(x_j, y_j=c_i\right)\right\}_{j=1}^{\left\lceil\frac{n}{m}\right\rceil} \quad x_j \sim \operatorname{Uniform}\left(\left\{x_i \mid f\left(x_i\right)=c_i\right\}\right)\end{gathered}
+$$</p>
+<p>通过计算每个super node和所有label node的cosine similarity 来得到预测的logits：</p>
+<p>$$
+O_i=\left[\operatorname{cosine} \_ \text {similarity }\left(H_{x_i}, H_y\right), \forall y \in \mathcal{Y}\right]
+$$</p>
+<p>模型的优化目标是在NM和MT这两个预训练任务的query set上的损失最小：</p>
+<p>$$
+\mathcal{L}=\underset{x_i \in \mathcal{Q}_{\mathrm{NM}}}{\mathbb{E}} \operatorname{CE}\left(O_{\mathrm{NM}, i}, y_{\mathrm{NM}, i}\right)+\underset{x_i \in \mathcal{Q}_{\mathrm{MT}}}{\mathbb{E}} \operatorname{CE}\left(O_{\mathrm{MT}, i}, y_{\mathrm{MT}, i}\right)
+$$</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>ICML2024《LLaGA：Large Language and Graph Assistant》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/llaga/</link>
+      <pubDate>Mon, 28 Jul 2025 15:09:11 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/llaga/</guid>
+      <description>ICML2024 &amp;#34;LLaGA：Large Language and Graph Assistant&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p>目的：将图结构调整为适配LLM的输入。具体来说，将图节点表示为<strong>图结构感知</strong>和<strong>属性感知</strong>的序列，然后将序列映射到token embedding space中，从而使LLM可以用处理text tokens的方式来对Graph token embeddings进行处理。为了实现这个目标，就要求node sequence必须充分保存中心节点的结构信息。</p>
+<h2 id="structure-aware-graph-translation">Structure-Aware Graph Translation</h2>
+<p>LLaGA的目的是将graph翻译成可被LLM理解的token embedding sequence的形式。同时，这可以利用LLM固有的推理能力来处理图的任务，并且无需改变LLM的参数（foundation model）。为了实现这个目标，LLaGA将图结构转化为node embedding sequences，这些sequences融合了图的局部和更大范围的结构信息，然后将node embedding sequences通过一个projector转化为LLM可以处理的token embedding sequence。</p>
+<p>第一步是将图转换为node embedding sequences。由于图分析的基本单位是节点，所以本工作开发了2个节点级templates，这些templates是多功能的，不仅可以用于节点级任务，也可以用于边级任务。分别是一个<strong>Neighborhood Detail Template</strong>，提供对中心节点及其周围环境的深入观察；<strong>Hop-Field Overview Template</strong>，提供了一个节点邻居的总结视角，可以拓展到更大的域。<strong>这两个模板都旨在编码节点周围的结构信息</strong>，为分析提供不同的视角。</p>
+<h3 id="neighborhood-detail-template"><strong>Neighborhood Detail Template</strong></h3>
+<p>Neighborhood Detail Template用于描述节点和其周围邻居的详细信息。给定一个中心节点 $v$，需要构造一个形状固定的tree。对于中心节点 $v$的每跳邻居，定义一组邻居采样的size： $n_1$, $n_2$, …，其中 $n_i$表示第 $i$跳邻居的采样数量。对于 $1$-hop邻居集合 $\mathcal{N}_v^1$，从其中随机采样 $n_1$个邻居，表示为 $\widetilde{\mathcal{N}}_v^1$。如果 $\left|\mathcal{N}_v^1\right|&lt;n_1$，那么用placeholder nodes来补全 $n_1$个邻居。注意，这里定义的每跳邻居的采样数量 $n_1, n_2, \cdots$是应用于所有节点的。得到的 $v$-centered tree如下图所示：</p>
+<p><img loading="lazy" src="/posts/2025-07-28-llaga/0.png#center" alt="icl"  />
+</p>
+<p>这里定义 $n_2 = 3$，如果2跳邻居不满3个节点，那么用 placeholder node  $[\text{pad}]$来占位。然后我们从tree的中心节点开始遍历，可以把这棵计算树转换为一个固定长度的node sequence。这个node sequence描述了以 $A$为中心的局部邻域内的节点相对结构位置（从近到远）。</p>
+<p>上面的步骤将中心节点和它的结构信息编码成一个节点序列，然后我们需要把这个节点序列映射到embedding space中。对于TAG（Text-Attributed Graph），使用现成的语言模型 $\phi$，例如SBERT，RoBERTa或SimTeG来编码文本信息，placeholder node的特征被编码为 $0$向量。然后进一步融合结构信息，每个节点在tree中的结构信息用Laplacian Embedding来表示，也就是拉普拉斯矩阵的特征向量在node id的位置来表示这个node在Tree中的结构信息，也就是相邻的节点有相似的embedding：</p>
+<p>$$
+L=I-\mathcal{D}^{-\frac{1}{2}} \mathcal{A}_{\text {tree }} \mathcal{D}^{-\frac{1}{2}}=U^T \Lambda U
+$$</p>
+<p>其中 $U$的每行表示对应节点的Laplacian Embedding。注意到，我们预训练的时候，只需要计算一次Laplacian Embedding，以为对于任何图中的任何节点，都为它构造一样的computational tree，所以Laplacian Embedding是不变的。对于计算树induced node sequence $v_1, v_2, \cdots, v_n$，那么这个计算树中的节点 $v_i$的最终node embedding表示为：</p>
+<p>$$
+h_{v_i}= \begin{cases}\mathbf{0} || U_i, &amp; \text { if } v_i=[p a d] ; \ \phi\left(x_{v_i}\right) || U_i, &amp; \text { otherwise }\end{cases}
+$$</p>
+<p>它结合了文本信息和节点与领域内其他节点的相对位置信息。</p>
+<h3 id="hop-field-overview-template">Hop-Field Overview Template</h3>
+<p><img loading="lazy" src="/posts/2025-07-28-llaga/1.png#center" alt="icl"  />
+</p>
+<p>Hop-Field Overview Template提供的是一个关于中心节点和其邻居的总结视角。**Neighborhood Detail Template中sequence的每个元素是一个节点，Hop-Field Overview Template中每个元素是一跳节点的总结。**首先，用LM来初始话每个节点的特征，节点 $v$的初始特征为 $h_x^0=\phi\left(x_v\right)$。定义parameter-free message passing on encoded text features：</p>
+<p>$$
+h_v^i=\frac{1}{\left|\mathcal{N}_v^1\right|} \sum_{v^{\prime} \in \mathcal{N}_v^1} h_{v^{\prime}}^{i-1}
+$$</p>
+<p>$h_v^1=\frac{1}{\left|\mathcal{N}_v^1\right|} \sum_{v^{\prime} \in \mathcal{N}_v^1} h_{v^{\prime}}^{0}$表示节点 $v$的 $1$-hop邻居的summarized embedding，即直接聚合邻居的原始特征。 $h_v^i$表示聚合邻居的 $i-1$阶特征，也就是 $v$的 $i$hop以内邻居的summarized embedding。那么可以依据中心节点和hop顺序关系构造一个序列 $h_v^1, h_v^2,\cdots$，用来表示中心节点和它的相对结构信息。这个方法牺牲了更多细节，但是保留了更广的感受野。</p>
+<h3 id="mapping-node-embeddings-into-llms-token-space">Mapping Node Embeddings into LLM’s token space</h3>
+<p>用于对齐节点的embedding space和LLM的token space，使得节点序列可以作为LLM的输入。定义一个可训练的projector $f_\theta$：</p>
+<p>$$
+e_i=f_\theta\left(h_i\right)
+$$</p>
+<p>用来将序列中的每个节点embedding映射到token space。然后，node embedding sequence $h_1, h_2,\cdots, h_n$可以被转换成token embeddings $e_2, e_2,\cdots, e_n$。LLaGA中唯一的训练参数就是这个projector $f_\theta$。</p>
+<h3 id="alignment-tuning">Alignment Tuning</h3>
+<p><img loading="lazy" src="/posts/2025-07-28-llaga/2.png#center" alt="icl"  />
+</p>
+<p>LLaGA采用3个预训练任务：节点分类，链路预测和<strong>节点描述（Node description）。<strong>其中，Node description任务用于将node embedding和特定文本描述对齐。这个特殊任务能够提供图的丰富语义解释，从而更深入地了解基于图的预测背后的逻辑。将这些预训练projector的任务统一成</strong>Questions and Answers</strong>的形式：</p>
+<p>Questions: Please describe the center node: <!-- raw HTML omitted -->.</p>
+<p>Answers: The center node represents a [paper / products /&hellip;], it’s about [node description].</p>
+<p>在训练过程中，以chat的形式在组织问答，Vicuna-v1.5 (Chiang et al., 2023) 作为LLaGA的LLM模型。如上图step 2所示，在处理Freezed LLM的输入阶段，将SYSTEM MESSAGE，USER: [Give you a node] 都tokenize，然后将node sequence 替换为projected node embedding $e_1, e_2, \cdots$，然后将后面描述任务的prompt也tokenize，训练的优化目标是最大化生成正确答案的概率：</p>
+<p>$$
+\underset{\theta}{\operatorname{maximize}} \quad p\left(X_{\text {answer }} \mid X_{\text {graph }}, X_{\text {question }}, X_{\text {system }}\right)
+$$</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>NeurIPS2024《GFT：Graph Foundation Model with Transferable Tree Vocabulary》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/gft/</link>
+      <pubDate>Mon, 28 Jul 2025 14:49:00 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/gft/</guid>
+      <description>NeurIPS2024 &amp;#34;GFT：Graph Foundation Model with Transferable Tree Vocabulary&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p>本文的目的是在预训练图上训练一组通用的图词汇表（vocabulary）作为图上可迁移的通用pattern，这些词汇表可应用于跨领域的多任务中。</p>
+<h2 id="gnn的可迁移性">GNN的可迁移性</h2>
+<p>可迁移性指的是模型从source task中提取模式，这些模式的知识可以增强对目标任务的预测。近期的工作通过识别与各种任务相关的关键子结构，来研究图上可迁移的词汇表。例如，三元闭包（triadic closure），同质性，异质性对于节点分类至关重要；一些motif，比如三角形，k-cliques，和star，是图分类的基本组成成分，这些子结构可以作为通用可迁移的pattern，基于这些子结构在不同图中的形式，或者研究图具有怎样的子结构组成，可以推断图在各种任务上的表现。</p>
+<p>拿自然语言来类比，positive sub-vocabulary 可以是 [happy, nice, great, … ]；negative sub-vocabulary 可以是[upset, bad, worse, … ]，对于一个句子，只需要用它来检索这个词汇表，就可以对这个句子是积极或者消极做出分类。</p>
+<p>对于Graph也是一样，构建一些通用的子结构，下游graph去检索这些子结构，基于子结构的性质来对图的性质做出推理。</p>
+<h2 id="计算树computation-tree作为可迁移的graph-pattern">计算树（computation tree）作为可迁移的graph pattern</h2>
+<p>Computation Tree：对于一个图 $\mathcal{G}(\mathcal{V}, \mathcal{E})$，关于节点 $v$，它的 $L$ 层计算树为 $\mathcal{T}_v^L$，且 $\mathcal{T}_v^1 = v$。这个tree通过递归融合邻居的子树得到。对于图 $\mathcal{G}$，它的 $L$层子树的集合可以表示为一个multiset： $\mathcal{T}_{\mathcal{G}}^L:=\left\{\mathcal{T}_v^L\right\}_{v \in \mathcal{V}}$ 。</p>
+<h3 id="为什么计算树比其他子结构如motif更适合做通用的vocabulary">为什么计算树比其他子结构（如motif）更适合做通用的vocabulary？</h3>
+<p>首先，节点级、边级、图级任务都可以表示为计算树的分类任务。如下图所示：</p>
+<p><img loading="lazy" src="/posts/2025-07-28-GFT/0.png#center" alt="icl"  />
+</p>
+<p>计算树可以捕获图中重要的局部子树模式。如果两个节点的 $L$层计算树相似（同时考虑节点和特征），那么表明这两个节点共享相似的邻域信息，则这两个节点具有类似现象（analogous phenomena）。</p>
+<p><strong>两个具有相似计算树的图，是否以为这模型在这两个图上的迁移性更好？（Yes）</strong></p>
+<p>两个图具有相似的其他子结构（如motif），并<strong>不一定</strong>意味着两个图之间模型的迁移性更好</p>
+<p>Theorem 2.2：</p>
+<p>$$
+\Delta \triangleq\left|\left|\phi\left(\mathcal{T}_{v_1}\right)-\phi\left(\mathcal{T}_{v_2}\right)\right|\right|_2 \leq \mathcal{C}_1 \left| \left| \mathbf{x}_{v_1}-\mathbf{x}_{v_2}\right|\right|_2+\mathcal{C}_2 \sum_{j \in \mathcal{N}(v)} \Delta_{v_1, v_2, j}^{L-1} \leq 2 \mathcal{B}_{\mathbf{x}}\left(\mathcal{C}_1+\sum_{l=1}^L \mathcal{C}_2^l D_l\right)
+$$</p>
+<p>上面定理表示，一个GNN模型 $\phi$对两个计算树计算embedding的相似度，一定会被两个计算树的子树相似度bound，也就是说，<strong>如果两个计算树相似，那么GNN一定可以为他们计算相似的embedding，从而做出相似度预测，所以GNN在这两个子树上具有较好的可迁移性</strong>。如下图所示，motif的相似度并不意味着更高的准确率，99.01的motif相似度，实际上的准确率很低，但计算树的相似度可以反映相似度，所以可以作为图上可迁移的vocabulary，下游图可以检索vocabulary计算树来推测性质。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-GFT/1.png#center" alt="icl"  />
+</p>
+<h2 id="pre-training-with-computation-tree-reconstruction">Pre-training with Computation Tree Reconstruction</h2>
+<p>GFT采用Vector Quantization (VQ, 参考VQ-VAE)来开发计算树词汇表。对于一个图数据库 $\mathcal{D} = \{\mathcal{G}_i\}^n_{i = 1}$，从中提取一个集合的计算树 $\mathcal{T}=\left\{\mathcal{T}_i\right\}_{i=1}^m$。通过GNN $\phi$可以得到 $m$个computation tree的embedding： $\mathcal{Z}=\left\{\mathbf{z}_i\right\}_{i=1}^m$。然后定义一组codebooks为可学习的tokens $\mathbf{C}=\left\{\mathbf{c}_1, \ldots, \mathbf{c}_K\right\}$，那么tree embedding space被量化为将每个tree embedding分配给最近的codebook token（类似于k-means，但没有明确的k）。那么对于tree embedding $\mathbf{z}_i$，它所属的codebook token 为 $\mathbf{q}_i=\mathbf{c}_j$，其中 $j=\arg \min _j\left|\left|\mathbf{z}_i-\mathbf{c}_j\right|\right|_2 .$ 那么对于 $m$个数，可以将他们分配給 $K$个codebook tokens 作为长度为 $K$的词汇表。通过vocabulary loss和commitment loss来优化tree embedding和codebook tokens，可以得到预训练目标函数：</p>
+<p>$$
+\mathcal{L}_{\text {pretrain }}=\mathcal{L}_{\text {tree }}+\underbrace{\frac{1}{m} \sum_{i=1}^m\left|\left|\operatorname{sg}\left[\mathbf{z}_i\right]-\mathbf{c}_i\right|\right|_2^2}_{\text {vocabulary loss }}+\beta_1 \cdot \underbrace{\frac{1}{m} \sum_{i=1}^m\left|\left|\mathbf{z}_i-\operatorname{sg}\left[\mathbf{c}_i\right]\right|\right|_2^2}_{\text {commitment loss }}
+$$</p>
+<p>先看后面两项，目的是可微地将 $m$个tree embedding压缩为 $K$个向量， $\mathrm{sg}[\mathbf{z}_i]$是stop-gradient的意思，即前向传播得到 $\mathbf{z}_i$后，block $\mathbf{z}_i$回传的梯度，也就是把 $\mathrm{sg}[\mathbf{z}_i]$视为constant来优化 $\mathbf{c}_j$。commitment loss同理。</p>
+<p><strong>Computation Tree Reconstruction.</strong> 除了vocabulary loss和commitment loss联合训练codebooks和tree embedding外，本文还引入了一个树重建任务使得学习到的词汇表可以深入理解计算树的结构和语义属性。</p>
+<ol>
+<li>对于每个计算树 $\mathcal{T}_i$所属的token $\mathbf{q}_i \in \mathbf{C}$，它应当具备重构计算树root node 特征 $\mathbf{x}_i$的能力（codebook token要充分学习它包含的计算树的结构和属性信息）：</li>
+</ol>
+<p>$$
+\mathcal{L}_{\text {feat }}=\frac{1}{m} \sum_{i=1}^m\left|\left|\hat{\mathbf{q}_i^2}-\mathbf{x}_i\right|\right|_2^2
+$$</p>
+<ol>
+<li>计算树token $\mathbf{q}_i$ 要能够重构树 $\mathcal{T}_i$的总体语义信息 $\mathbf{z}_i$：</li>
+</ol>
+<p>$$
+\mathcal{L}_{s e m}=\frac{1}{m} \sum_{i=1}^m\left(1-\frac{\hat{\mathbf{q}}_i^{1^T} \hat{\mathbf{z}_i}}{\left|\left|\hat{\mathbf{q}_i^1}\right|\right|\left|\left|\hat{\mathbf{z}}_i\right|\right|}\right)^\gamma
+$$</p>
+<ol>
+<li>对于有边连接的节点，他们的两个计算树 $\mathcal{T}_i$ 和 $\mathcal{T}_j$所属的codebook token $\mathbf{q}_i$和 $\mathbf{q}_j$要相似：</li>
+</ol>
+<p>$$
+\mathcal{L}_{\text {topo }}=\sum_{(i, j) \in \mathcal{E},\left(i, j^{\prime}\right) \in \hat{\mathcal{E}}}-\frac{1}{|\mathcal{E}|} \log \left(\sigma\left(\hat{\mathbf{q}}_i^{\mathbf{3}^T} \hat{\mathbf{q}}_j^3\right)\right)-\frac{1}{|\hat{\mathcal{E}}|} \log \left(1-\sigma\left(\hat{\mathbf{q}}_i^{\mathbf{3}^T} \hat{\mathbf{q}}_{j^{\prime}}^3\right)\right)+\frac{1}{|\mathcal{E}|}\left|\left|\left[\mathbf{q}_i^4 || \mathbf{q}_j^4\right]-\mathbf{e}_{i j}\right|\right|_2^2
+$$</p>
+<p>所以预训练loss $\mathcal{L}_{\text {pretrain }}$中的 $\mathcal{L}_{\text {tree }}$定义为如下形式：</p>
+<p>$$
+\mathcal{L}_{\text {tree }}=\beta_2 \cdot \mathcal{L}_{\text {feat }}+\beta_3 \cdot \mathcal{L}_{\text {sem }}+\beta_4 \cdot \mathcal{L}_{\text {topo }}
+$$</p>
+<p>为了增强tree vocabulary的质量，不同的词汇应具备一定的区分性，所以regularize the tree vocabulary space by intentionally <strong>increasing the distance between distinct tokens</strong>：</p>
+<p>$$
+\mathcal{L}_{\text {ortho }}=\lambda \frac{1}{K^2}\left|\left|\mathbf{C C}^T-\mathbf{I}_K\right|\right|_F^2, \quad \mathbf{C}=\left[\mathbf{c}_1, \ldots, \mathbf{c}_K\right]^T \in \mathbb{R}^{K \times d^{\prime}}
+$$</p>
+<h2 id="fine-tuning-with-computation-tree-classification">Fine-tuning with Computation Tree Classification</h2>
+<p>预训练阶段将通用知识编码到Tree vocabulary中，Fine-tuning阶段将这些知识应用于特定的预测任务。首先将节点级、边级、图级任务全部统一成tree-level task。</p>
+<ul>
+<li>节点分类：任务特定的树表示为 $\mathcal{T}_{node}  =\mathcal{T}_i$，embedding为 $\mathbf{z}=\phi\left(\mathcal{T}_i\right)$。</li>
+<li>链接预测：任务特定的树表示为 $\mathcal{T}_{\text {link }}=\operatorname{Combine}\left(\mathcal{T}_s, \mathcal{T}_t\right)$， embedding为 $\mathbf{z}=\operatorname{mean}\left(\phi\left(\mathcal{T}_s\right), \phi\left(\mathcal{T}_t\right)\right)$。</li>
+<li>图级分类：任务特定的树表示为 $\mathbf{z}=\operatorname{mean}\left(\phi\left(\mathcal{T}_s\right), \phi\left(\mathcal{T}_t\right)\right)$。</li>
+</ul>
+<p>然后，任务特定的计算树通过查询tree vocabulary来做出预测，从而将词汇表中的通用知识用于各种任务和领域。</p>
+<p><strong>Prototype Classifier</strong>. 给定一组任务特定的计算树 $\left\{\left(\mathcal{T}_i, y_i\right)\right\}_{i=1}^n$包含 $|C|$个类别，需要预测这个计算树的类别。对于一个预训练好的GNN $\phi$，可以为这些计算树生成embeddings $\mathcal{Z}=\left\{\mathbf{z}_i\right\}_{i=1}^n$。这些embedding用于查询tree vocabulary 然后可以得到每个计算树所属的codebook token $\mathcal{Q}=\left\{\mathbf{q}_i\right\}_{i=1}^n$。然后，对于每个类别有一定数量的计算树用于训练，对于训练计算树，构造一个memory bank $\mathbb{S}=\left\{\mathbb{S}^1, \ldots, \mathbb{S}^{|C|}\right\}$用来保存构构成每个类别的codebook token，其中 $\mathbb{S}^k = \{\mathbf{q}_i \in \mathcal{Q} | y_i = k\}$，表示那些用于构成类别 $k$的codebook tokens。那么，class prototype就是用于表示这些类的tokens的结合：
+$$
+\mathbf{p}_k=\frac{1}{ \left|\mathbb{S}^k\right|} \sum_{\mathbf{q}_i \in \mathbb{S}^k} \mathbf{q}_i
+$$</p>
+<p>这些类prototype可以用于对测试计算树的预测。若测试计算树的GNN embedding为 $\mathbf{z}$，那么它的第 $k$个类别的预测结果如下：</p>
+<p>$$
+p(y=k \mid \mathbf{z})=\frac{\exp \left(-\operatorname{sim}\left(\mathbf{z}, \mathbf{p}_k\right) / \tau\right)}{\sum_c \exp \left(-\operatorname{sim}\left(\mathbf{z}, \mathbf{p}_c\right) / \tau\right)}
+$$</p>
+<p>通过上面的概率在下游图的训练集上fine-tuning模型。为什么要fine tuning，因为对于不同的图，同一个计算树可能的作用也是不一样的，所以要通过这种方式来让计算树的embedding变得task specific，使得每个类别有最适合它的计算树。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>ICLR2025《GOFA：A Generative One-For-All Model for Joint Graph Language Modeling》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/gofa/</link>
+      <pubDate>Mon, 28 Jul 2025 14:35:16 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/gofa/</guid>
+      <description>ICLR2025 &amp;#34;GOFA：A Generative One-For-All Model for Joint Graph Language Modeling&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p>GOFA是OFA（ICLR 2024）的后续工作，用来解决OFA中存在的一些问题。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-Gofa/6.png#center" alt="icl"  />
+</p>
+<p>OFA用NOI Prompt Node来统一不同的分类任务，也就是用不同的NOI Prompt Node来表示不同的分类任务，然后用任务的文本描述作为这些表示任务的节点的文本特征，LLM 编码来数值化这个节点的初始特征，任务对应的label也用节点（Class Node）来表示，然后用每个class的文本描述作为这个Class Node的特征。GNN的训练目标就是训练NOI Prompt node的embedding 和class node的embedding，对于某个节点，如果我们要预测它关于某个任务的标签，只需要把它和这个任务对应的NOI Prompt Node连接起来，根据输出就可以知道这个节点在该任务下的标签。</p>
+<p>但是，OFA存在以下问题：必须是已知任务，无法泛化到新的任务，因为新的任务NOI Prompt Node 未知，也不知道新任务的Class Node是什么， 因此下游任务必须得是预训练阶段见过的任务，不能是一个全新的任务。此外，可以看出由于OFA是一个supervised foundation model，所以他和参与训练的任务标签是强相关的，很难泛化到训练阶段没有见过的任务，GOFA就是用来解决OFA存在的问题，GOFA认为foundation model的训练过程应该不能有标签信息加入的，也就是需要是自监督的。</p>
+<h2 id="unified-task-formats">Unified Task Formats</h2>
+<p>模型的输入必须要统一，所以和过去的很多方法一样，GOFA用TAG来统一所有graph：</p>
+<p>$$
+G=\left\{V, E, X_V, X_E\right\}
+$$</p>
+<p>自监督语言模型里面，模型训练的目标叫next-token prediction 通常是补全句子，比如给定一个句子，自监督语言模型的训练目标是基于这个句子来预测生下来的tokens，假设剩下来的token是apple，参数优化的目标就是使生成apple的likelihood要最大， 如下图所示：</p>
+<p><img loading="lazy" src="/posts/2025-07-28-Gofa/1.png#center" alt="icl"  />
+</p>
+<p>GOFA提出的自监督图模型，也继承这种做法，模型学习的目标是补全TAG图，有个目标节点，叫node of generation，也就是自监督学习要补全的节点，把它的文本属性截断，然后自监督学习的目标就是要生成这个NOG node 的剩下内容。但是，如果要生成这个节点剩下的内容的话，不能无视这种图中的边信息，因为图的结构可以帮助这个自监督任务生成正确的信息，所以自监督图模型需要充分理解图结构。比如上图中的Target就需要在理解边关系的情况下补全句子，因此，模型需要充分学习图结构。</p>
+<h2 id="gofa-generative-one-for-all-model">GOFA: Generative One-For-All Model</h2>
+<p>怎么才能在充分学习图结构的情况下，补全目标节点的text，是GOFA的主要目标。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-Gofa/2.png#center" alt="icl"  />
+</p>
+<p>GOFA主要由2个模块组成，一个是Graph Language Encoder，还有一个是LLM Decoder。其中Graph Language Encoder的目的是用来学习节点的表示向量， 其中交替训练了LLM compressor和GNNlayer，LLM compressor用来学习TAG graph中的语义信息，GNN用来学习结构关系信息（也就是NOG Node和其他节点的交互）。因为GNN已经可以学到图的结构信息了，LLM compressor的作用就是把文本信息压缩到GNN学习的节点表示中。 第二个模块是一个LLM decoder，它的训练目标是，基于节点的向量表示，预测下一个token。</p>
+<h3 id="graph-language-encoder">Graph Language Encoder</h3>
+<p>Graph Language Encoder 包含LLM compressors和GNN Layers。对于一个NOG Node的text attribute，若它由 $l$个tokens组成 $\{x_i\}_{i = 1}^l$，通过一个pretrained LLM 比如Mistral-7B，可以将每个token映射为一个token embedding $q(x_i)$。那么将NOG Node的所有token $\left\{q\left(x_i\right)\right\}_{i=1}^l$ pooling成一个向量可以作为NOG Node的node feature vector。但是这种做法丢失太多semantic information。</p>
+<p><strong>Solution:</strong> 将NOG Node的text attribute压缩为 $K$个向量，且 $K &laquo;l$。具体来说，首先定义 $K$个memory tokens $\{m_1, \cdots. m_K \}$ with their lookup initial embeddings $\left\{q\left(m_j\right)\right\}_{j=1}^K$用于接收压缩后的text tokens。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-Gofa/3.png#center" alt="icl"  />
+</p>
+<p>然后把 $l$个text tokens和 $K$个memory tokens 拼起来输入到LLM Compressor Layer1，由于LLM的是<strong>multiple transformer layers</strong> (self-attention mechanisms)，因此可以捕获memory tokens和text tokens之间的dependencies。所以通过这种方式，text tokens的信息可以被压缩到memory tokens中。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-Gofa/4.png#center" alt="icl"  />
+</p>
+<p>此时，这个目标节点（NOG Node）的特征向量就被压缩到 $K$个token embeddings，但是这个时候 $K$个memory tokens并没有学到图的结构信息。为了编码图的结构信息，将这 $K$个memory token embeddings作为node features输入GNN中，做一个 $K$通道的聚合GNN。通过上图中的Token-level Message Passing，可以将图的结构信息编码到 NOG Node的 $K$个memory tokens中，然后将GNN处理过的memory token embeddings再和text token embeddings拼起来，用LLM compressors将文本信息压缩到 memory token embeddings中。经过 $L$次的交替LLM压缩和训练GNN后，这里得到的 $K$个memory token可以认为是充分节点的text 信息和图的结构信息。</p>
+<h3 id="llm-decoder">LLM Decoder</h3>
+<p><strong>The memory tokens $Q_{m,x}$ ( $m$:memory; $x$: 节点 $x$) of every node contain information about the text on the node, the surrounding node text, and the graph structure due to the message-passing process in the GNN layers.</strong> 然后，对于NOG节点 $v$，它的completion target 是 $y$，GOFA将NOG Node的memory tokens $Q_{m,x}$插入到target text tokens的前面，然后输入LLM Decoder中来生成下一个token。优化目标是最大化completion target 的log likelihood，也就是生成正确tokens的概率。</p>
+<p>$$
+\operatorname{CrossEntropy}\left(\left\{l\left(m_K\right), l\left(x_1\right), \ldots, l\left(x_{l-1}\right)\right\},\left\{x_1, \ldots, x_l\right\}\right) .
+$$</p>
+<p>在GOFA的influence阶段，输入一个新图和每个节点的text attribute，并且给出目标节点NOG Node，就可以补全该NOG Node。</p>
+<p><img loading="lazy" src="/posts/2025-07-28-Gofa/5.png#center" alt="icl"  />
+</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Fair Graph Learning</title>
       <link>https://JhuoW.github.io/posts/fairnessgnn/</link>

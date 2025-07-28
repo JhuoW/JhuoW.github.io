@@ -10,21 +10,11 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 21 May 2025 12:13:13 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Fairness</title>
-      <link>https://JhuoW.github.io/tags/fairness/</link>
-      <pubDate>Wed, 21 May 2025 12:13:13 +0800</pubDate>
-      
-      <guid>https://JhuoW.github.io/tags/fairness/</guid>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
-    </item>
-    
+    <lastBuildDate>Mon, 28 Jul 2025 15:19:07 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GNN</title>
       <link>https://JhuoW.github.io/tags/gnn/</link>
-      <pubDate>Wed, 21 May 2025 12:13:13 +0800</pubDate>
+      <pubDate>Mon, 28 Jul 2025 15:19:07 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/gnn/</guid>
       <description></description>
@@ -34,9 +24,19 @@
     <item>
       <title>LLM</title>
       <link>https://JhuoW.github.io/tags/llm/</link>
-      <pubDate>Wed, 21 May 2025 11:57:35 +0800</pubDate>
+      <pubDate>Mon, 28 Jul 2025 15:19:07 +0800</pubDate>
       
       <guid>https://JhuoW.github.io/tags/llm/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Fairness</title>
+      <link>https://JhuoW.github.io/tags/fairness/</link>
+      <pubDate>Wed, 21 May 2025 12:13:13 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/tags/fairness/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

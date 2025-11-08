@@ -10,9 +10,71 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 26 Oct 2025 13:59:35 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/llm/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 08 Nov 2025 13:16:37 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/tags/llm/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>ICML2025《AutoGFM：Automated Graph Foundation Model with Adaptive Architecture Customization》 阅读笔记</title>
+      <title>ICML2025《Towards Graph Foundation Models：Learning Generalities Across Graphs via Task-Trees》 Reading Notes</title>
+      <link>https://JhuoW.github.io/posts/2025-11-08-task-tree/</link>
+      <pubDate>Sat, 08 Nov 2025 13:16:37 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/2025-11-08-task-tree/</guid>
+      <description>ICML2025 &amp;#34;Towards Graph Foundation Models：Learning Generalities Across Graphs via Task-Trees&amp;#34; 阅读笔记</description>
+      <content:encoded><![CDATA[<p>和GFT类似，本文使用task-tree来作为统一不同图任务的学习实例。图中什么样的信息是可以实现跨图泛化的？过去的方法通常从2个角度出发：（1）一些方法利用graphon来作为跨图的可迁移pattern，如果两个图生成自相同的graphon，那么这两个图有相似的结构属性，但是这类方法依赖于强的生成假设，并且从大量图中计算graphon是计算复杂的；（2）可以通过寻找重复出现的motif来作为可迁移的pattern：在不同图中都可用于预测图属性的关键substructure，类似于自然语言中表示积极或者消极的词语就是关键子结构，在不同的句子中都可用于预测句子情感。但MPNN难以捕获这这些子结构。本文提出用task-tree来作为transferable pattern。</p>
+<p>定义1（任务相关节点）节点级任务，task-relevant node就是节点本身 $v_i^t$；边级任务的task-relevant node是边的endpoints $\{v_i^t, v_j^t\}$ for target edge $e_{ij}$；对于图级任务，task-relevant nodes是 $\{v_i^t\}^{|V|}_{i=1}$为目标图中的所有节点。</p>
+<p>定义2（计算树）对于一个节点 $v$，它的 $L$层计算树 $T^L_v$是以该节点为根节点的 $L$层subtree，其中 $T^1_v =v$。</p>
+<p>定义3（Task-Trees）对于一个任务的一组task-relevant nodes ${v_i^t,\ldots,v_n^t}$和这些节点的计算树 $\{T_1, \ldots,T_n\}$。这些计算树可以通过引入<strong>连接到所有任务相关节点的虚拟节点</strong>构成一个更大的task-tree $T^t$。如下图所示，虚拟节点连接到任务相关的节点上，对于节点分类，目标节点被连接到虚拟节点；边任务上，endpoints被连接到虚拟节点。</p>
+<p><img loading="lazy" src="/posts/2025-11-08-task-tree/1.png#center" alt="autogfm"  />
+</p>
+<p>对于一个task-tree $T^t$，它由一个虚拟节点 $v^t$和它的任务相关节点 $\{v_i^t,\ldots,v_n^t\}$，通过MEAN aggregator over computation trees来计算这个task-tree的表示：</p>
+<p>$$
+z^t=\phi\left(T^t\right)=\frac{1}{n} \sum_{i=1}^n \phi\left(T_i\right)
+$$</p>
+<p>所有分类任务均通过任务目标task-tree的表示来做prediction。</p>
+<p>GIT与GFT的区别：GFT通过实验证明计算树可以所谓跨任务的可迁移实例；GIT提供了理论基础。</p>
+<h1 id="theoretical-analysis-of-task-trees">Theoretical Analysis of Task-Trees</h1>
+<h2 id="stability-on-task-trees">Stability on Task-Trees</h2>
+<p>首先分析GNN在学习task-tree表示时的稳定性，如果GNN可以为<strong>具有相似subtree的task-tree和生成相似的embedding</strong>，那么就说明GNN关于task的输出时稳定的。即task-tree的子树越相似，那么他们的embedding越相似，那么具有相似subtree的task-tree可以用同一个GNN来学习。<strong>也就是说task-tree的相似度可以来决定两个任务是否可以用同一个GNN来学习</strong>。具体来说，用邻居的平均来表示每层subtree的信息： $\boldsymbol{x}_i^{(l)}=\frac{1}{\left|\left|\mathcal{N}_i\right|\right|} \sum_{j \in \mathcal{N}_i} \boldsymbol{x}_j^{(l-1)}$。给定两个 $L$层的task-tree $T_t^1$和 $T_t^2$，他们的task-relevant nodes分别是 $\{v_1, \ldots,v_n\}$和 $\{v_1, \ldots,v_m\}$，他们可能代表不同的任务，每个task-tree的subtree数量可能也不同，比如节点级任务的subtree和图级任务的subtree数量差别很大。用GNN为task的输出来定义task-tree之间的差异 $\Delta:=\left|\left|\phi\left(T_1^t\right)-\phi\left(T_2^t\right)\right|\right|$，它由如下bound：</p>
+<p>$$
+\begin{aligned}\Delta &amp; =\left|\left|\phi\left(T_1^t\right)-\phi\left(T_2^t\right)\right|\right|=\left|\left|\frac{1}{n} \sum_{i=1}^n \phi\left(T_i\right)-\frac{1}{m} \sum_{j=1}^m \phi\left(T_j\right)\right|\right| \\ &amp; \leq \frac{1}{n m} \sum_{i=1}^n \sum_{j=1}^m\left(\mathcal{C}_1\left|\left|\boldsymbol{x}_i^{(0)}-\boldsymbol{x}_j^{(0)}\right|\right|+\ldots\right. \\ &amp; \left.+\mathcal{C}_1 \mathcal{C}_2^{L-1}\left|\left|\boldsymbol{x}_i^{(L-1)}-\boldsymbol{x}_j^{(L-1)}\right|\right|\right) \leq 2 \mathcal{B}_{\boldsymbol{x}} \cdot \mathcal{C}_1 \frac{\mathcal{C}_2^L-1}{\mathcal{C}_2-1}\end{aligned}
+$$</p>
+<p>上面这个式子表示，GNN为task-tree输出的embedding差异被这个task-tree的subtree差异bounded，也就是说，两个task-tree越相似（子树越相似），那么GNN就可以为他们输出越相似的embedding，由于task-tree的embedding计算时通过计算它的所有subtree的平均 $\frac{1}{m} \sum_{j=1}^m \phi\left(T_j\right)$来得到的，所以相似度与subtree个数无关，也就是说，即使是两个完全不同的任务（比如节点级任务和图级任务）它的的task-tree也可能相似，那么他们也可以使用相似的GNN来进行处理，所以GNN可以捕获task-tree之间的共享pattern。</p>
+<p>总结：GNN可以为相似的task-tree得到相似的embedding，所以task-tree可以作为可迁移pattern。反之，GNN对相似的子结构无法输出相似的embedding，那么这种子结构就不能作为可迁移的pattern，因为具有这些相似的子结构的图并不能用GNN来推断出他们具有相似的性质。也就是说，task-tree可以作为一种好的任务signature，2个任务有相似的task-tree，那么可以用统一的GNN。</p>
+<h2 id="transferability-on-task-trees">Transferability on Task-Trees</h2>
+<p>假设一个模型通过<strong>task-tree的重构任务</strong>来预训练，为了量化预训练中获得的知识如何迁移到下游任务，将预训练的目标函数定义为：</p>
+<p>$$
+\mathcal{L}_{\mathcal{P}}(g \circ \phi):=\mathbb{E}_{(\hat{T}, T) \sim \mathcal{P}}||g(\phi(\hat{T}))-\phi(T)||^2,
+$$</p>
+<p>其中， $\mathcal{P}$是预训练task-tree的分布， $\phi$是GNN encoder， $g$是reconstruction head，用于将扰动后的task-tree $\hat{T}$重构为原始task-tree $T$。下游任务的损失定义如下：</p>
+<p>$$
+\mathcal{R}_{\mathcal{T}}(f \circ \phi):=\mathbb{E}_{(T, y) \sim \mathcal{T}} \kappa(f(\phi(T)), y)
+$$</p>
+<p>其中 $\mathcal{T}$是下游任务的task-tree分布，每个task-tree有它的标签 $y$，表示预训练模型在下游任务上的loss。进一步，以下定理成立：</p>
+<p>$$
+\min _{f \in \mathcal{F}} \mathcal{R}_{\mathcal{T}}(f \circ \phi)-\min _{f^{\prime} \in \mathcal{F}} \mathcal{R}_{\mathcal{T}}\left(f^{\prime} \circ \phi^{\prime}\right)  \leq \mathcal{C}_\delta\left(\min _{g \in G} \mathcal{L}_{\mathcal{P}}(g \circ \phi)-\min _{g^{\prime} \in G} \mathcal{L}_{\mathcal{P}}\left(g^{\prime} \circ \phi^{\prime}\right)\right)^\delta,
+$$</p>
+<p>直观来看，上式左边表示预训练模型表示两个预训练模型在下游任务上的损失差异，右边表示在task-tree上预训练两个模型的预训练损失。可以看出如果预训练模型在task-trees上表现与下游任务上的表现一直，也就是说，预训练效果相似的模型，他们在下游任务上的效果也是相似的，因此可以说明task-tree上的预训练是可迁移的。</p>
+<h2 id="generalization-on-task-trees">Generalization on Task-Trees</h2>
+<p>给定2个task-tree分布， $\mathcal{P}$是预训练task-trees的分布， $\mathcal{T}$是下游任务的task-tree分布，GNN $\phi$在服从 $\mathcal{P}$分布的一组task-trees $\{T_i\}^m_{i=1}$上预训练，然后在服从 $\mathcal{T}$的task-trees $\{T_i\}^n_{i=1}$上测试的，那么下游任务的generalization bound表示为：</p>
+<p>$$
+\begin{aligned}&amp; \mathcal{R}_{\mathcal{T}}(f \circ \phi) \leq \min_{f^{\prime} \in \mathcal{F}} \mathcal{R}_{\mathcal{T}}\left(f^{\prime} \circ \phi^*\right) \\ &amp; \quad+2 \mathcal{C}_2\left(\sum_{x \in \mathcal{X}_\phi}\left|\left|\mathcal{T}_\phi(x)-\mathcal{P}_\phi(x)\right|\right|+2 \sqrt{\frac{\log (1 / v)}{n}}\right) \\ &amp; \quad+\mathcal{C}_\delta\left(\mathcal{E}_{\mathcal{P}}(g, \phi)\right)^\delta+\frac{4 \mathcal{C}_1}{n} \sqrt{\sum_{i=1}^n\left|\left|\phi\left(T_i\right)\right|\right|^2},\end{aligned}
+$$</p>
+<p>从上式的右边可以看出，预训练模型在具有不同task-tree分布的下游任务上的损失由第二项的分布差异决定，预训练与finetune节点task-tree的分布差异越小，那么预训练模型就越适合于下游任务的分布。</p>
+<h1 id="git-g">GIT-G</h1>
+<p>从上面的分析可以看出，task-tree重构任务具备可迁移性，task-tree reconstruction任务构建如下，对于一组task-trees $\{T_1^t,\ldots ,T_n^t\}$，构造它的两个view $\{\hat{T}_1^t,\ldots ,\hat{T}_n^t\}$和 $\{\tilde{T}_1^t,\ldots ,\tilde{T}_n^t\}$。然后构造重构损失：</p>
+<p>$$
+\begin{aligned}\mathcal{L} &amp; =\frac{1}{2 n} \sum_{i=1}^n\left[\left|\left|\rho\left(g\left(\hat{\boldsymbol{z}}_i\right)\right)-\operatorname{sg}\left[\rho\left(\tilde{\boldsymbol{z}}_i\right)\right]\right|\right|^2\right. \\ &amp; \left.+\left|\left|\rho\left(g\left(\tilde{\boldsymbol{z}}_i\right)\right)-\operatorname{sg}\left[\rho\left(\hat{\boldsymbol{z}}_i\right)\right]\right|\right|^2\right]+\sum_{i=1}^n D_{\mathrm{KL}}\left(\boldsymbol{h} | \boldsymbol{z}_i\right)\end{aligned}
+$$</p>
+<p>通过该损失来预训练GNN。</p>
+<h1 id="git-s">GIT-S</h1>
+<p>从第三个理论的第二项可以看出，预训练模型的泛化性和预训练节点的task-tree与下游任务的task-tree分布有关，如果分布差异太大，那么预训练阶段的模型难以在下游task上得到较低的损失。因此本文提出了指令调优（instruction-tuning）的方法。指令调优是一种监督式微调 (SFT) 技术，旨在通过在小型数据集上对预训练模型进行后训练来增强其性能。本文的目标是使用指令对模型进行微调，使其更适合特定的目标领域。对于一个已经预训练好的模型 $\phi^<em>$和目标领域内的一堆task-trees $\{T_1,\ldots,T_n\}$，对 $\phi^</em>$用如下损失进行后训练：</p>
+<p>$$
+\mathcal{L}_{S F T}=\frac{1}{n} \sum_{i=1}^n \kappa\left(\phi^*\left(T_i\right), \psi\left(T_i\right)\right),
+$$</p>
+<p>其中 $\psi$是指令生成函数，这里用LLM生成每个task-tree的label描述来post-train $\phi^*$， $\kappa$是MSE loss。</p>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>ICML2025《AutoGFM：Automated Graph Foundation Model with Adaptive Architecture Customization》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/2025-10-26-autogfm/</link>
       <pubDate>Sun, 26 Oct 2025 13:59:35 +0800</pubDate>
       

@@ -97,7 +97,7 @@ $$</p>
 <li>量子纠缠指的是两个粒子动了其中一个，另一个也会瞬间做出反应。（Reward：0.6）</li>
 </ol>
 <p>那么如果将第一个句子的partial state $s_t$=“如何解释量子纠缠？量子纠缠是指两个或多个粒子之间形成了一种无视距离的内在关联” 输入 $V_\gamma(s_t)$，那么它输出的分数应该尽可能接近 0.9，因为当前状态最终可以到达分数为0.9的complete response。通过这种方式来训练一个多层神经网络 $V_\gamma$，使得它可以根据LLM生成的中间状态预测最终response的分数。</p>
-<p>**$V_\gamma$要和LLM同步更新：**在PPO for LLM 中，策略函数 $\pi_\theta$就是LLM本身，用于基于当前state生成下一个token。状态价值函数 $V_\gamma$需要和policy (LLM)同步更新。因为 $V_\gamma(s_t)$预测的是从当前partial response $s_t$出发，按照当前的策略（当前LLM参数）继续生成，最终拿到的期望reward。但是LLM是要被RL微调来生成reward 最高的问题的，所以LLM要和 $V_\gamma$同步更新。</p>
+<p><strong>$V_\gamma$要和LLM同步更新：</strong> 在PPO for LLM 中，策略函数 $\pi_\theta$就是LLM本身，用于基于当前state生成下一个token。状态价值函数 $V_\gamma$需要和policy (LLM)同步更新。因为 $V_\gamma(s_t)$预测的是从当前partial response $s_t$出发，按照当前的策略（当前LLM参数）继续生成，最终拿到的期望reward。但是LLM是要被RL微调来生成reward 最高的问题的，所以LLM要和 $V_\gamma$同步更新。</p>
 <p>具体来说，状态价值函数 $V_\gamma$在RLHF中通常是预训练的LLM加上一个linear head，把LLM hidden state映射到一个标量值作为状态的预测价值。假设LLM在位置 $t$的输出隐藏状态是 $h_t \in \mathbb{R}^d$，那么 $V_\gamma$的形式为：</p>
 <p>$$
 V_\gamma\left(s_t\right)=W^{\top} h_t+b, \quad W \in \mathbb{R}^d, b \in \mathbb{R}

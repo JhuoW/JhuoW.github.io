@@ -10,7 +10,168 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 08 Nov 2025 13:16:37 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Mar 2026 12:13:47 +0800</lastBuildDate><atom:link href="https://JhuoW.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Proximal Policy Optimization (PPO) for Large Language Models</title>
+      <link>https://JhuoW.github.io/posts/ppo-llm/</link>
+      <pubDate>Thu, 19 Mar 2026 12:13:47 +0800</pubDate>
+      
+      <guid>https://JhuoW.github.io/posts/ppo-llm/</guid>
+      <description>PPO在LLM中的应用</description>
+      <content:encoded><![CDATA[<p>主要参考<a href="https://yugeten.github.io/posts/2025/01/ppogrpo/">https://yugeten.github.io/posts/2025/01/ppogrpo/</a> 和一点自己的理解。</p>
+<p>LLM的训练通常可以分为pre-training和post-training两个阶段：</p>
+<ol>
+<li><strong>预训练（Pre-training）：</strong> 这是&quot;把大量数据喂给模型&quot;的阶段。模型在大规模网络数据上通过<strong>下一个 token 预测</strong>（next token prediction）进行训练。简单来说，模型反复做一件事：给定前面的文字，预测下一个词是什么。通过海量文本的训练，模型学会了语言的统计规律、世界知识和基本推理能力。</li>
+<li><strong>后训练（Post-training）:</strong>  目标是在预训练的基础上进一步提升模型的推理能力和对齐程度，它分为两个子阶段：
+<ul>
+<li><em><strong>Stage 1: SFT (监督微调，Supervised Finetuning)：</strong></em> 用少量高质量的&quot;专家推理数据&quot;对模型做监督学习，比如指令跟随、问答、思维链（Chain-of-Thought）等。模型在这个阶段学习模仿专家的示范。如果我们有无限量的高质量专家数据，SFT 本身就足够了——但现实中我们没有。</li>
+<li><em><strong>Stage 2: RLHF (基于人类反馈的强化学习，Reinforcement Learning from Human Feedback)：</strong></em> 核心思路是先让人类标注员对模型输出进行偏好评分，然后训练一个Reward Model来自动化这个评分过程，即模拟人类的评分。最后用强化学习算法（如 PPO、GRPO）引导LLM朝着人类偏好的方向优化。</li>
+</ul>
+</li>
+</ol>
+<p>整个流程可以理解为：pre-training让模型学会回答问题，SFT 让模型回答的像专家，RLHF 让模型说对话，即与人类的细微偏好对齐。DeepSeek R1-Zero 的一个关键创新是跳过了 SFT 阶段，直接在基座模型上做 RL，这样既节省算力，又避免了人工标注数据带来的偏差，还允许模型通过探索自主演化推理能力。</p>
+<h1 id="policy-network">Policy Network</h1>
+<p>策略网络表示为 $\pi_\theta(a|s)$，其中 $\theta$是可训练的参数，表示对于当前环境状态 $s$，执行动作 $a$的概率。对于 $s$状态下所有可能的action $a \in \mathcal{A}$，有 $\sum_{a \in \mathcal{A}} \pi_\theta (a | s) = 1$。</p>
+<p><strong>状态价值函数（State Value Function, Critic）：</strong> 一个用于评价当前状态 $s$好坏的函数 $V_\gamma(s)$：</p>
+<p>$$
+V_\gamma(s) = \sum_a \pi_\theta(a|s) \cdot Q_{\pi}(s,a)
+$$</p>
+<p>当前状态的好坏由当前状态下所有可执行的动作价值的期望决定，也就是当前状态越好，那么在这个状态下执行所有action的<strong>期望</strong>价值越高（当前状态下，执行动作的期望价值越高）。$Q_\pi(s,a)$表示在当前状态 $s$和策略函数 $\pi$下，动作 $a$的价值，即动作价值函数。</p>
+<p>给定状态 $s$，策略函数 $\pi$越好，那么就可以选择出价值最高的动作，那么当前的状态价值就越高。即越好的 $\pi$可以为状态 $s$选出下一步的最优动作 $a$，将$a$施加到 $s$上可以得到最高的回报。</p>
+<h1 id="rlhf-基于人类反馈的强化学习">RLHF: 基于人类反馈的强化学习</h1>
+<p>RLHF 的工作流程拆解为四步：</p>
+<ul>
+<li>
+<p><strong>采样多个回复：</strong> 给定一个 prompt，让模型生成多个不同的回复。比如对于一个问题：”如何解释量子纠缠？“，模型可能生成 5 到 10 条质量，风格、深度、准确度各不相同的回答。采样时通常会用一定的温度参数来保证回复之间的多样性。</p>
+</li>
+<li>
+<p><strong>人类对回复进行排序</strong>：让人类标注员对这些回复按质量排序。实际操作中，通常简化为成对比较（pairwise comparison）：给标注员看两条回复，选出更好的那条。这比给绝对分数更可靠，因为人类更擅长做相对判断。让人类标注所有输出是不现实的，所以只标注一小部分，剩下的交给第三步的Reward Model来自动化。训练出一个通用LLM回答质量评分器，针对<strong>完整的</strong>response评分</p>
+</li>
+<li>
+<p><strong>训练Reward Model</strong>：用第二步收集的偏好数据训练一个Reward Model $R_\phi$。它的任务是：给定任意一个 prompt  $p$，LLM会生成 $N$个回复 $r_1, \ldots, r_N$，且它们都作为Reward Model的输入，来输出这个回答的分数。训练集中，如果人类标注 $r_i$好于 $r_j$，那么 $R_\phi$使用以下Bradley-Terry 损失进行训练：
+$$
+\mathcal{L}(\phi)=-\log \sigma\left(R_\phi\left(p, r_i\right)-R_\phi\left(p, r_j\right)\right)
+$$</p>
+<p>通过这种方式训练的Reward Model $R_\phi$可以模拟人类对一组LLM生成的问答的评价。</p>
+<p>训练完成后，这个Reward Model就被冻结，作为第四步的自动评分器使用。它本质上是人类偏好的一个可微分的近似：把&quot;人觉得好不好&quot;这个主观判断变成了一个可以用来做梯度优化的数值信号。</p>
+</li>
+<li>
+<p><strong>用强化学习（RL）来优化大语言模型</strong>：有了基于人类反馈训练的frozen Reward Model作为评分器，现在用强化学习算法微调 LLM，目标是让模型prompt $p$生成的回复 $r$获得尽可能高的奖励分数 $R_\phi(p, r)$。</p>
+<ul>
+<li>PPO (Proximal Policy Optimization)</li>
+<li>Group Relative Policy Optimization (GRPO)</li>
+</ul>
+</li>
+</ul>
+<h1 id="rl部分ppo">RL部分：PPO</h1>
+<p>PPO 需要三个组件协同工作：</p>
+<ul>
+<li><strong>策略函数（policy） $\pi_\theta$</strong>：就是我们正在微调的 LLM。用来描述当前状态下，选择action的概率分布，例如 $\pi_\theta (a = \text{go left} | s) = 0.3$。对于LLM的RL微调来说，action空间就是token空间，当前环境是prompt和已经输出的上下文，action是下一个输出token。<strong>因此，对 LLM 来说，策略函数就是&quot;给定前文，选择下一个 token 的概率分布&quot;</strong>。</li>
+<li><strong>奖励模型（Reward Model）</strong> $R_\phi$：已经使用人类反馈训练好并且frozen，用来对LLM输出的<strong>完整response</strong> 打分。注意：只能用于对完整的response打分，不能用于对没输出完的response打分！</li>
+<li><strong>状态价值函数</strong> $V_\gamma$：也叫Critic，表示当前中间状态的价值，是一个可学习的网络，可以根据部分回复（immediate state）预测最终会拿到多少分。</li>
+</ul>
+<p>PPO 的完整工作流分五步：</p>
+<ol>
+<li>LLM 对 prompt 生成多条回复；</li>
+<li>奖励模型（Reward Model）对每条完整回复打分；</li>
+<li>用 GAE 计算每个 token 的优势（advantage）；</li>
+<li>用优势信号更新 LLM（策略优化）；</li>
+<li>同步更新 critic，让它更准确地预测奖励。</li>
+</ol>
+<p>接下来逐层展开。</p>
+<p><strong>第一层：State and Action：Token-level RL</strong>
+在 LLM 场景下，RL 的&quot;状态&quot;和&quot;动作&quot;被定义在 <strong>token 级别</strong>：
+第 $t$步的状态 $s_t$包括prompt加上已经生成的所有token。举例来说， $s_0 = {p}$ （只有prompt）， $s_1 = {p, a_0}$（prompt + 第一个生成的词），以此类推，其中action空间就是token空间；动作 $a_t$表示第 $t$步要执行的动作，即next token。</p>
+<p>一条完整回复就是所有动作的序列： $r_i=\left\{a_0, a_1, \ldots, a_{T-1}\right\}$。它意味着 PPO 要在<strong>每个 token 的粒度</strong>上评估这个token生成的质量，而不是只看整条回复。</p>
+<p><strong>第二层：Critic（状态价值函数）</strong></p>
+<p>Reward 信号是稀疏的，只有当整条回复生成完毕时，frozen Reward Model $R_\phi$才返回一个非零分数用来评估生成质量。但 RL 训练需要知道每个中间步骤生成的好不好，比如第 5 个 token 和第 50 个 token 对最终奖励的贡献是不一样的，RL要求LLM的每个中间action的选择可以提升<strong>最终的回报</strong>。</p>
+<p>状态价值函数 $V_\gamma(s_t)$的作用就是：给定当前部分状态 $s_t$，（prompt + 已生成的部分回复），预测最终完整回复能拿到的Reward。也就是对于当前状态 $s_t$，它的价值取决于它最终到达的完整response的分数。在LLM中， $s_t$是partial response，如果补全 $s_t$后的完整response分数很低，那么 $s_t$就是LLM生成的比较差的状态，如果LLM补全 $s_t$后的response分数很高，那么 $s_t$就是好的中间状态。</p>
+<p>状态价值函数通过 $L2$回归的方式训练：</p>
+<p>$$
+L(\gamma)=\mathbb{E}_t\left[\left(V_\gamma\left(s_t\right)-\operatorname{sg}\left(R_\phi\left(s_T\right)\right)\right)^2\right]
+$$</p>
+<p>表示当前的状态 $s_t$输入参数为 $\gamma$的神经网络中，得到当前状态的预测分数，这个预测分数要和尽可能接近Reward Model对完整回复 $s_T$的实际打分。 $\operatorname{sg}(R_\phi)$表示 stop gradient，表示不对Reward model反传梯度，因为它是已经通过RLHF训练好的frozen模型。</p>
+<p>一个例子：训练集prompt: “如何解释量子纠缠？”， LLM生成两个答案：</p>
+<ol>
+<li>量子纠缠是指两个或多个粒子之间形成了一种无视距离的内在关联，无论它们相隔多远，只要测量出其中一个的状态，另一个的状态也会瞬间随之确定。（Reward：0.9）</li>
+<li>量子纠缠指的是两个粒子动了其中一个，另一个也会瞬间做出反应。（Reward：0.6）</li>
+</ol>
+<p>那么如果将第一个句子的partial state $s_t$=“如何解释量子纠缠？量子纠缠是指两个或多个粒子之间形成了一种无视距离的内在关联” 输入 $V_\gamma(s_t)$，那么它输出的分数应该尽可能接近 0.9，因为当前状态最终可以到达分数为0.9的complete response。通过这种方式来训练一个多层神经网络 $V_\gamma$，使得它可以根据LLM生成的中间状态预测最终response的分数。</p>
+<p>**$V_\gamma$要和LLM同步更新：**在PPO for LLM 中，策略函数 $\pi_\theta$就是LLM本身，用于基于当前state生成下一个token。状态价值函数 $V_\gamma$需要和policy (LLM)同步更新。因为 $V_\gamma(s_t)$预测的是从当前partial response $s_t$出发，按照当前的策略（当前LLM参数）继续生成，最终拿到的期望reward。但是LLM是要被RL微调来生成reward 最高的问题的，所以LLM要和 $V_\gamma$同步更新。</p>
+<p>具体来说，状态价值函数 $V_\gamma$在RLHF中通常是预训练的LLM加上一个linear head，把LLM hidden state映射到一个标量值作为状态的预测价值。假设LLM在位置 $t$的输出隐藏状态是 $h_t \in \mathbb{R}^d$，那么 $V_\gamma$的形式为：</p>
+<p>$$
+V_\gamma\left(s_t\right)=W^{\top} h_t+b, \quad W \in \mathbb{R}^d, b \in \mathbb{R}
+$$</p>
+<p>其中 $h_t$是 $s_t$在LLM的Transformer backbone编码后在最后一个token位置的hidden state，然后经过线性映射后得到一个标量 $V_\gamma\left(s_t\right)$ 表示从当前partial response补全最终能拿到多少reward的预测。</p>
+<p><strong>第三层：GAE：广义优势估计</strong></p>
+<p>什么是优势Advantage？</p>
+<p>优势 $A_t$定义为：</p>
+<p>$$
+A_t=Q\left(s_t, a_t\right)-V_\gamma\left(s_t\right)
+$$</p>
+<p>直观上来看， $V(s_t)$是当前状态 $s_t$下，按照当前策略（LLM参数）能拿到的reward的期望。 $Q(s_t, a_t)$是当前状态 $s_t$下，选择特定动作 $a_t$后能拿到的reward。这两个的差异是，生成具体的token $a_t$给 $s_t$带来的增益有多少。</p>
+<ul>
+<li>$A_t &gt; 0$：这个token比平均水平好，应该encourage</li>
+<li>$A_t&lt;0$：这个token比平均水平差，需要discourage</li>
+</ul>
+<p>估计Advantage的两种极端：</p>
+<ol>
+<li><strong>Monte-Carlo（MC）</strong>：等整条response生成完，用实际拿到的总奖励减去 $V(s_t)$，这样可以得到当前这条response中， $a_t$对 状态 $s_t$的advantage。好处是无偏，因为用的是真实奖励，坏处是高方差（LLM是概率模型，每次生成的Reward都不同），需要大量采样才能稳定得到 $a_t$对 状态 $s_t$的advantage。</li>
+<li><strong>时序差分（TD）</strong>：只看相邻的一步， $\delta_t = V_\gamma(s_{t+1}) -V_\gamma(s_t)$，表示 $s_t + a_t$后的期望状态价值与没有施加 $a_t$的期望状态价值计算差值。因为 $V_\gamma(s_{t+1})$并不是 $s_t + a_t$后的最终reward， $\delta_t$并不是 $a_t$带来的真实reward增益。所以这样计算 $a_t$的advantage是有偏的。</li>
+</ol>
+<p>GAE旨在MC和TD之间取得平衡，具体做法是多步TD的加权求和：</p>
+<p>$$
+A_K^{\mathrm{GAE}}=\sum_{t=0}^{K-1} \lambda^t \delta_t, \quad \delta_t=V_\gamma\left(s_{t+1}\right)-V_\gamma\left(s_t\right)
+$$</p>
+<p>其中 $\lambda \in [0,1]$。若 $\lambda = 0$，那么 $A_K^{\mathrm{GAE}} = \delta_t$，表示只看一步TD，因为是期望的差，也就是低方差高偏差；如果 $\lambda = 1$，那么相当于一直走到最后计算 $a_t$带来的真实advantage。实践中通常设置 $\lambda \approx 0.95$。</p>
+<p>PPO中不需要显式算动作价值函数 $Q$，因为策略优化只关心哪个动作相对更好（比平均更好），不需要知道绝对回报是多少。</p>
+<p><strong>第四层：PPO目标函数的四个组成部分 （用于更新LLM policy）</strong></p>
+<p>在有了优势函数（用来衡量一个action的好坏），PPO的目标函数由四个部分组成：</p>
+<ol>
+<li>
+<p>Clipped Surrogate Loss（裁剪替代损失）</p>
+<p>这是PPO的核心，定义概率比：</p>
+<p>$$
+c_t\left(\pi_\theta\right)=\frac{\pi_\theta\left(a_t \mid s_t\right)}{\pi_{\theta_{\mathrm{old}}}\left(a_t \mid s_t\right)}
+$$</p>
+<p>它衡量的是LLM参数更新后，对某个token生成概率相比更新前变化了多少。然后裁剪替代损失为：</p>
+<p>$$
+L^{\operatorname{clip}}(\theta)=\mathbb{E}_t\left[\min \left(c_t A_t^{\mathrm{GAE}}, \operatorname{clip}\left(c_t, 1-\epsilon, 1+\epsilon\right) A_t^{\mathrm{GAE}}\right)\right]
+$$</p>
+<p>假设某个token在模型更新前的概率为0.1，更新后为0.3，那么 $c_t=3$。如果 $\epsilon=0.2$，那么 $c_t$就被剪裁到1.2。那么这个token上的loss就变为 $L^{\operatorname{clip}}(\theta) = 1.2A_K^\text{GAE}$。如果一个token对于 $s_t$有很大的正advantage，那么它的 $A_K^\text{GAE}$就会很大，策略函数的优化目标是使得这个大advantage的action  $a_t$的生成概率尽可能大，所以要最大化 $c_t A_t^{\mathrm{GAE}}$，但是在训练过程中会不断增加 $\pi_\theta\left(a_t \mid s_t\right)$，使得它越来越大，使得训练不稳定甚至崩溃 （比如被提升到0.9）。通过剪裁的方式，给策略的优化加了一个限制，使得对于高优势的token，也不会过度替身它的概率。</p>
+</li>
+<li>
+<p>KL散度惩罚</p>
+<p>$$
+\operatorname{KL}(\theta)=\mathbb{E}_{s_t}\left[\mathbb{D}_{\mathrm{KL}}\left(\pi_{\theta_{\text {orig }}}\left(\cdot \mid s_t\right) | \pi_\theta\left(\cdot \mid s_t\right)\right)\right]
+$$</p>
+<p>这一项惩罚当前策略与<strong>原始模型</strong>（RL 训练开始前的模型）之间的分布差异。注意 KL 惩罚和 clipping 的区别：clipping 约束的是<strong>相邻两次更新</strong>之间的步幅 （ $\theta$ vs $\theta_{\text{old}}$），而KL 惩罚约束的是累计偏移（ $\theta$ vs $\theta_{\text{orig}}$）。clipping 防止单步走太远，KL 防止多步累积后离起点太远。</p>
+</li>
+<li>
+<p>熵奖励（Entropy Bonus）</p>
+<p>$$
+H(\theta)=-\mathbb{E}_{a_t}\left[\log \pi_\theta\left(a_t \mid s_t\right)\right]
+$$</p>
+<p>熵衡量的是策略的不确定性。如果策略在某个位置几乎确定地生成某个 token（概率接近 1），熵就很低；如果概率分布比较均匀，熵就高。加入熵奖励是为了<strong>鼓励探索</strong>：防止策略过早坍缩到少数几个高奖励的模式上，保持生成的多样性。</p>
+</li>
+<li>
+<p>最终目标函数</p>
+<p>$$
+\mathcal{L}_{\mathrm{PPO}}(\theta, \gamma)=\underbrace{\mathcal{L}_{\mathrm{clip}}(\theta)}_{\text {最大化奖励 }}+\underbrace{w_1 H(\theta)}_{\text {最大化熵 }}-\underbrace{w_2 \mathrm{KL}(\theta)}_{\text {惩罚 KL 散度 }}-\underbrace{w_3 L(\gamma)}_{\text {Critic L2 损失 }}
+$$</p>
+<p>前两项是要最大化的（拿更高奖励、保持探索），后两项是要最小化的（不要偏离太远、让 critic 更准）。</p>
+</li>
+</ol>
+<!-- raw HTML omitted -->
+<p>通过上面的介绍，下面来看Actor-Critic中，状态价值函数 $V_\gamma$和策略函数LLM $\pi_\theta$是如何交替更新的：</p>
+<p><strong>第一步：Actor采样</strong>。当前策略LLM $\pi_\theta$对一批prompt生成完整response，RLHF pretrained frozen Reward Model对每个response计算分数。这批数据同时用于LLM和  $V_\gamma$的训练。</p>
+<p><strong>第二部：Critic评估。</strong> 对于每条轨迹中的每个token位置 $t$，即中间状态 $s_t$，将其输入到当前LLM中得到hidden state $h_t$，并计算状态价值 $V_\gamma\left(s_t\right)=W^{\top} h_t+b$。因为我们知道每个轨迹的实际奖励，因此我们可以得到当前价值函数 $V_\gamma$和LLM参数下，每个token的优势 $A_t^{\text{GAE}}$。比如可以通过MC来得到，直接用Reward - $V_\gamma\left(s_t\right)$就可以得到句子中 $a_t$这个token的无偏优势。</p>
+<p><strong>第三步：LLM更新。</strong> 利用优势信号，通过 clipped surrogate loss 更新LLM参数 $\theta$。正优势的 token 被鼓励（概率提升），负优势的被抑制（概率降低）。也就是将Reward和response中每个token的关系学习进LLM中，使得<strong>LLM可以为对Reward贡献大的token输出更高的概率</strong> 。</p>
+<p><strong>第四步：更新Critic。</strong> 用同一批数据和更新好的LLM，为每个 $s_t$计算新的hidden state $h_t$，从而得到新的状态价值，通过L2loss $L(\gamma)=\mathbb{E}_t\left[\left(V_\gamma\left(s_t\right)-R_\phi\left(s_T\right)\right)^2\right]$来更新状态价值函数的参数 $\gamma$，使得它的预测更接近实际奖励。</p>
+<p>这里的关键依赖关系是循环的：Actor 的更新质量取决于 critic 的评估是否准确，Critic 的评估是否准确取决于它是否跟上了 actor 的变化。</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>ICML2025《Towards Graph Foundation Models：Learning Generalities Across Graphs via Task-Trees》 Reading Notes</title>
       <link>https://JhuoW.github.io/posts/2025-11-08-task-tree/</link>
